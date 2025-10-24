@@ -5,7 +5,7 @@ PPII des goats
 
 To create and activate the python virtual environment run the following commands.
 ```
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
