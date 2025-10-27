@@ -15,3 +15,15 @@ Then to install the dependencies run the following command.
 ```
 pip install -r requirements.txt
 ```
+
+
+# Run the app
+
+After activating the venv, launch the server with this command :
+```
+flask --app main.py run
+```
+or this command to launch in debug mode :
+```
+flask --app main.py run --debug
+```
