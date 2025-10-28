@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Boilerplate</title>
-    <link rel="stylesheet" href="/static/style.css">
-  </head>
-  <body>
-    <h1>Main page</h1>
-    <script src="index.js"></script>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Main page{% endblock %}
+
+{% block content %}
+<h1>Main page</h1>
+{% endblock %}
+
+{% block js_files %}
+<script src="/static/js/index.js"></script>
+{% endblock %}
