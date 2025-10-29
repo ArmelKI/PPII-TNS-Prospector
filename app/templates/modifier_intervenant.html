@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Modifier un intervenant{% endblock %}
+{% block content %}
+<h1>Modifier un intervenant</h1>
+
+<form method="POST" action="{{ url_for('intervenants.modifier_intervenant', id=intervenant.id) }}">
+    <label>Nom :</label><br>
+    <input type="text" name="nom" value="{{ intervenant.nom }}" required><br><br>
+
+    <label>Compétences :</label><br>
+    <input type="text" name="competences" value="{{ intervenant.competences }}" required><br><br>
+
+    <label>Disponibilité :</label><br>
+    <select name="disponibilite">
+        <option {% if intervenant.disponibilite == 'Disponible' %}selected{% endif %}>Disponible</option>
+        <option {% if intervenant.disponibilite == 'Indisponible' %}selected{% endif %}>Indisponible</option>
+    </select><br><br>
+
+    <button type="submit">💾 Enregistrer</button>
+</form>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Intervenants{% endblock %}
+{% block content %}
+<h1>Liste des intervenants</h1>
+
+<a href="{{ url_for('intervenants.ajouter_intervenant') }}">+ Ajouter un intervenant</a>
+
+<table>
+    <tr>
+        <th>Nom</th>
+        <th>Compétences</th>
+        <th>Disponibilité</th>
+        <th>Actions</th>
+    </tr>
+    {% for i in intervenants %}
+    <tr>
+        <td>{{ i.nom }}</td>
+        <td>{{ i.competences }}</td>
+        <td>{{ i.disponibilite }}</td>
+        <td>
+        <td>
+            <a class="button edit" href="{{ url_for('intervenants.modifier_intervenant', id=i.id) }}">✏️ Modifier</a>
+            <form method="POST" action="{{ url_for('intervenants.supprimer_intervenant', id=i.id) }}" style="display:inline;">
+                <button class="delete" type="submit" onclick="return confirm('Supprimer cet intervenant ?');">🗑️ Supprimer</button>
+            </form>
+        </td>
+
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

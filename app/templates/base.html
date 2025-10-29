@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{% block title %}TNS - Tableau de bord{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<script>
+function toggleMenu() {
+  document.getElementById("navMenu").classList.toggle("open");
+}
+</script>
+<body>
+<button class="menu-toggle" onclick="toggleMenu()">
+  <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M1.5 12.5a.5.5 0 0 1 0-1h13a.5.5 0 0 1 0 1h-13zm0-4a.5.5 0 0 1 0-1h13a.5.5 0 0 1 0 1h-13zm0-4a.5.5 0 0 1 0-1h13a.5.5 0 0 1 0 1h-13z"/>
+  </svg>
+</button>
+    <header class="site-header">
+    <nav class="navbar">
+        <a href="{{ url_for('dashboard') }}" class="brand">
+        <img src="{{ url_for('static', filename='images/tns_logo.svg') }}" alt="TNS" class="logo">
+        </a>
+        <ul class="nav-list" id="navMenu">
+        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('intervenants.liste_intervenants') }}">Intervenants</a></li>
+        <li><a href="#">Projets</a></li>
+        <li><a href="#">Clients</a></li>
+        </ul>
+    </nav>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; PP2I TNS pôle FWFTNS. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>

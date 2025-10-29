@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord - TNS{% endblock %}
+
+{% block content %}
+    <h1>Tableau de bord</h1>
+
+    <div class="cards">
+        <div class="card">
+            <h2>Clients</h2>
+            <p class="big">{{ nb_clients }}</p>
+            <p>enregistrés</p>
+        </div>
+
+        <div class="card">
+            <h2>Projets</h2>
+            <p class="big">{{ nb_projets }}</p>
+            <p>en cours</p>
+        </div>
+
+        <div class="card">
+            <h2>Intervenants</h2>
+            <p class="big">{{ nb_intervenants }}</p>
+            <p>disponibles</p>
+        </div>
+    </div>
+{% endblock %}

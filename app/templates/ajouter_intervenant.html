@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Ajouter un intervenant{% endblock %}
+{% block content %}
+<h1>Ajouter un intervenant</h1>
+
+<form method="POST" action="{{ url_for('intervenants.ajouter_intervenant') }}">
+    <label>Nom :</label><br>
+    <input type="text" name="nom" required><br><br>
+
+    <label>Compétences :</label><br>
+    <input type="text" name="competences" required><br><br>
+
+    <label>Disponibilité :</label><br>
+    <select name="disponibilite">
+        <option>Disponible</option>
+        <option>Indisponible</option>
+    </select><br><br>
+
+    <button type="submit">Enregistrer</button>
+</form>
+{% endblock %}
