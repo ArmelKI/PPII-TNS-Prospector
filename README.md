@@ -21,9 +21,9 @@ pip install -r requirements.txt
 
 After activating the venv, launch the server with this command :
 ```
-flask --app main.py run
+flask --app app.py run
 ```
 or this command to launch in debug mode :
 ```
-flask --app main.py run --debug
+flask --app app.py run --debug
 ```
