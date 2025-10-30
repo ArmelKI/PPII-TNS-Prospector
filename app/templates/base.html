@@ -5,12 +5,36 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{% block title %}TNS - Tableau de bord{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <script>
 function toggleMenu() {
   document.getElementById("navMenu").classList.toggle("open");
 }
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const counters = document.querySelectorAll("[data-count]");
+  counters.forEach(counter => {
+    const target = +counter.getAttribute("data-count");
+    let count = 0;
+    const speed = 30; // plus petit = plus rapide
+    const increment = Math.ceil(target / 40);
+
+    const updateCount = () => {
+      if (count < target) {
+        count += increment;
+        counter.textContent = count;
+        setTimeout(updateCount, speed);
+      } else {
+        counter.textContent = target;
+      }
+    };
+    updateCount();
+  });
+});
+</script>
+
 <body>
 <button class="menu-toggle" onclick="toggleMenu()">
   <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" viewBox="0 0 16 16">

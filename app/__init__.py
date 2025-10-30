@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from app.routes.intervenants import intervenants_bp 
-from app.models import db # Pour initialiser la BDD (quand elle sera prête)
+from app.models import db, Intervenant # Pour initialiser la BDD (quand elle sera prête)
 
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
@@ -12,14 +12,16 @@ def create_app():
    
     @app.route("/")
     def dashboard():
-        # données de test (plus tard on récupèrera depuis la BDD)
-        nb_clients = 5
-        nb_projets = 3
-        nb_intervenants = 8
-        return render_template("dashboard.html",
-                               nb_clients=nb_clients,
-                               nb_projets=nb_projets,
-                               nb_intervenants=nb_intervenants)
+        nb_intervenants = Intervenant.query.count()
+        nb_clients = 0  # temporaire
+        nb_projets = 0  # temporaire
+        return render_template(
+            "dashboard.html",
+            nb_clients=nb_clients,
+            nb_projets=nb_projets,
+            nb_intervenants=nb_intervenants)
+    
+    # Enregistrement des Blueprints
     app.register_blueprint(intervenants_bp)
 
     # Gestion d'erreur 404
