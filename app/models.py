@@ -10,3 +10,14 @@ class Intervenant(db.Model):
 
     def __repr__(self):
         return f"<Intervenant {self.nom}>"
+
+class Utilisatur(db.Model):
+    id_utilisateur = db.Column(db.Integer, primary_key=True)
+    prenom_utilisateur = db.Column(db.String(255), nullable=False)
+    nom_utilisateur = db.Column(db.String(255), nullabe=False)
+    mail_utilisateur = db.Column(db.String(255), nullabe=False, unique=True)
+    mdp_utilisateur = db.Column(db.String(255), nullable=True)
+
+    def __repr__(self):
+        return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
+    
