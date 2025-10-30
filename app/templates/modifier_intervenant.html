@@ -1,21 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Modifier un intervenant{% endblock %}
+{% block title %}Modifier un Intervenant{% endblock %}
 {% block content %}
-<h1>Modifier un intervenant</h1>
 
-<form method="POST" action="{{ url_for('intervenants.modifier_intervenant', id=intervenant.id) }}">
-    <label>Nom :</label><br>
-    <input type="text" name="nom" value="{{ intervenant.nom }}" required><br><br>
+<div class="container">
+  <h1>Modifier un Intervenant</h1>
 
-    <label>Compétences :</label><br>
-    <input type="text" name="competences" value="{{ intervenant.competences }}" required><br><br>
+  <form method="POST" action="{{ url_for('intervenants.modifier_intervenant', id=intervenant.id) }}" onsubmit="return confirmModify();">
+    <input type="text" id="nom" name="nom" value="{{ intervenant.nom }}" required><br><br>
 
-    <label>Disponibilité :</label><br>
-    <select name="disponibilite">
-        <option {% if intervenant.disponibilite == 'Disponible' %}selected{% endif %}>Disponible</option>
-        <option {% if intervenant.disponibilite == 'Indisponible' %}selected{% endif %}>Indisponible</option>
+    <label for="competences">Compétences</label><br>
+    <input type="text" id="competences" name="competences" value="{{ intervenant.competences }}" required><br><br>
+
+    <label for="disponibilite">Disponibilité</label><br>
+    <select id="disponibilite" name="disponibilite" required>
+      <option value="Disponible" {% if intervenant.disponibilite == 'Disponible' %}selected{% endif %}>Disponible</option>
+      <option value="Indisponible" {% if intervenant.disponibilite == 'Indisponible' %}selected{% endif %}>Indisponible</option>
     </select><br><br>
 
-    <button type="submit">💾 Enregistrer</button>
-</form>
+    <button type="submit" class="btn">💾 Enregistrer</button>
+    <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">⬅ Retour</a>
+  </form>
+</div>
+
 {% endblock %}

@@ -1,15 +1,28 @@
+import os
 from flask import Flask, render_template
 from app.routes.intervenants import intervenants_bp 
-from app.models import db, Intervenant # Pour initialiser la BDD (quand elle sera prête)
+from app.models import db, Intervenant # Import des modèles
 
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
 
-    # Config temporaire pour SQLite (fichier local)
+    # Configuration de la base de données
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # === AJOUT DE LA SECRET_KEY ===
+    # Nécessaire pour que les 'flash messages' (sessions) fonctionnent.
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'ma-super-cle-secrete-de-dev')
+
+    # Initialisation de la BDD
     db.init_app(app)  # Lie la BDD à l'app
    
+    # === CRÉATION DES TABLES ===
+    # Crée les tables (ex: 'intervenant') si elles n'existent pas déjà.
+    with app.app_context():
+        db.create_all()
+
+    # === ROUTE DU TABLEAU DE BORD ===
     @app.route("/")
     def dashboard():
         nb_intervenants = Intervenant.query.count()

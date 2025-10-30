@@ -1,21 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Ajouter un intervenant{% endblock %}
+{% block title %}Ajouter un Intervenant{% endblock %}
 {% block content %}
-<h1>Ajouter un intervenant</h1>
 
-<form method="POST" action="{{ url_for('intervenants.ajouter_intervenant') }}">
-    <label>Nom :</label><br>
-    <input type="text" name="nom" required><br><br>
+<div class="container">
+  <h1>Ajouter un Intervenant</h1>
 
-    <label>Compétences :</label><br>
-    <input type="text" name="competences" required><br><br>
+  <form method="POST" action="{{ url_for('intervenants.ajouter_intervenant') }}">
+    <label for="nom">Nom</label><br>
+    <input type="text" id="nom" name="nom" required><br><br>
 
-    <label>Disponibilité :</label><br>
-    <select name="disponibilite">
-        <option>Disponible</option>
-        <option>Indisponible</option>
+    <label for="competences">Compétences</label><br>
+    <input type="text" id="competences" name="competences" required><br><br>
+
+    <label for="disponibilite">Disponibilité</label><br>
+    <select id="disponibilite" name="disponibilite" required>
+      <option value="Disponible">Disponible</option>
+      <option value="Indisponible">Indisponible</option>
     </select><br><br>
 
-    <button type="submit">Enregistrer</button>
-</form>
+    <button type="submit" class="btn">✅ Ajouter</button>
+    <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">⬅ Retour</a>
+  </form>
+</div>
+
 {% endblock %}

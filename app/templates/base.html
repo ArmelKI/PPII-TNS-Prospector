@@ -6,34 +6,10 @@
     <title>{% block title %}TNS - Tableau de bord{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
-<script>
-function toggleMenu() {
-  document.getElementById("navMenu").classList.toggle("open");
-}
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const counters = document.querySelectorAll("[data-count]");
-  counters.forEach(counter => {
-    const target = +counter.getAttribute("data-count");
-    let count = 0;
-    const speed = 30; // plus petit = plus rapide
-    const increment = Math.ceil(target / 40);
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    const updateCount = () => {
-      if (count < target) {
-        count += increment;
-        counter.textContent = count;
-        setTimeout(updateCount, speed);
-      } else {
-        counter.textContent = target;
-      }
-    };
-    updateCount();
-  });
-});
-</script>
+</head>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 <body>
 <button class="menu-toggle" onclick="toggleMenu()">
@@ -46,11 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <a href="{{ url_for('dashboard') }}" class="brand">
         <img src="{{ url_for('static', filename='images/tns_logo.svg') }}" alt="TNS" class="logo">
         </a>
-        <ul class="nav-list" id="navMenu">
-        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-        <li><a href="{{ url_for('intervenants.liste_intervenants') }}">Intervenants</a></li>
-        <li><a href="#">Projets</a></li>
-        <li><a href="#">Clients</a></li>
+        <ul class="nav-list" id="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('intervenants.liste_intervenants') }}">Intervenants</a></li>
+            <li><a href="#">Projets</a></li>
+            <li><a href="#">Clients</a></li>
         </ul>
     </nav>
     </header>
@@ -62,5 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <footer class="site-footer">
         <p>&copy; PP2I TNS pôle FWFTNS. Tous droits réservés.</p>
     </footer>
+    
+    {% block scripts %}{% endblock %}
 </body>
 </html>

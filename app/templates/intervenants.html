@@ -1,31 +1,97 @@
 {% extends "base.html" %}
 {% block title %}Intervenants{% endblock %}
 {% block content %}
-<h1>Liste des intervenants</h1>
 
-<a href="{{ url_for('intervenants.ajouter_intervenant') }}">+ Ajouter un intervenant</a>
+<h1>Liste des Intervenants</h1>
 
-<table>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="toolbar">
+  <form method="get" action="{{ url_for('intervenants.liste_intervenants') }}" class="search-form">
+    <input type="text" name="q" placeholder="Rechercher..." value="{{ search_query or '' }}">
+    <button type="submit">🔍</button>
+  </form>
+
+  <select id="filter-dispo">
+    <option value="">-- Disponibilité --</option>
+    <option value="Disponible" {% if filter_dispo == 'Disponible' %}selected{% endif %}>Disponible</option>
+    <option value="Indisponible" {% if filter_dispo == 'Indisponible' %}selected{% endif %}>Indisponible</option>
+  </select>
+
+  <a href="{{ url_for('intervenants.ajouter_intervenant') }}" class="btn">+ Ajouter</a>
+  <a href="{{ url_for('intervenants.exporter_intervenants') }}" class="btn-secondary">📤 Export CSV</a>
+</div>
+
+<table class="data-table">
+  <thead>
     <tr>
-        <th>Nom</th>
-        <th>Compétences</th>
-        <th>Disponibilité</th>
-        <th>Actions</th>
+      <th>Nom</th>
+      <th>Compétences</th>
+      <th>Disponibilité</th>
+      <th>Actions</th>
     </tr>
-    {% for i in intervenants %}
+  </thead>
+  <tbody>
+    {% for i in intervenants.items %}
     <tr>
-        <td>{{ i.nom }}</td>
-        <td>{{ i.competences }}</td>
-        <td>{{ i.disponibilite }}</td>
-        <td>
-        <td>
-            <a class="button edit" href="{{ url_for('intervenants.modifier_intervenant', id=i.id) }}">✏️ Modifier</a>
-            <form method="POST" action="{{ url_for('intervenants.supprimer_intervenant', id=i.id) }}" style="display:inline;">
-                <button class="delete" type="submit" onclick="return confirm('Supprimer cet intervenant ?');">🗑️ Supprimer</button>
-            </form>
-        </td>
-
+      <td><a href="{{ url_for('intervenants.details_intervenant', id=i.id) }}">{{ i.nom }}</a></td>
+      <td>{{ i.competences }}</td>
+      <td>
+        <span class="badge {{ 'green' if i.disponibilite == 'Disponible' else 'red' }}">
+          {{ i.disponibilite }}
+        </span>
+      </td>
+      <td>
+        <a href="{{ url_for('intervenants.modifier_intervenant', id=i.id) }}" class="edit">✏️</a>
+        
+        <form method="post" action="{{ url_for('intervenants.supprimer_intervenant', id=i.id) }}" class="delete-form" onsubmit="return confirmDelete();">
+          <button type="submit" class="delete">🗑</button>
+        </form>
+      </td>
     </tr>
     {% endfor %}
+  </tbody>
 </table>
+
+<div class="pagination">
+  {% if intervenants.has_prev %}
+    <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.prev_num, q=search_query, disponibilite=filter_dispo) }}">← Précédent</a>
+  {% endif %}
+  <span>Page {{ intervenants.page }} / {{ intervenants.pages }}</span>
+  {% if intervenants.has_next %}
+    <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.next_num, q=search_query, disponibilite=filter_dispo) }}">Suivant →</a>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('filter-dispo').addEventListener('change', function() {
+    // Récupère la valeur sélectionnée
+    const dispo = this.value;
+    
+    // Construit la nouvelle URL à partir de l'URL actuelle
+    const url = new URL(window.location.href);
+    
+    // Met à jour ou supprime le paramètre 'disponibilite'
+    if (dispo) {
+        url.searchParams.set('disponibilite', dispo);
+    } else {
+        url.searchParams.delete('disponibilite');
+    }
+    
+    // Réinitialise à la page 1 lors d'un changement de filtre
+    url.searchParams.set('page', '1');
+    
+    // Redirige l'utilisateur vers la nouvelle URL
+    window.location.href = url.toString();
+});
+</script>
 {% endblock %}
