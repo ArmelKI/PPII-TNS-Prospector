@@ -5,7 +5,7 @@ from sqlalchemy import Enum
 db = SQLAlchemy()
 
 
-    
+
 
 class StatutProjet(enum.Enum):
     PAS_COMMENCE = "Pas commencé"
@@ -28,7 +28,7 @@ class StatutTache(enum.Enum):
 
 class Role(db.Model):
     id_role = db.Column(db.Integer, primary_key=True)
-    nom_role = db.Colmun(db.String, nullable=False)
+    nom_role = db.Column(db.String, nullable=False)
 
 class Utilisateur(db.Model):
     id_utilisateur = db.Column(db.Integer, primary_key=True)
@@ -62,7 +62,7 @@ class Client(db.Model):
 
     def __repr__(self):
         return f"Client {self.raison_sociale}"
-    
+
 
 class Intervenant(db.Model):
     id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur"), primary_key=True)
@@ -74,8 +74,8 @@ class Intervenant(db.Model):
     def __repr__(self):
         return f"Intervenant "
 
-    
-    
+
+
 class Projet(db.Model):
     id_projet = db.Column(db.Integer, primary_key=True)
     nom_projet = db.Column(db.String(255), nullable = False)
