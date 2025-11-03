@@ -4,14 +4,7 @@ from sqlalchemy import Enum
 
 db = SQLAlchemy()
 
-class Intervenant(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(100), nullable=False)
-    competences = db.Column(db.String(255), nullable=False)
-    disponibilite = db.Column(db.String(50), nullable=False)
 
-    def __repr__(self):
-        return f"<Intervenant {self.nom}>"
     
 
 class StatutProjet(enum.Enum):
@@ -92,4 +85,15 @@ class Projet(db.Model):
     id_client = db.Column(db.Integer, db.ForeignKey("clients.id_client"))
     id_utilisateur_ajout = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur"))
     id_intervenant = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant"))
-    
+
+
+
+
+class Intervenant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(100), nullable=False)
+    competences = db.Column(db.String(255), nullable=False)
+    disponibilite = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f"<Intervenant {self.nom}>"
