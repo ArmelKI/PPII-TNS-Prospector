@@ -40,7 +40,7 @@ def create_app():
     @app.route("/")
     def dashboard():
         nb_intervenants = Intervenant.query.count()
-        nb_clients = Client.query.count()
+        nb_clients = Client.query.count()   
         nb_projets = Projet.query.count()
         return render_template(
             "dashboard.html",

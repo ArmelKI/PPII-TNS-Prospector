@@ -2,6 +2,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, Respon
 from app.models import Intervenant, db
 import csv
 from io import StringIO
+from sqlalchemy.orm import joinedload
+
+intervenants = db.session.query(Intervenant).options(joinedload(Intervenant.utilisateur)).all()
+
 
 intervenants_bp = Blueprint('intervenants', __name__)
 
@@ -9,7 +13,7 @@ intervenants_bp = Blueprint('intervenants', __name__)
 @intervenants_bp.route('/intervenants')
 def liste_intervenants():
     query = request.args.get('q', '')
-    dispo = request.args.get('disponibilite', '')
+    dispo = request.args.get('disponible_actuellement', '')
     page = request.args.get('page', 1, type=int)
     per_page = 5
 
@@ -17,13 +21,13 @@ def liste_intervenants():
 
     if query:
         intervenants = intervenants.filter(
-            (Intervenant.nom.contains(query)) | 
+            (Intervenant.utilisateur.nom_utilisateur.contains(query)) | 
             (Intervenant.competences.contains(query))
         )
     if dispo:
-        intervenants = intervenants.filter_by(disponibilite=dispo)
+        intervenants = intervenants.filter_by(disponible_acutellement=dispo)
 
-    intervenants = intervenants.order_by(Intervenant.nom).paginate(page=page, per_page=per_page, error_out=False)
+    intervenants = intervenants.order_by(Intervenant.utilisateur.nom_utilisateur).paginate(page=page, per_page=per_page, error_out=False)
 
     return render_template('intervenants.html',
                            intervenants=intervenants,
@@ -34,11 +38,11 @@ def liste_intervenants():
 @intervenants_bp.route('/intervenant/add', methods=['GET', 'POST'])
 def ajouter_intervenant():
     if request.method == 'POST':
-        nom = request.form['nom']
+        nom = request.form['nom_utilisateur']
         competences = request.form['competences']
-        dispo = request.form['disponibilite']
+        dispo = request.form['disponible_actuellement']
 
-        new_intervenant = Intervenant(nom=nom, competences=competences, disponibilite=dispo)
+        new_intervenant = Intervenant(utilisateur=nom, competences=competences, disponible_actuellement=dispo)
         db.session.add(new_intervenant)
         db.session.commit()
         flash("✅ Intervenant ajouté avec succès !", "success")
@@ -52,9 +56,9 @@ def modifier_intervenant(id):
     intervenant = Intervenant.query.get_or_404(id)
 
     if request.method == 'POST':
-        intervenant.nom = request.form['nom']
+        intervenant.utilisateur.nom_utilisateur = request.form['nom_utilisateur']
         intervenant.competences = request.form['competences']
-        intervenant.disponibilite = request.form['disponibilite']
+        intervenant.disponible_actuellement = request.form['disponible_actuellement']
         db.session.commit()
         flash("✏️ Modifications enregistrées.", "info")
         return redirect(url_for('intervenants.liste_intervenants'))
@@ -84,7 +88,7 @@ def exporter_intervenants():
     writer = csv.writer(si)
     writer.writerow(['ID', 'Nom', 'Compétences', 'Disponibilité'])
     for i in intervenants:
-        writer.writerow([i.id, i.nom, i.competences, i.disponibilite])
+        writer.writerow([i.id_intervenant, i.utilisateur.nom_utilisateur, i.competences, i.disponible_actuellement])
 
     output = si.getvalue()
     return Response(
