@@ -159,6 +159,7 @@ class JalonProjet(db.Model):
 
     id_jalon = db.Column(db.Integer, primary_key=True)
     id_projet = db.Column(db.Integer, db.ForeignKey("projets.id_projet", ondelete="SET NULL", onupdate="CASCADE"))
+    nom_jalon = db.Column(db.String(255), nullable=False)
     statut_jalon = db.Column(Enum(StatutJalon, name="statut_jalon"))
     date_debut_jalon = db.Column(db.Date)
     date_fin_jalon = db.Column(db.Date)
