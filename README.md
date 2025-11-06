@@ -1,7 +1,10 @@
 # PPII
 PPII des goats
 
-# Python virtual environment
+
+# Before running
+
+## Python virtual environment
 
 To create and activate the python virtual environment run the following commands.
 ```
@@ -14,6 +17,22 @@ source .venv/bin/activate
 Then to install the dependencies run the following command.
 ```
 pip install -r requirements.txt
+```
+
+
+## Environment variables
+
+Create a texte file named `.env` in the root of the project.
+
+And put your credentials in it :
+
+```
+FLASK_SECRET_KEY=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+DB_NAME=
 ```
 
 
