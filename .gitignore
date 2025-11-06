@@ -6,3 +6,6 @@
 
 # VSCode config
 .vscode
+
+# variables d'environnement privées
+.env
