@@ -10,8 +10,8 @@ db = SQLAlchemy()
 
 intervenant_projet = db.Table(
     "intervenant_projet",
-    db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", primary_key=True)),
-    db.Column("id_projet", db.Integer, db.ForeignKey("projets.id_projet", primary_key=True))
+    db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
+    db.Column("id_projet", db.Integer, db.ForeignKey("projets.id_projet", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
 )
 
 class StatutProjet(enum.Enum):
@@ -59,6 +59,8 @@ class Utilisateur(db.Model):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
 class Client(db.Model):
+    __tablename__ = "clients"
+
     id_client = db.Column(db.Integer, primary_key=True)
     raison_sociale = db.Column(db.String(255), nullable=False)
     mail_client = db.Column(db.String(255))
@@ -71,20 +73,42 @@ class Client(db.Model):
     def __repr__(self):
         return f"Client {self.raison_sociale}"
 
+class Etat_Relation(db.Model):
+    __tablename__ = "relations"
+
+    id_etat_relation = db.Column(db.Integer, primary_key=True)
+    nom_relation = db.Column(db.String)
+
+class Interaction_Client():
+    # Attention, ce n'est pas une table de correspondance entre deux autres tables
+    # elle permet de faire figurer, à un instant t, l'état de la relation entre TNS et le client
+    __tablename__ = "interaction_client"
+
+    id_interaction = db.Column(db.Integer, primary_key=True)
+    id_client = db.Column(db.Integer)
+    date_interaction = db.Column(db.Date)
+    detail_interaction = db.Column(db.String)
+    id_etat_relation = db.Column(db.Integer, db.ForeignKey("etats_relation.id_etat_relation"))
+
+
 
 class Intervenant(db.Model):
+    __tablename__ = "intervenants"
+
     id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur"), primary_key=True)
     disponible_actuellement = db.Column(db.Boolean, nullable=False)
     nombre_heures_disponibles = db.Column(db.Float(8))
 
     utilisateur = db.relationship("Utilisateur", backref="intervenant")
-    projets = db.relationship("Projet", backref="intervenants")
+    projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
 
     def __repr__(self):
-        return f"Intervenant "
+        return f"Intervenant {self.utilisateur.nom_utilisateur}"
 
 
 class Projet(db.Model):
+    __tablename__ = "projets"
+
     id_projet = db.Column(db.Integer, primary_key=True)
     nom_projet = db.Column(db.String(255), nullable = False)
     statut_projet = db.Column(Enum(StatutProjet, name="statut_projet"), nullable=False)
@@ -94,10 +118,18 @@ class Projet(db.Model):
     id_utilisateur_creation = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur"))
 
     client = db.relationship("Client", backref="projet")
-    utilisateur_creation = db.relationship("Utilisateur", backref="projet")
+    utilisateur_creation = db.relationship("Utilisateur", backref="projets_créés")
+
+    intervenants = db.relationship("Intervenant", secondary=intervenant_projet, back_populates="projets")
+
+    def __repr__(self):
+        return f"Projet {self.nom_projet}"
+    
+
 
 
 class Intervenant(db.Model):
+    
     id = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(100), nullable=False)
     competences = db.Column(db.String(255), nullable=False)
