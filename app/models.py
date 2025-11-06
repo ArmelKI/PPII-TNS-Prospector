@@ -4,10 +4,20 @@ from sqlalchemy import Enum
 
 db = SQLAlchemy()
 
+# Tables d'associations (pour les relations plusieurs-à-plusieurs)
+# Un projet peut avoir plusieurs intervenants et un intervenant peut travailler sur plusieurs projets
+# Humainement un intervenant peut peut-être pas travailler sur plusieurs projets en même temps, il peut en effectuer deux de suite par exemple
 
-
+intervenant_projet = db.Table(
+    "intervenant_projet",
+    db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", primary_key=True)),
+    db.Column("id_projet", db.Integer, db.ForeignKey("projets.id_projet", primary_key=True))
+)
 
 class StatutProjet(enum.Enum):
+    # les statuts de projets, de tâches et de jalons sont des types énumérés, et non pas des tables
+    # par conséquent on n'ajoute pas de dunder tablename
+
     PAS_COMMENCE = "Pas commencé"
     EN_COURS = "En cours"
     TERMINE = "Terminé"
@@ -15,6 +25,7 @@ class StatutProjet(enum.Enum):
     STAND_BY = "Stand-By"
 
 class StatutJalon(enum.Enum):
+
     A_VENIR = "À venir"
     ACTUEL = "Actuel"
     PASSE = "Passé"
@@ -27,10 +38,14 @@ class StatutTache(enum.Enum):
     STAND_BY = "Stand-By"
 
 class Role(db.Model):
+    __tablename__ = "roles"
+
     id_role = db.Column(db.Integer, primary_key=True)
     nom_role = db.Column(db.String, nullable=False)
 
 class Utilisateur(db.Model):
+    __tablename__ = "utilisateurs"
+
     id_utilisateur = db.Column(db.Integer, primary_key=True)
     prenom_utilisateur = db.Column(db.String(255), nullable=False)
     nom_utilisateur = db.Column(db.String(255), nullable=False)
@@ -38,10 +53,7 @@ class Utilisateur(db.Model):
     mdp_utilisateur = db.Column(db.String(255), nullable=True)
     id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"))
 
-    clients_ajoutes = db.relationship("Client", back_populates="utilisateur_ajout")
-
     role = db.relationship("Role", backref="utilisateurs")
-
 
     def __repr__(self):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
@@ -53,12 +65,8 @@ class Client(db.Model):
     telephone_client = db.Column(db.String(12))
     secteur = db.Column(db.String)
     dernier_contact = db.Column(db.Date)
-    id_utilisateur_ajout = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur"))
     latitude = db.Column(db.Float(8))
     longitude = db.Column(db.Float(8))
-
-    utilisateur_ajout = db.relationship("Utilisateur", back_populates="clients_ajoutes")
-
 
     def __repr__(self):
         return f"Client {self.raison_sociale}"
@@ -69,11 +77,11 @@ class Intervenant(db.Model):
     disponible_actuellement = db.Column(db.Boolean, nullable=False)
     nombre_heures_disponibles = db.Column(db.Float(8))
 
-    utilisateur_intervenant = db.relationship("Utilisateur", backref="intervenant")
+    utilisateur = db.relationship("Utilisateur", backref="intervenant")
+    projets = db.relationship("Projet", backref="intervenants")
 
     def __repr__(self):
         return f"Intervenant "
-
 
 
 class Projet(db.Model):
@@ -83,10 +91,10 @@ class Projet(db.Model):
     date_debut_projet = db.Column(db.Date, nullable = False)
     date_fin_projet = db.Column(db.Date, nullable=False)
     id_client = db.Column(db.Integer, db.ForeignKey("clients.id_client"))
-    id_utilisateur_ajout = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur"))
-    id_intervenant = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant"))
+    id_utilisateur_creation = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur"))
 
-
+    client = db.relationship("Client", backref="projet")
+    utilisateur_creation = db.relationship("Utilisateur", backref="projet")
 
 
 class Intervenant(db.Model):
