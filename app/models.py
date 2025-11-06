@@ -133,6 +133,7 @@ class Intervenant(db.Model):
         return f"Intervenant {self.utilisateur.nom_utilisateur}"
 
 
+
 class Projet(db.Model):
     __tablename__ = "projets"
 

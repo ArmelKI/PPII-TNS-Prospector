@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template
 from app.routes.intervenants import intervenants_bp 
-from app.models import db, Intervenant # Import des modèles
+from app.models import * # Import des modèles
 from dotenv import load_dotenv
 from urllib.parse import quote
 
@@ -40,8 +40,8 @@ def create_app():
     @app.route("/")
     def dashboard():
         nb_intervenants = Intervenant.query.count()
-        nb_clients = 0  # temporaire
-        nb_projets = 0  # temporaire
+        nb_clients = Client.query.count()
+        nb_projets = Projet.query.count()
         return render_template(
             "dashboard.html",
             nb_clients=nb_clients,
