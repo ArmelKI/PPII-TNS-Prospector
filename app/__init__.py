@@ -4,9 +4,12 @@ from app.routes.intervenants import intervenants_bp
 from app.models import db, Intervenant # Import des modèles
 from dotenv import load_dotenv
 from urllib.parse import quote
+from flask_login import LoginManager
+
 
 
 load_dotenv()
+login_manager = LoginManager()
 
 
 def create_app():
@@ -35,6 +38,9 @@ def create_app():
     # Crée les tables (ex: 'intervenant') si elles n'existent pas déjà.
     with app.app_context():
         db.create_all()
+
+    # Initialisation du login manager
+    login_manager.init_app(app)
 
     # === ROUTE DU TABLEAU DE BORD ===
     @app.route("/")

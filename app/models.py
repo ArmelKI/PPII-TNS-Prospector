@@ -1,6 +1,8 @@
 import enum
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum
+from flask_login import UserMixin
+from app import login_manager
 
 db = SQLAlchemy()
 
@@ -51,7 +53,7 @@ class Role(db.Model):
     nom_role = db.Column(db.String, nullable=False)
 
 
-class Utilisateur(db.Model):
+class Utilisateur(db.Model, UserMixin):
     __tablename__ = "utilisateurs"
 
     id_utilisateur = db.Column(db.Integer, primary_key=True)
@@ -64,6 +66,11 @@ class Utilisateur(db.Model):
     role = db.relationship("Role", backref="utilisateurs")
     projets_crees = db.relationship("Projet", back_populates="utilisateur_creation")
     intervenant = db.relationship("Intervenant", uselist=False, back_populates="utilisateur")
+
+    @login_manager.user_loader
+    @classmethod
+    def load_user(clc, user_id):
+        return clc.quer
 
     def __repr__(self):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
