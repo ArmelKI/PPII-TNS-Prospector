@@ -50,7 +50,6 @@ class Role(db.Model):
     id_role = db.Column(db.Integer, primary_key=True)
     nom_role = db.Column(db.String, nullable=False)
 
-    utilisateurs = db.relationship("Utilisateur", back_populates="role")
 
 class Utilisateur(db.Model):
     __tablename__ = "utilisateurs"
@@ -95,7 +94,7 @@ class EtatRelation(db.Model):
 
     interactions = db.relationship("InteractionClient", back_populates="etat_relation")
 
-class InteractionClient():
+class InteractionClient(db.Model):
     # Attention, ce n'est pas une table de correspondance entre deux autres tables
     # elle permet de faire figurer, à un instant t, l'état de la relation entre TNS et le client
     __tablename__ = "interaction_client"
