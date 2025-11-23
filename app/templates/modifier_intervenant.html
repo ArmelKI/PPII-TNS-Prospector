@@ -1,22 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Modifier Intervenant{% endblock %}
+
 {% block content %}
-<div class="container">
-  <h1>Modifier l'intervenant</h1>
+<h1>Modifier Intervenant</h1>
 
-  <form method="post" action="{{ url_for('intervenants.modifier_intervenant', id=intervenant.id_intervenant) }}">
-    <p><strong>Utilisateur :</strong> {{ intervenant.utilisateur.nom_utilisateur }} {{ intervenant.utilisateur.prenom_utilisateur }}</p>
+<form method="POST">
+  <label>Disponible</label>
+  <input type="checkbox" name="disponible" {% if intervenant.disponible_actuellement %}checked{% endif %}>
 
-    <label><input type="checkbox" name="disponible" {% if intervenant.disponible_actuellement %}checked{% endif %}> Disponible</label>
+  <label>Heures disponibles</label>
+  <input type="number" step="0.5" name="heures" value="{{ intervenant.nombre_heures_disponibles or 0 }}">
 
-    <label>Heures disponibles</label>
-    <input type="number" step="0.5" name="heures" value="{{ intervenant.nombre_heures_disponibles or 0 }}">
+  <label>Compétences (séparées par ;)</label>
+  <input type="text" name="competences" value="{{ competences_str }}">
 
-    <label>Compétences (séparées par ; )</label>
-    <input type="text" name="competences" value="{{ competences_str }}">
-
-    <button type="submit" class="btn" onclick="return confirmModify();">Enregistrer</button>
-    <a href="{{ url_for('intervenants.details_intervenant', id=intervenant.id_intervenant) }}" class="btn-secondary">Annuler</a>
-  </form>
-</div>
+  <button type="submit" class="btn">Enregistrer</button>
+  <a href="{{ url_for('intervenants.details_intervenant', id=intervenant.id_intervenant) }}" class="btn-secondary">Annuler</a>
+</form>
 {% endblock %}

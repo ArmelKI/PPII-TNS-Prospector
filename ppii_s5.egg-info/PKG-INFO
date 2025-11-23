@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: ppii-s5
+Version: 1.0.0
+Summary: PPII S5 - Application de gestion (utilisateurs / intervenants / projets)
+Requires-Python: >=3.10
+Requires-Dist: Flask>=2.0
+Requires-Dist: Flask-SQLAlchemy>=3.0
+Requires-Dist: python-dotenv>=0.20
+Requires-Dist: pytest>=7.0
+Requires-Dist: pytest-flask>=1.2
