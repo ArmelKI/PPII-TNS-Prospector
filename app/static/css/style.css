@@ -385,3 +385,12 @@ form input, form select {
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
+/* Ajouts pour dashboard et badges */
+.chart-container h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--tns-gray-dark);
+}
+.badge { font-size: 0.85rem; margin-right:6px; padding:4px 8px; }
+.chart-container { padding: 16px; }

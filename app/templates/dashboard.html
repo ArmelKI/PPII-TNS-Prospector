@@ -1,30 +1,118 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h1>Tableau de bord</h1>
+<div class="container">
+  <h1>Tableau de bord</h1>
 
-<div class="cards">
-  <div class="card card-blue">
-    <div class="icon"><i class="fa-solid fa-user-group"></i></div>
-    <h2>Clients</h2>
-    <div class="big" data-count="{{ nb_clients }}">0</div>
+  <div class="cards">
+    <div class="card card-blue">
+      <div class="icon"><i class="fa-solid fa-user-group"></i></div>
+      <h2>Clients</h2>
+      <div class="big" data-count="{{ nb_clients }}">{{ nb_clients }}</div>
+    </div>
+
+    <div class="card card-green">
+      <div class="icon"><i class="fa-solid fa-diagram-project"></i></div>
+      <h2>Projets</h2>
+      <div class="big" data-count="{{ nb_projets }}">{{ nb_projets }}</div>
+    </div>
+
+    <div class="card card-orange">
+      <div class="icon"><i class="fa-solid fa-people-line"></i></div>
+      <h2>Intervenants</h2>
+      <div class="big" data-count="{{ nb_intervenants }}">{{ nb_intervenants }}</div>
+    </div>
   </div>
 
-  <div class="card card-green">
-    <div class="icon"><i class="fa-solid fa-diagram-project"></i></div>
-    <h2>Projets</h2>
-    <div class="big" data-count="{{ nb_projets }}">0</div>
-  </div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:30px;">
+    <div class="chart-container">
+      <h3>Projets par statut</h3>
+      <canvas id="projetsStatutChart"></canvas>
+    </div>
 
-  <div class="card card-orange">
-    <div class="icon"><i class="fa-solid fa-people-line"></i></div>
-    <h2>Intervenants</h2>
-    <div class="big" data-count="{{ nb_intervenants }}">0</div>
+    <div class="chart-container">
+      <h3>Disponibilité des intervenants</h3>
+      <canvas id="dispoChart"></canvas>
+    </div>
+
+    <div class="chart-container" style="grid-column: 1 / -1;">
+      <h3>Interactions (6 derniers mois)</h3>
+      <canvas id="interactionsChart"></canvas>
+    </div>
   </div>
 </div>
+{% endblock %}
 
-<!-- Conteneur du graphique -->
-<div class="chart-container">
-  <canvas id="statsChart"></canvas>
-</div>
+{% block scripts %}
+<!-- Chart.js (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const statutCounts = {{ statut_counts | tojson }};
+const dispoMap = {{ dispo_map | tojson }};
+const interLabels = {{ inter_labels | tojson }};
+const interCounts = {{ inter_counts | tojson }};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Projets par statut : pie
+  const ctx1 = document.getElementById('projetsStatutChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'pie',
+    data: {
+      labels: Object.keys(statutCounts),
+      datasets: [{
+        data: Object.values(statutCounts),
+        backgroundColor: [
+          'rgba(0,86,179,0.8)',
+          'rgba(74,139,237,0.8)',
+          'rgba(40,167,69,0.8)',
+          'rgba(255,136,0,0.8)',
+          'rgba(200,200,200,0.8)'
+        ]
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  // Disponibilité intervenants : doughnut
+  const ctx2 = document.getElementById('dispoChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(dispoMap),
+      datasets: [{
+        data: Object.values(dispoMap),
+        backgroundColor: ['rgba(40,167,69,0.8)', 'rgba(220,53,69,0.8)']
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  // Interactions : line
+  const ctx3 = document.getElementById('interactionsChart').getContext('2d');
+  new Chart(ctx3, {
+    type: 'line',
+    data: {
+      labels: interLabels,
+      datasets: [{
+        label: 'Interactions',
+        data: interCounts,
+        fill: false,
+        tension: 0.2,
+        borderWidth: 2,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 }
+        }
+      }
+    }
+  });
+});
+</script>
 {% endblock %}
