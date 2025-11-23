@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template
 from app.routes.intervenants import intervenants_bp 
-from app.models import * # Import des modèles
+import app.models
 from dotenv import load_dotenv
 from urllib.parse import quote
 
