@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from dotenv import load_dotenv
 from urllib.parse import quote
 
@@ -37,7 +37,15 @@ def create_app():
             nb_intervenants=nb_intervenants
         )
     
-    
+    @app.route("/client", methods=["GET"])
+    def all_clients():
+        clients = Client.query.count()
+        output = []
+        for client in clients:
+            current_client = {}
+            current_client["raison_sociale"] = client.raison_sociale
+            output.append(current_client)
+        return jsonify(output)
 
     # Enregistrement des blueprints
     app.register_blueprint(intervenants_bp)
