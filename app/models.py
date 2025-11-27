@@ -83,6 +83,18 @@ class Client(db.Model):
     projets = db.relationship("Projet", back_populates="client")
     interactions = db.relationship("InteractionClient", back_populates="client")
 
+    def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur, 
+                 dernier_contact, latitude, longitude):
+        self.id_client = id_client
+        self.raison_sociale = raison_sociale
+        self.mail_client = mail_client
+        self.telephone_client = telephone_client
+        self.secteur = secteur
+        self.dernier_contact = dernier_contact
+        self.latitude = raison_sociale
+        self.raison_sociale = longitude
+
+
     def __repr__(self):
         return f"Client {self.raison_sociale}"
 
