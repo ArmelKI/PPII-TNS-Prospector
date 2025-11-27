@@ -91,9 +91,8 @@ class Client(db.Model):
         self.telephone_client = telephone_client
         self.secteur = secteur
         self.dernier_contact = dernier_contact
-        self.latitude = raison_sociale
-        self.raison_sociale = longitude
-
+        self.latitude = latitude
+        self.longitude = longitude
 
     def __repr__(self):
         return f"Client {self.raison_sociale}"

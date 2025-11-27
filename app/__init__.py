@@ -1,10 +1,10 @@
 import os
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from dotenv import load_dotenv
 from urllib.parse import quote
 
 from app.models import *
-from app.routes.intervenants import intervenants_bp
+#from app.routes.intervenants import intervenants_bp
 from app.models import Intervenant, Client, Projet
 
 load_dotenv()
@@ -37,22 +37,41 @@ def create_app():
             nb_intervenants=nb_intervenants
         )
     
-    @app.route("/client", methods=["GET"])
+    @app.route("/clients", methods=["GET"])
     def all_clients():
-        clients = Client.query.count()
+        clients = Client.query.all()
         output = []
         for client in clients:
             current_client = {}
             current_client["raison_sociale"] = client.raison_sociale
             output.append(current_client)
         return jsonify(output)
+    
+    @app.route("/clients", methods=["POST"])
+    def add_client():
+        client_data = request.get_json()
+        client = Client(
+            id_client=client_data["id_client"],
+            raison_sociale=client_data["raison_sociale"],
+            mail_client=client_data["mail_client"],
+            telephone_client=client_data["telephone_client"],
+            secteur=client_data["secteur"],
+            dernier_contact=client_data["dernier_contact"],
+            latitude=client_data["latitude"],
+            longitude=client_data["longitude"]
+        )
+        db.session.add(client)
+        db.session.commit()
+        return jsonify(client_data)
+
 
     # Enregistrement des blueprints
-    app.register_blueprint(intervenants_bp)
+    #app.register_blueprint(intervenants_bp)
 
     # Gestion erreur 404
+    """
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('404.html'), 404
-
+"""
     return app
