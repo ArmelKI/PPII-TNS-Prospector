@@ -62,7 +62,6 @@ class Utilisateur(db.Model):
     id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"))
 
     role = db.relationship("Role", backref="utilisateurs")
-    projets_crees = db.relationship("Projet", back_populates="utilisateur_creation")
     intervenant = db.relationship("Intervenant", uselist=False, back_populates="utilisateur")
 
     def __repr__(self):
@@ -154,10 +153,8 @@ class Projet(db.Model):
     date_debut_projet = db.Column(db.Date, nullable = False)
     date_fin_projet = db.Column(db.Date, nullable=False)
     id_client = db.Column(db.Integer, db.ForeignKey("clients.id_client", ondelete="SET NULL", onupdate="CASCADE"))
-    id_utilisateur_creation = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur", ondelete="SET NULL", onupdate="CASCADE"))
 
     client = db.relationship("Client", back_populates="projets")
-    utilisateur_creation = db.relationship("Utilisateur", back_populates="projets_crees")
     jalons = db.relationship("JalonProjet", back_populates="projet")
     intervenants = db.relationship("Intervenant", secondary=intervenant_projet, back_populates="projets")
 

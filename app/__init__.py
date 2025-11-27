@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, jsonify, request
 from dotenv import load_dotenv
 from urllib.parse import quote
+from sqlalchemy.exc import ProgrammingError
 
 from app.models import *
 #from app.routes.intervenants import intervenants_bp
@@ -85,10 +86,14 @@ def create_app():
     @app.route("/clients/<int:id_client>", methods=["DELETE"])
     def delete_client(id_client):
         client = Client.query.get_or_404(id_client)
-        db.session.delete(client)
-        db.session.commit()
+        try:
+            db.session.delete(client)
+            db.session.commit()
+        except ProgrammingError as e:
+            db.session.rollback()  # important pour ne pas bloquer la session
+            return jsonify({"Erreur":"", "details": str(e)}), 500
+        
         return jsonify({"message": f"Client {id_client} deleted"})
-
 
 
 
