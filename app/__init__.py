@@ -37,6 +37,8 @@ def create_app():
             nb_intervenants=nb_intervenants
         )
     
+
+    
     @app.route("/clients", methods=["GET"])
     def all_clients():
         clients = Client.query.all()
@@ -63,6 +65,24 @@ def create_app():
         db.session.add(client)
         db.session.commit()
         return jsonify(client_data)
+    
+    @app.route("/clients/<int:id_client>", methods=["PUT"])
+    def update_client(id_client):
+        client_data = request.get_json()
+        client = Client.query.get_or_404(id_client) # si le client n'est pas trouvé -> 404
+
+        client.raison_sociale = client_data.get("raison_sociale", client.raison_sociale)
+        client.mail_client = client_data.get("mail_client", client.mail_client)
+        client.telephone_client = client_data.get("telephone_client", client.telephone_client)
+        client.secteur = client_data.get("secteur", client.secteur)
+        client.dernier_contact = client_data.get("dernier_contact", client.dernier_contact)
+        client.latitude = client_data.get("latitude", client.latitude)
+        client.longitude = client_data.get("longitude", client.longitude)
+
+        db.session.commit()
+        return jsonify({"message": "Client updated", "client": client_data})
+
+
 
 
     # Enregistrement des blueprints
