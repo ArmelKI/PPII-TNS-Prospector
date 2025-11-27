@@ -81,6 +81,14 @@ def create_app():
 
         db.session.commit()
         return jsonify({"message": "Client updated", "client": client_data})
+    
+    @app.route("/clients/<int:id_client>", methods=["DELETE"])
+    def delete_client(id_client):
+        client = Client.query.get_or_404(id_client)
+        db.session.delete(client)
+        db.session.commit()
+        return jsonify({"message": f"Client {id_client} deleted"})
+
 
 
 
