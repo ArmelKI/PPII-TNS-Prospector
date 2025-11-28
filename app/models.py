@@ -34,7 +34,9 @@ class StatutTache(enum.Enum):
 intervenant_projet = db.Table(
     "intervenant_projet",
     db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
-    db.Column("id_projet", db.Integer, db.ForeignKey("projets.id_projet", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
+    db.Column("id_projet", db.Integer, db.ForeignKey("projets.id_projet", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
+    db.Column("date_debut_intervention", db.Date),
+    db.Column("date_fin_intervention", db.Date)
 )
 
 intervenant_competence = db.Table(
