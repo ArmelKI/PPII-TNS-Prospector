@@ -82,7 +82,7 @@ class Intervenant(db.Model):
     __tablename__ = "intervenants"
 
     id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur", ondelete="CASCADE"), primary_key=True)
-    disponible = db.Column(db.Boolean, nullable=False), server_default=sa.text('TRUE')
+    disponible = db.Column(db.Boolean, nullable=False, server_default=sa.text('TRUE'))
     nb_heures_dispo = db.Column(db.Integer)
     bulletin_adhesion = db.Column(db.String(255))
     carte_etudiante = db.Column(db.String(255))

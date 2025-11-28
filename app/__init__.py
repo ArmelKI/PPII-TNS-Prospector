@@ -38,7 +38,6 @@ def create_app():
             nb_intervenants=nb_intervenants
         )
     
-
     
     @app.route("/clients", methods=["GET"])
     def all_clients():
@@ -59,7 +58,7 @@ def create_app():
             mail_client=client_data["mail_client"],
             telephone_client=client_data["telephone_client"],
             secteur=client_data["secteur"],
-            dernier_contact=client_data["dernier_contact"],
+            date_dernier_contact=client_data["date_dernier_contact"],
             latitude=client_data["latitude"],
             longitude=client_data["longitude"]
         )
