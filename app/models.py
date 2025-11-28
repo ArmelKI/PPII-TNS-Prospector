@@ -132,13 +132,13 @@ class Client(db.Model):
     interactions = db.relationship("InteractionClient", back_populates="client")
 
     def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur, 
-                 dernier_contact, latitude, longitude):
+                 date_dernier_contact, latitude, longitude):
         self.id_client = id_client
         self.raison_sociale = raison_sociale
         self.mail_client = mail_client
         self.telephone_client = telephone_client
         self.secteur = secteur
-        self.dernier_contact = dernier_contact
+        self.date_dernier_contact = date_dernier_contact
         self.latitude = latitude
         self.longitude = longitude
 
