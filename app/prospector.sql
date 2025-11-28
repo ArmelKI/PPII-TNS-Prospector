@@ -29,6 +29,12 @@ CREATE TABLE intervenants (
     id_intervenant INT PRIMARY KEY,
     disponible BOOLEAN NOT NULL DEFAULT TRUE,
     nb_heures_dispo INT,
+    bulletin_adhesion VARCHAR(255),
+    carte_etudiante VARCHAR(255),
+    carte_vitale VARCHAR(255),
+    piece_identite VARCHAR(255),
+    photo_identite VARCHAR(255),
+    cv VARCHAR(255),
     FOREIGN KEY (id_intervenant) REFERENCES utilisateurs(id_utilisateur)
 );
 

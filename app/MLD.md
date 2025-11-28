@@ -1,6 +1,6 @@
 roles(id_role, nom_role)
 utilisateurs(id_utilisateur, prenom_utilisateur, nom_utilisateur, mail_utilisateur, mdp_utilisateur, #id_role)
-intervenants(#id_intervenant, disponible, nb_heures_dispo)
+intervenants(#id_intervenant, disponible, nb_heures_dispo, bulletin_adhesion, carte_etudiante, carte_vitale, piece_identite, photo_identite, cv)
 intervenants[id_intervenant] => utilisateurs[id_utilisateur]
 competences(id_competence, nom_competence)
 intervenant_competence(#id_intervenant, #id_competence)
