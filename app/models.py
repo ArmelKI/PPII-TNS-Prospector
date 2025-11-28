@@ -119,15 +119,15 @@ class Client(db.Model):
     __tablename__ = "clients"
 
     id_client = db.Column(db.Integer, primary_key=True)
-    raison_sociale = db.Column(db.String(255), nullable=False)
-    mail_client = db.Column(db.String(255))
-    telephone_client = db.Column(db.String(12))
-    secteur = db.Column(db.String)
-    dernier_contact = db.Column(db.Date)
+    raison_sociale = db.Column(db.String(200), nullable=False)
+    mail_client = db.Column(db.String(150))
+    telephone_client = db.Column(db.String(30))
+    secteur = db.Column(db.String(100))
+    date_dernier_contact = db.Column(db.Date)
     latitude = db.Column(db.Float(8))
     longitude = db.Column(db.Float(8))
 
-    projets = db.relationship("Projet", back_populates="client")
+    conventions = db.relationship("Convention", back_populates="client")
     interactions = db.relationship("InteractionClient", back_populates="client")
 
     def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur, 
