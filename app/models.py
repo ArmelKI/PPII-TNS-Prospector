@@ -45,6 +45,12 @@ intervenant_competence = db.Table(
     db.Column("id_competence", db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
 )
 
+intervenant_tache = db.Table(
+    "intervenant_tache",
+    db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
+    db.Column("id_tache", db.Integer, db.ForeignKey("taches.id_tache", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
+)
+
 
 class Role(db.Model):
     __tablename__ = "roles"
