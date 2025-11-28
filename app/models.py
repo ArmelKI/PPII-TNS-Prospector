@@ -107,6 +107,14 @@ class Competence(db.Model):
 
     intervenants = db.relationship("Intervenant", secondary=intervenant_competence, back_populates="competences")
 
+class EtatRelation(db.Model):
+    __tablename__ = "etats_relations"
+
+    id_etat_relation = db.Column(db.Integer, primary_key=True)
+    libelle_relation = db.Column(db.String(150), nullable=False)
+
+    interactions = db.relationship("InteractionClient", back_populates="etat_relation")
+
 class Client(db.Model):
     __tablename__ = "clients"
 
@@ -136,13 +144,6 @@ class Client(db.Model):
     def __repr__(self):
         return f"Client {self.raison_sociale}"
 
-class EtatRelation(db.Model):
-    __tablename__ = "etats_relation"
-
-    id_etat_relation = db.Column(db.Integer, primary_key=True)
-    nom_relation = db.Column(db.Text, nullable=False)
-
-    interactions = db.relationship("InteractionClient", back_populates="etat_relation")
 
 class InteractionClient(db.Model):
     # Attention, ce n'est pas une table de correspondance entre deux autres tables
