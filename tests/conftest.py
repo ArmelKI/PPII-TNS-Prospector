@@ -16,3 +16,6 @@ def app():
     # transforme app() en intérable (un truc sur lequel on peut faire une boucle for)
     # ça n'arrête pas la fonction contrairement au return
 
+@pytest.fixture()
+def client(app):
+    return app.test_client() # test_client() permet de faire les fameuses requêtes HTTP
