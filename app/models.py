@@ -56,7 +56,9 @@ class Role(db.Model):
     __tablename__ = "roles"
 
     id_role = db.Column(db.Integer, primary_key=True)
-    nom_role = db.Column(db.String, nullable=False)
+    nom_role = db.Column(db.String(100), nullable=False)
+
+    utilisateurs = db.relationship("Utilisateur", back_populates="role")
 
 
 class Utilisateur(db.Model):
