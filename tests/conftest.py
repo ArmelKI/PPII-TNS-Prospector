@@ -18,7 +18,7 @@ def app():
 
 @pytest.fixture()
 def client(app):
-    return app.test_client() # test_client() permet de faire les fameuses requêtes HTTP
+    return app.test_client() # test_client() permet de faire les fameuses requêtes HTTP sans lancer de serveur !
 
 @pytest.fixture()
 def runner(app):
