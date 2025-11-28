@@ -148,13 +148,13 @@ class Client(db.Model):
 class InteractionClient(db.Model):
     # Attention, ce n'est pas une table de correspondance entre deux autres tables
     # elle permet de faire figurer, à un instant t, l'état de la relation entre TNS et le client
-    __tablename__ = "interaction_client"
+    __tablename__ = "interactions_client"
 
     id_interaction = db.Column(db.Integer, primary_key=True)
-    id_client = db.Column(db.Integer, db.ForeignKey("clients.id_client", ondelete="SET NULL", onupdate="CASCADE"))
+    id_client = db.Column(db.Integer, db.ForeignKey("clients.id_client", ondelete="SET NULL", onupdate="CASCADE"), nullable=False)
     date_interaction = db.Column(db.Date, nullable=False)
     detail_interaction = db.Column(db.Text)
-    id_etat_relation = db.Column(db.Integer, db.ForeignKey("etats_relation.id_etat_relation", ondelete="SET NULL", onupdate="CASCADE"))
+    id_etat_relation = db.Column(db.Integer, db.ForeignKey("etats_relations.id_etat_relation", ondelete="SET NULL", onupdate="CASCADE"), nullable=False)
 
     client = db.relationship("Client", back_populates="interactions")
     etat_relation = db.relationship("EtatRelation", back_populates="interactions")
