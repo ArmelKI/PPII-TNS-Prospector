@@ -18,3 +18,7 @@ def test_all_clients_returns_list(client, app):
 
     resp = client.get("/clients")
     assert resp.status_code == 200 # on vérifie que la route est bien "atteinte"
+
+    data = resp.get_json() # récupère l'output donné par GET
+    assert isinstance(data, list)
+    assert {"raison_sociale": "Entreprise très modale"} in data
