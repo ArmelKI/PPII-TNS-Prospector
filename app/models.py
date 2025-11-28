@@ -214,15 +214,15 @@ class Tache(db.Model):
     __tablename__ = "taches"
 
     id_tache = db.Column(db.Integer, primary_key=True)
-    id_jalon = db.Column(db.Integer, db.ForeignKey("jalon_projet.id_jalon", ondelete="SET NULL", onupdate="CASCADE"))
-    nom_tache = db.Column(db.Text)
+    id_jalon = db.Column(db.Integer, db.ForeignKey("jalons.id_jalon", ondelete="SET NULL", onupdate="CASCADE"), nullable=False)
+    nom_tache = db.Column(db.String(200), nullable=False)
     description_tache = db.Column(db.Text)
-    statut_tache = db.Column(Enum(StatutTache, name="statut_tache"), nullable=False)
-    date_delai_tache = db.Column(db.Date)
+    statut_tache = db.Column(SAEnum(StatutTache, name="statut_tache_enum"), nullable=False, server_default=sa.text("'Pas commencé'"))
+    date_dernier_delai_tache = db.Column(db.Date)
     id_intervenant_tache = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="SET NULL", onupdate="CASCADE"))
 
-    jalon = db.relationship("JalonProjet", back_populates="taches")
-    intervenant_tache = db.relationship("Intervenant", back_populates="taches")
+    jalon = db.relationship("Jalon", back_populates="taches")
+    intervenants = db.relationship("Intervenant", back_populates="taches", secondary=intervenant_tache,)
 
     def __repr__(self):
         return f"<Tache {self.nom_tache}>"
