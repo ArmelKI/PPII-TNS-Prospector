@@ -125,7 +125,7 @@ class Client(db.Model):
     telephone_client = db.Column(db.String(30))
     secteur = db.Column(db.String(100))
     date_dernier_contact = db.Column(db.Date)
-    latitude = db.Column(db.Numeric(10, 7))
+    latitude = db.Column(db.Numeric(10, 7)) # 777.7777777
     longitude = db.Column(db.Numeric(10, 7))
 
     conventions = db.relationship("Convention", back_populates="client")
