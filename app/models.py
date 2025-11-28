@@ -1,6 +1,7 @@
 import enum
+import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Enum
+from sqlalchemy import Enum as SAEnum, CheckConstraint, Numeric
 
 db = SQLAlchemy()
 
@@ -124,8 +125,8 @@ class Client(db.Model):
     telephone_client = db.Column(db.String(30))
     secteur = db.Column(db.String(100))
     date_dernier_contact = db.Column(db.Date)
-    latitude = db.Column(db.Float(8))
-    longitude = db.Column(db.Float(8))
+    latitude = db.Column(db.Numeric(10, 7))
+    longitude = db.Column(db.Numeric(10, 7))
 
     conventions = db.relationship("Convention", back_populates="client")
     interactions = db.relationship("InteractionClient", back_populates="client")
@@ -159,7 +160,24 @@ class InteractionClient(db.Model):
     client = db.relationship("Client", back_populates="interactions")
     etat_relation = db.relationship("EtatRelation", back_populates="interactions")
 
+class Convention(db.Model):
+    __tablename__ = "conventions"
 
+    id_convention = db.Column(db.Integer, primary_key=True)
+    id_client = db.Column(db.Integer, db.ForeignKey("clients.id_client"), nullable=False)
+    type_convention = db.Column(db.String(2), nullable=False)
+    date_debut_convention = db.Column(db.Date, nullable=False)
+    date_fin_convention = db.Column(db.Date)
+    regles = db.Column(db.Text)
+    cahier_charges = db.Column(db.Text)
+    prix = db.Column(db.Numeric(10, 2))
+
+    client = db.relationship("Client", back_populates="conventions")
+    projets = db.relationship("Projet", back_populates="convention")
+
+    __table_args__ = (
+        CheckConstraint("type_convention IN ('CE','CC')", name="convention_type_check"),
+    )
 
 
 
