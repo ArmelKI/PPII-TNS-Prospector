@@ -65,13 +65,13 @@ class Utilisateur(db.Model):
     __tablename__ = "utilisateurs"
 
     id_utilisateur = db.Column(db.Integer, primary_key=True)
-    prenom_utilisateur = db.Column(db.String(255), nullable=False)
-    nom_utilisateur = db.Column(db.String(255), nullable=False)
-    mail_utilisateur = db.Column(db.String(255), nullable=False, unique=True)
-    mdp_utilisateur = db.Column(db.String(255), nullable=True)
-    id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"))
+    prenom_utilisateur = db.Column(db.String(100), nullable=False)
+    nom_utilisateur = db.Column(db.String(100), nullable=False)
+    mail_utilisateur = db.Column(db.String(150), nullable=False, unique=True)
+    mdp_utilisateur = db.Column(db.String(255), nullable=False)
+    id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"), nullable = False)
 
-    role = db.relationship("Role", backref="utilisateurs")
+    role = db.relationship("Role", back_populates="utilisateurs")
     intervenant = db.relationship("Intervenant", uselist=False, back_populates="utilisateur")
 
     def __repr__(self):
