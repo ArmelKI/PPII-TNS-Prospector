@@ -179,21 +179,18 @@ class Convention(db.Model):
         CheckConstraint("type_convention IN ('CE','CC')", name="convention_type_check"),
     )
 
-
-
-
 class Projet(db.Model):
     __tablename__ = "projets"
 
     id_projet = db.Column(db.Integer, primary_key=True)
-    nom_projet = db.Column(db.String(255), nullable = False)
-    statut_projet = db.Column(Enum(StatutProjet, name="statut_projet"), nullable=False)
-    date_debut_projet = db.Column(db.Date, nullable = False)
-    date_fin_projet = db.Column(db.Date, nullable=False)
-    id_client = db.Column(db.Integer, db.ForeignKey("clients.id_client", ondelete="SET NULL", onupdate="CASCADE"))
+    nom_projet = db.Column(db.String(200), nullable = False)
+    statut_projet = db.Column(SAEnum(StatutProjet, name="statut_projet_enum"), nullable=False, server_default=sa.text("'Pas commencé'"))
+    date_debut_projet = db.Column(db.Date)
+    date_fin_projet = db.Column(db.Date)
+    id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
 
-    client = db.relationship("Client", back_populates="projets")
-    jalons = db.relationship("JalonProjet", back_populates="projet")
+    convention = db.relationship("Convention", back_populates="projets")
+    jalons = db.relationship("Jalon", back_populates="projet")
     intervenants = db.relationship("Intervenant", secondary=intervenant_projet, back_populates="projets")
 
     def __repr__(self):
