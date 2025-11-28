@@ -98,6 +98,14 @@ class Intervenant(db.Model):
     def __repr__(self):
         nom = self.utilisateur.nom_utilisateur if self.utilisateur else str(self.id_intervenant)
         return f"Intervenant {nom}"
+    
+class Competence(db.Model):
+    __tablename__ = "competences"
+
+    id_competence = db.Column(db.Integer, primary_key=True)
+    nom_competence = db.Column(db.String(150), nullable=False)
+
+    intervenants = db.relationship("Intervenant", secondary=intervenant_competence, back_populates="competences")
 
 class Client(db.Model):
     __tablename__ = "clients"
@@ -150,13 +158,7 @@ class InteractionClient(db.Model):
     client = db.relationship("Client", back_populates="interactions")
     etat_relation = db.relationship("EtatRelation", back_populates="interactions")
 
-class Competence(db.Model):
-    __tablename__ = "competences"
 
-    id_competence = db.Column(db.Integer, primary_key=True)
-    nom_competence = db.Column(db.String(255), nullable=False)
-
-    intervenants = db.relationship("Intervenant", secondary=intervenant_competence, back_populates="competences")
 
 
 
