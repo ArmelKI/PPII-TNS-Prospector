@@ -197,13 +197,13 @@ class Projet(db.Model):
         return f"Projet {self.nom_projet}"
     
 
-class JalonProjet(db.Model):
-    __tablename__ = "jalon_projet"
+class Jalon(db.Model):
+    __tablename__ = "jalons"
 
     id_jalon = db.Column(db.Integer, primary_key=True)
-    id_projet = db.Column(db.Integer, db.ForeignKey("projets.id_projet", ondelete="SET NULL", onupdate="CASCADE"))
-    nom_jalon = db.Column(db.String(255), nullable=False)
-    statut_jalon = db.Column(Enum(StatutJalon, name="statut_jalon"))
+    id_projet = db.Column(db.Integer, db.ForeignKey("projets.id_projet", ondelete="SET NULL", onupdate="CASCADE"), nullable=False)
+    nom_jalon = db.Column(db.String(200), nullable=False)
+    statut_jalon = db.Column(SAEnum(StatutJalon, name="statut_jalon_enum"), nullable=False, server_default=sa.text("'À venir'"))
     date_debut_jalon = db.Column(db.Date)
     date_fin_jalon = db.Column(db.Date)
 
