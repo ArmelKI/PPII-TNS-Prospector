@@ -77,6 +77,28 @@ class Utilisateur(db.Model):
     def __repr__(self):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
+class Intervenant(db.Model):
+    __tablename__ = "intervenants"
+
+    id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur", ondelete="CASCADE"), primary_key=True)
+    disponible = db.Column(db.Boolean, nullable=False), server_default=sa.text('TRUE')
+    nb_heures_dispo = db.Column(db.Integer)
+    bulletin_adhesion = db.Column(db.String(255))
+    carte_etudiante = db.Column(db.String(255))
+    carte_vitale = db.Column(db.String(255))
+    piece_identite = db.Column(db.String(255))
+    photo_identite = db.Column(db.String(255))
+    cv = db.Column(db.String(255))
+
+    utilisateur = db.relationship("Utilisateur", back_populates="intervenant")
+    competences = db.relationship("Competence", secondary=intervenant_competence, back_populates="intervenants")
+    projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
+    taches = db.relationship("Tache", secondary=intervenant_tache, back_populates="intervenants")
+
+    def __repr__(self):
+        nom = self.utilisateur.nom_utilisateur if self.utilisateur else str(self.id_intervenant)
+        return f"Intervenant {nom}"
+
 class Client(db.Model):
     __tablename__ = "clients"
 
@@ -136,21 +158,6 @@ class Competence(db.Model):
 
     intervenants = db.relationship("Intervenant", secondary=intervenant_competence, back_populates="competences")
 
-
-class Intervenant(db.Model):
-    __tablename__ = "intervenants"
-
-    id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur", ondelete="CASCADE"), primary_key=True)
-    disponible_actuellement = db.Column(db.Boolean, nullable=False)
-    nombre_heures_disponibles = db.Column(db.Float(8))
-
-    utilisateur = db.relationship("Utilisateur", back_populates="intervenant")
-    competences = db.relationship("Competence", secondary=intervenant_competence, back_populates="intervenants")
-    projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
-    taches = db.relationship("Tache", back_populates="intervenant_tache")
-
-    def __repr__(self):
-        return f"Intervenant {self.utilisateur.nom_utilisateur}"
 
 
 
