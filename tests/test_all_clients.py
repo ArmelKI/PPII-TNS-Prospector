@@ -15,3 +15,6 @@ def test_all_clients_returns_list(client, app):
             longitude = 77777777)
         db.session.add(c) # on crée un client qu'on ajoute à la base de test pour s'assurer que tout marche bien
         db.session.commit()
+
+    resp = client.get("/clients")
+    assert resp.status_code == 200 # on vérifie que la route est bien "atteinte"
