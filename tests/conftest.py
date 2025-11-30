@@ -17,6 +17,28 @@ def app():
     # transforme app() en intérable (un truc sur lequel on peut faire une boucle for)
     # ça n'arrête pas la fonction contrairement au return
 
+@pytest.fixture(autouse=True)
+def clean_db(app):
+    """
+    Crée une DB propre à chaque test.
+    Cette DB est créée au début du test et supprimée après celui-ci.
+
+    S'exécute lors de chaque test (voir autouse)
+    """
+    from app.models import db
+
+    with app.app_context():
+        db.create_all()
+
+    # avant le test, s'exécute le code ci-dessus
+    # le yield balance la fonction au test qui s'exécute à son tour
+    yield
+    # quand le test est terminé, le code ci-dessous est exécuté
+
+    with app.app_context():
+        db.session.remove()
+        db.drop_all()
+
 @pytest.fixture()
 def client(app):
     return app.test_client() # test_client() permet de faire les fameuses requêtes HTTP sans lancer de serveur !
