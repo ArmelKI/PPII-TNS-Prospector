@@ -10,6 +10,7 @@ def app():
     app = create_app()
     app.config.update({
         "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
     })
 
     yield app
@@ -22,5 +23,5 @@ def client(app):
 
 @pytest.fixture()
 def runner(app):
-    return app.test_cli_runner() 
+    return app.test_cli_runner()
     # en gros, imite la ligne de commande pour pouvoir passer des commandes dans de futurs tests
