@@ -1,12 +1,17 @@
-import sys, pathlib
+import sys, pathlib, os
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 import pytest
 from app.__init__ import create_app
 
-@pytest.fixture()
+TEST_DATABASE_URL = os.environ.get(
+    "TEST_DATABASE_URL", "postgresql+psycopg2://test_user:test_pass@localhost:5433/test_db"
+)
+
+@pytest.fixture(scope="session")
 def app():
+    config = {"TESTING":True, "SQLALCHEMY_DATABASE_URI": TEST_DATABASE_URL}
     app = create_app()
     app.config.update({
         "TESTING": True,
