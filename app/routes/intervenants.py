@@ -10,7 +10,7 @@ intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants"
 
 @intervenants_bp.route("/", methods=["GET"])
 def liste_intervenants():
-    q_str = request.args.get('q', '').strip()
+    search = request.args.get('search', '').strip()
     dispo = request.args.get('disponibilite', '')
     page = request.args.get('page', 1, type=int)
     per_page = 8
@@ -18,11 +18,11 @@ def liste_intervenants():
     q = Intervenant.query.options(joinedload(Intervenant.utilisateur), joinedload(Intervenant.competences))
 
     # XXX : Possible injection SQL !!!
-    if q_str:
+    if search:
         q = q.join(Intervenant.utilisateur).outerjoin(Intervenant.competences).filter(
-            (Utilisateur.nom_utilisateur.ilike(f"%{q_str}%")) |
-            (Utilisateur.prenom_utilisateur.ilike(f"%{q_str}%")) |
-            (Competence.nom_competence.ilike(f"%{q_str}%"))
+            (Utilisateur.nom_utilisateur.ilike(f"%{search}%")) |
+            (Utilisateur.prenom_utilisateur.ilike(f"%{search}%")) |
+            (Competence.nom_competence.ilike(f"%{search}%"))
         )
 
     if dispo:
@@ -33,7 +33,7 @@ def liste_intervenants():
 
     return render_template('intervenants.html',
                            intervenants=pagination,
-                           search_query=q_str,
+                           search_query=search,
                            filter_dispo=dispo)
 
 # TODO corriger pour correspondre à l'E-R
