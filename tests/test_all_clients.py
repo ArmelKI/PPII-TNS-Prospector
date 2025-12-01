@@ -25,4 +25,8 @@ def test_all_clients_entreprise_modale(client, app):
 
     resp = client.get("/clients")
     data = resp.get_json() # récupère l'output donné par GET
-    assert data == {"raison_sociale":"Entreprise très modale"}
+    assert data == [{"raison_sociale":"Entreprise très modale"}]
+
+def test_all_clients_returns_list(client):
+    response = client.get("/clients")
+    assert isinstance(response.get_json(), list)

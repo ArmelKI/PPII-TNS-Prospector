@@ -11,7 +11,7 @@ from app.__init__ import create_app
 load_dotenv()
 
 @pytest.fixture()
-def test_app():
+def app():
     DB_PASSWORD = quote(os.getenv("DB_PASSWORD"))
     os.environ["DB_NAME"] = "db_test"
     os.environ["DB_USER"] = "postgres"
@@ -31,5 +31,5 @@ def test_app():
     # ça n'arrête pas la fonction contrairement au return
 
 @pytest.fixture
-def client(test_app):
-    return test_app.test_client()  # test_client() permet de faire les fameuses requêtes HTTP sans lancer de serveur !
+def client(app):
+    return app.test_client()  # test_client() permet de faire les fameuses requêtes HTTP sans lancer de serveur !
