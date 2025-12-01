@@ -184,7 +184,10 @@ class Projet(db.Model):
 
     id_projet = db.Column(db.Integer, primary_key=True)
     nom_projet = db.Column(db.String(200), nullable = False)
-    statut_projet = db.Column(SAEnum(StatutProjet, name="statut_projet_enum"), nullable=False, server_default=sa.text("Pas commencé"))
+    statut_projet = db.Column(
+        SAEnum(StatutProjet, name="statut_projet_enum"), 
+        nullable=False, 
+        default=StatutProjet.PAS_COMMENCE)
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
@@ -203,7 +206,7 @@ class Jalon(db.Model):
     id_jalon = db.Column(db.Integer, primary_key=True)
     id_projet = db.Column(db.Integer, db.ForeignKey("projets.id_projet", ondelete="SET NULL", onupdate="CASCADE"), nullable=False)
     nom_jalon = db.Column(db.String(200), nullable=False)
-    statut_jalon = db.Column(SAEnum(StatutJalon, name="statut_jalon_enum"), nullable=False, server_default=sa.text("'À venir'"))
+    statut_jalon = db.Column(SAEnum(StatutJalon, name="statut_jalon_enum"), nullable=False, default=StatutJalon.A_VENIR)
     date_debut_jalon = db.Column(db.Date)
     date_fin_jalon = db.Column(db.Date)
 
@@ -217,7 +220,7 @@ class Tache(db.Model):
     id_jalon = db.Column(db.Integer, db.ForeignKey("jalons.id_jalon", ondelete="SET NULL", onupdate="CASCADE"), nullable=False)
     nom_tache = db.Column(db.String(200), nullable=False)
     description_tache = db.Column(db.Text)
-    statut_tache = db.Column(SAEnum(StatutTache, name="statut_tache_enum"), nullable=False, server_default=sa.text("'Pas commencé'"))
+    statut_tache = db.Column(SAEnum(StatutTache, name="statut_tache_enum"), nullable=False, default=StatutTache.PAS_COMMENCE)
     date_dernier_delai_tache = db.Column(db.Date)
     id_intervenant_tache = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="SET NULL", onupdate="CASCADE"))
 
