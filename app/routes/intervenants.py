@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload
 import csv
 import secrets
 
-intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants", template_folder="../templates")
+intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants")
 
 @intervenants_bp.route("/", methods=["GET"])
 def liste_intervenants():

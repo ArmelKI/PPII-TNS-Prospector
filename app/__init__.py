@@ -37,7 +37,7 @@ def create_app():
     DB_NAME = os.getenv("DB_NAME")
     DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
-    app = Flask(__name__, template_folder="templates", static_folder="static")
+    app = Flask(__name__)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -116,29 +116,20 @@ def create_app():
         return jsonify({"message": f"Client {id_client} deleted"})
 
 
-    # Enregistrement des Blueprints
-    # app.register_blueprint(intervenants_bp)
-
     # Gestion d'erreur 404
     # @app.errorhandler(404)
     # def page_not_found(e):
         # return render_template('404.html'), 404
 
-    # from app.routes.media import media_bp
-    # app.register_blueprint(media_bp)
 
-    # from .routes.clients import clients
-    # app.register_blueprint(clients)
-
-    # from .routes.projets import projets
-    # app.register_blueprint(projets)
-
-    # from .routes.interactions import interactions
-    # app.register_blueprint(interactions)
+    # Enregistrement des Blueprints
 
     # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
-    # app.context_processor(inject_current_year)
+    def inject_current_year():
+        return {"current_year": datetime.now().year}
+
+    app.context_processor(inject_current_year)
 
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(intervenants_bp)
@@ -147,6 +138,3 @@ def create_app():
     app.register_blueprint(interactions_bp)
 
     return app
-
-# def inject_current_year():
-#     return {"current_year": datetime.now().year}
