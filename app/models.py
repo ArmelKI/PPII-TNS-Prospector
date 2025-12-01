@@ -99,7 +99,7 @@ class Intervenant(db.Model):
     def __repr__(self):
         nom = self.utilisateur.nom_utilisateur if self.utilisateur else str(self.id_intervenant)
         return f"Intervenant {nom}"
-    
+
 class Competence(db.Model):
     __tablename__ = "competences"
 
@@ -131,7 +131,7 @@ class Client(db.Model):
     conventions = db.relationship("Convention", back_populates="client")
     interactions = db.relationship("InteractionClient", back_populates="client")
 
-    def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur, 
+    def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur,
                  date_dernier_contact, latitude, longitude):
         self.id_client = id_client
         self.raison_sociale = raison_sociale
@@ -184,7 +184,7 @@ class Projet(db.Model):
 
     id_projet = db.Column(db.Integer, primary_key=True)
     nom_projet = db.Column(db.String(200), nullable = False)
-    statut_projet = db.Column(SAEnum(StatutProjet, name="statut_projet_enum"), nullable=False, server_default=sa.text("'Pas commencé'"))
+    statut_projet = db.Column(SAEnum(StatutProjet, name="statut_projet_enum"), nullable=False, server_default=sa.text("Pas commencé"))
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
@@ -195,7 +195,7 @@ class Projet(db.Model):
 
     def __repr__(self):
         return f"Projet {self.nom_projet}"
-    
+
 
 class Jalon(db.Model):
     __tablename__ = "jalons"
