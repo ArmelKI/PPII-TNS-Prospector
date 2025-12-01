@@ -9,7 +9,6 @@ app.__init__ — Factory pour l'application TNS (version test-friendly)
 
 import os
 from flask import Flask, render_template, jsonify, request
-from app.routes.intervenants import intervenants_bp
 from app.models import db, Intervenant # Import des modèles
 from dotenv import load_dotenv
 from urllib.parse import quote
@@ -17,6 +16,13 @@ from sqlalchemy.exc import ProgrammingError
 from sqlalchemy import inspect, create_engine, text
 from app.models import *
 from datetime import datetime
+
+# Blueprints imports
+from app.routes.dashboard import dashboard_bp
+from app.routes.intervenants import intervenants_bp
+from app.routes.clients import clients_bp
+from app.routes.projets import projets_bp
+from app.routes.interactions import interactions_bp
 
 
 load_dotenv()
@@ -133,6 +139,12 @@ def create_app():
     # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
     # app.context_processor(inject_current_year)
+
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(intervenants_bp)
+    app.register_blueprint(clients_bp)
+    app.register_blueprint(projets_bp)
+    app.register_blueprint(interactions_bp)
 
     return app
 
