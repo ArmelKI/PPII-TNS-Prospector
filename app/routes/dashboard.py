@@ -28,6 +28,7 @@ def dashboard():
     # On récupère les valeurs brutes (texte) et on les convertit côté Python.
     statut_counts = {s.value: 0 for s in StatutProjet}
 
+# TODO enlever le sql
     try:
         # Requête SQL qui renvoie le statut tel qu'il est en base (string) et le compte
         sql = text("SELECT statut_projet, COUNT(id_projet) AS cnt FROM projets GROUP BY statut_projet")
@@ -37,6 +38,7 @@ def dashboard():
         current_app.logger.exception("Erreur lors de la récupération des projets par statut")
         rows = []
 
+# TODO y'a surement plus simple (c'était pour le graphe)
     # rows contient des tuples (statut_value_from_db, cnt)
     unknown_values = []
     for raw_statut, cnt in rows:

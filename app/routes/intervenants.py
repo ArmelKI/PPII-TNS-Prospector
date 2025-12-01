@@ -36,6 +36,7 @@ def liste_intervenants():
                            search_query=q_str,
                            filter_dispo=dispo)
 
+# TODO corriger pour correspondre à l'E-R
 # === Ajouter ===
 @intervenants_bp.route('/add', methods=['GET', 'POST'])
 def ajouter_intervenant():
@@ -105,6 +106,7 @@ def ajouter_intervenant():
     utilisateurs = Utilisateur.query.order_by(Utilisateur.nom_utilisateur).all()
     return render_template("ajouter_intervenant.html", utilisateurs=utilisateurs)
 
+# TODO A tester avec un dataset de test
 @intervenants_bp.route("/edit/<int:id>", methods=["GET", "POST"])
 def modifier_intervenant(id):
     intervenant = Intervenant.query.options(joinedload(Intervenant.utilisateur), joinedload(Intervenant.competences)).get_or_404(id)

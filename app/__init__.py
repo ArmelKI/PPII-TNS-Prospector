@@ -7,6 +7,7 @@ app.__init__ — Factory pour l'application TNS (version test-friendly)
   so that create_all() is not executed on the wrong DB.
 """
 
+# TODO supprimer les imports en trop
 import os
 from flask import Flask, render_template, jsonify, request
 from app.models import db, Intervenant # Import des modèles
