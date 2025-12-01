@@ -40,7 +40,8 @@ def create_app():
             nb_projets=nb_projets,
             nb_intervenants=nb_intervenants
         )
-    
+
+    #### Clients
     
     @app.route("/clients", methods=["GET"])
     def all_clients():
@@ -96,8 +97,64 @@ def create_app():
             return jsonify({"Erreur":"", "details": str(e)}), 500
         
         return jsonify({"message": f"Client {id_client} deleted"})
+    
+    #### Utilisateurs
+    
+    @app.route("/users", methods=["GET"])
+    def all_users():
+        users = Utilisateur.query.all()
+        output = []
+        for user in users:
+            current_user = {}
+            current_user["prenom_utilisateur"] = user.prenom_utilisateur
+            current_user["nom_utilisateur"] = user.nom_utilisateur
+            output.append(current_user)
+        return jsonify(output)
+    
+    @app.route("/users", methods=["POST"])
+    def add_user():
+        user_data = request.get_json()
+        user = Utilisateur(
+            id_utilisateur = user_data["id_utilisateur"],
+            prenom_utilisateur = user_data["prenom_utilisateur"],
+            nom_utilisateur = user_data["nom_utilisateur"],
+            mail_utilisateur = user_data["mail_utilisateur"],
+            mdp_utilisateur = user_data["mdp_utilisateur"],
+            id_role = user_data["id_role"]
+        )
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user_data)
+    
+    @app.route("/users/<int:id_utilisateur>", methods=["PUT"])
+    def update_client(id_utilisateur):
+        user_data = request.get_json()
+        user = Client.query.get_or_404(id_utilisateur) # si le client n'est pas trouvé -> 404
 
+        user.raison_sociale = user_data.get("raison_sociale", client.raison_sociale)
+        user.mail_client = user_data.get("mail_client", client.mail_client)
+        user.telephone_client = user_data.get("telephone_client", client.telephone_client)
+        user.secteur = user_data.get("secteur", client.secteur)
+        user.dernier_contact = user_data.get("dernier_contact", client.dernier_contact)
+        user.latitude = user_data.get("latitude", client.latitude)
+        user.longitude = user_data.get("longitude", client.longitude)
 
+        db.session.commit()
+        return jsonify({"message": "Client updated", "client": client_data})
+    
+    @app.route("/clients/<int:id_client>", methods=["DELETE"])
+    def delete_client(id_client):
+        client = Client.query.get_or_404(id_client)
+        try:
+            db.session.delete(client)
+            db.session.commit()
+        except ProgrammingError as e:
+            db.session.rollback()  # important pour ne pas bloquer la session
+            return jsonify({"Erreur":"", "details": str(e)}), 500
+        
+        return jsonify({"message": f"Client {id_client} deleted"})
+
+    """
 
 
     # Enregistrement des blueprints
