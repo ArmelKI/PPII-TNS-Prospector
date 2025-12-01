@@ -8,9 +8,9 @@ def test_all_clients_empty(client):
     assert response.status_code == 200
     assert response.get_json() == []
 
-def test_all_clients_returns_list(client, app):
-    with app.app_context():
-        
+def test_all_clients_entreprise_modale(client, app):
+
+    with app.app_context(): 
         c = Client(
             id_client=0, 
             raison_sociale="Entreprise très modale",
@@ -24,8 +24,5 @@ def test_all_clients_returns_list(client, app):
         db.session.commit()
 
     resp = client.get("/clients")
-    assert resp.status_code == 200 # on vérifie que la route est bien "atteinte"
-
     data = resp.get_json() # récupère l'output donné par GET
-    assert isinstance(data, list)
-    assert {"raison_sociale": "Entreprise très modale"} in data
+    assert data == {"raison_sociale":"Entreprise très modale"}
