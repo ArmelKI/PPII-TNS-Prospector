@@ -1,9 +1,16 @@
 import json
 from app.models import db, Client
 
+
+def test_all_clients_empty(client):
+    response = client.get("/clients")
+
+    assert response.status_code == 200
+    assert response.get_json() == []
+
 def test_all_clients_returns_list(client, app):
     with app.app_context():
-        db.create_all()
+        
         c = Client(
             id_client=0, 
             raison_sociale="Entreprise très modale",
