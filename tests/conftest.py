@@ -1,22 +1,30 @@
 import sys, pathlib, os
+from dotenv import load_dotenv
+from urllib.parse import quote
+from app.models import db
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 import pytest
 from app.__init__ import create_app
 
-TEST_DATABASE_URL = os.environ.get(
-    "TEST_DATABASE_URL", "postgresql+psycopg2://test_user:test_pass@localhost:5433/test_db"
-)
+load_dotenv()
 
-@pytest.fixture(scope="session")
-def app():
-    config = {"TESTING":True, "SQLALCHEMY_DATABASE_URI": TEST_DATABASE_URL}
+@pytest.fixture()
+def test_app():
+    DB_PASSWORD = quote(os.getenv("DB_PASSWORD"))
+    os.environ["DB_NAME"] = "db_test"
+    os.environ["DB_USER"] = "postgres"
+    os.environ["DB_PASSWORD"] = DB_PASSWORD
+    os.environ["DB_HOST"] = "localhost"
+    os.environ["DB_PORT"] = "5432"
+
     app = create_app()
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
-    })
+    app.config["TESTING"] = True
+
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
 
     yield app
     # transforme app() en intérable (un truc sur lequel on peut faire une boucle for)
@@ -44,11 +52,7 @@ def clean_db(app):
         db.session.remove()
         db.drop_all()
 
-@pytest.fixture()
-def client(app):
-    return app.test_client() # test_client() permet de faire les fameuses requêtes HTTP sans lancer de serveur !
 
-@pytest.fixture()
-def runner(app):
-    return app.test_cli_runner()
-    # en gros, imite la ligne de commande pour pouvoir passer des commandes dans de futurs tests
+@pytest.fixture
+def client(test_app):
+    return test_app.test_client()  # test_client() permet de faire les fameuses requêtes HTTP sans lancer de serveur !
