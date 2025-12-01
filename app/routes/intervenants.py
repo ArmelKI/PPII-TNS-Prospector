@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from sqlalchemy.orm import joinedload
 from app.models import Intervenant, Utilisateur, Competence, db
 from io import StringIO
+from sqlalchemy.orm import joinedload
 import csv
 import secrets
 
@@ -9,13 +10,14 @@ intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants"
 
 @intervenants_bp.route("/", methods=["GET"])
 def liste_intervenants():
-    q_str = request.args.get("q", "").strip()
-    dispo = request.args.get("disponibilite", "")
-    page = request.args.get("page", 1, type=int)
+    q_str = request.args.get('q', '').strip()
+    dispo = request.args.get('disponibilite', '')
+    page = request.args.get('page', 1, type=int)
     per_page = 8
 
     q = Intervenant.query.options(joinedload(Intervenant.utilisateur), joinedload(Intervenant.competences))
 
+    # XXX : Possible injection SQL !!!
     if q_str:
         q = q.join(Intervenant.utilisateur).outerjoin(Intervenant.competences).filter(
             (Utilisateur.nom_utilisateur.ilike(f"%{q_str}%")) |
@@ -24,18 +26,18 @@ def liste_intervenants():
         )
 
     if dispo:
-        dispo_bool = True if dispo.lower() == "disponible" else False
-        q = q.filter(Intervenant.disponible_actuellement == dispo_bool)
+        dispo_bool = dispo.lower() == "disponible"
+        q = q.filter_by(Intervenant.disponible_actuellement == dispo_bool)
 
     pagination = q.order_by(Utilisateur.nom_utilisateur).paginate(page=page, per_page=per_page, error_out=False)
-    return render_template("intervenants.html", intervenants=pagination, search_query=q_str, filter_dispo=dispo)
 
-@intervenants_bp.route("/<int:id>", methods=["GET"])
-def details_intervenant(id):
-    intervenant = Intervenant.query.options(joinedload(Intervenant.utilisateur), joinedload(Intervenant.competences)).get_or_404(id)
-    return render_template("details_intervenant.html", intervenant=intervenant)
+    return render_template('intervenants.html',
+                           intervenants=pagination,
+                           search_query=q_str,
+                           filter_dispo=dispo)
 
-@intervenants_bp.route("/add", methods=["GET", "POST"])
+# === Ajouter ===
+@intervenants_bp.route('/add', methods=['GET', 'POST'])
 def ajouter_intervenant():
     if request.method == "POST":
         # récupération formulaire
