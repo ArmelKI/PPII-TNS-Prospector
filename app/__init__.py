@@ -3,6 +3,7 @@ from flask import Flask, render_template, jsonify, request
 from dotenv import load_dotenv
 from urllib.parse import quote
 from sqlalchemy.exc import ProgrammingError
+from sqlalchemy import inspect, create_engine, text
 
 from app.models import *
 #from app.routes.intervenants import intervenants_bp
@@ -10,18 +11,20 @@ from app.models import Intervenant, Client, Projet
 
 load_dotenv()
 
-def create_app():
-    # Chargement config DB depuis l'env
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = quote(os.getenv("DB_PASSWORD"))
-    DB_HOST = os.getenv("DB_HOST")
-    DB_PORT = os.getenv("DB_PORT")
-    DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
 
+DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+engine = create_engine(DATABASE_URI)
+
+
+def create_app():
+    
     app = Flask(__name__, template_folder="templates", static_folder="static")
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-    )
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key')
     db.init_app(app)
 
