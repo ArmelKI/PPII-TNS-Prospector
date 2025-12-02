@@ -73,8 +73,8 @@ def dashboard():
     # --- Disponibilité intervenants ---
     dispo_map = {"Disponible": 0, "Indisponible": 0}
     dispo_raw = (
-        Intervenant.query.with_entities(Intervenant.disponible_actuellement, func.count())
-        .group_by(Intervenant.disponible_actuellement)
+        Intervenant.query.with_entities(Intervenant.disponible, func.count())
+        .group_by(Intervenant.disponible)
         .all()
     )
     for dispo, cnt in dispo_raw:
