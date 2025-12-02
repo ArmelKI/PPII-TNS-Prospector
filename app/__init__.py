@@ -47,19 +47,6 @@ def create_app():
     db.init_app(app)  # Lie la BDD à l'app
 
 
-    @app.route("/")
-    def dashboard():
-        nb_intervenants = Intervenant.query.count()
-        nb_clients = Client.query.count()
-        nb_projets = Projet.query.count()
-        return render_template(
-            "dashboard.html",
-            nb_clients=nb_clients,
-            nb_projets=nb_projets,
-            nb_intervenants=nb_intervenants
-        )
-
-
     @app.route("/clients", methods=["GET"])
     def all_clients():
         clients = Client.query.all()
