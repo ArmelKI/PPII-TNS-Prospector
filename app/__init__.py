@@ -14,7 +14,6 @@ from app.models import db, Intervenant # Import des modèles
 from dotenv import load_dotenv
 from urllib.parse import quote
 from sqlalchemy.exc import ProgrammingError
-from sqlalchemy import inspect, create_engine, text
 from app.models import *
 from datetime import datetime
 
