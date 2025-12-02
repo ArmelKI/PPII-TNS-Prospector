@@ -47,71 +47,15 @@ def create_app():
     db.init_app(app)  # Lie la BDD à l'app
 
 
-    @app.route("/clients", methods=["GET"])
-    def all_clients():
-        clients = Client.query.all()
-        output = []
-        for client in clients:
-            current_client = {}
-            current_client["raison_sociale"] = client.raison_sociale
-            output.append(current_client)
-        return jsonify(output)
-
-    @app.route("/clients", methods=["POST"])
-    def add_client():
-        client_data = request.get_json()
-        client = Client(
-            id_client=client_data["id_client"],
-            raison_sociale=client_data["raison_sociale"],
-            mail_client=client_data["mail_client"],
-            telephone_client=client_data["telephone_client"],
-            secteur=client_data["secteur"],
-            date_dernier_contact=client_data["date_dernier_contact"],
-            latitude=client_data["latitude"],
-            longitude=client_data["longitude"]
-        )
-        db.session.add(client)
-        db.session.commit()
-        return jsonify(client_data)
-
-    @app.route("/clients/<int:id_client>", methods=["PUT"])
-    def update_client(id_client):
-        client_data = request.get_json()
-        client = Client.query.get_or_404(id_client) # si le client n'est pas trouvé -> 404
-
-        client.raison_sociale = client_data.get("raison_sociale", client.raison_sociale)
-        client.mail_client = client_data.get("mail_client", client.mail_client)
-        client.telephone_client = client_data.get("telephone_client", client.telephone_client)
-        client.secteur = client_data.get("secteur", client.secteur)
-        client.dernier_contact = client_data.get("dernier_contact", client.dernier_contact)
-        client.latitude = client_data.get("latitude", client.latitude)
-        client.longitude = client_data.get("longitude", client.longitude)
-
-        db.session.commit()
-        return jsonify({"message": "Client updated", "client": client_data})
-
-    @app.route("/clients/<int:id_client>", methods=["DELETE"])
-    def delete_client(id_client):
-        client = Client.query.get_or_404(id_client)
-        try:
-            db.session.delete(client)
-            db.session.commit()
-        except ProgrammingError as e:
-            db.session.rollback()  # important pour ne pas bloquer la session
-            return jsonify({"Erreur":"", "details": str(e)}), 500
-
-        return jsonify({"message": f"Client {id_client} deleted"})
-
-
     # Gestion d'erreur 404
     # @app.errorhandler(404)
     # def page_not_found(e):
         # return render_template('404.html'), 404
 
 
-    # Enregistrement des Blueprints
-
     # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
+
+    # Enregistrement des Blueprints
 
     def inject_current_year():
         return {"current_year": datetime.now().year}
