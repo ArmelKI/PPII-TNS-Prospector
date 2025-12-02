@@ -43,9 +43,6 @@ intervenants.html — Liste paginée avec recherche et filtre
           {{ 'Disponible' if i.disponible_actuellement else 'Indisponible' }}
         </span>
       </td>
-      <td>
-        <a href="{{ url_for('intervenants.details_intervenant', id=i.id_intervenant) }}">👁</a>
-      </td>
     </tr>
     {% endfor %}
   </tbody>
