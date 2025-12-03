@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.models import db, Client
+from app.models import *
 from sqlalchemy.exc import ProgrammingError
 
 
@@ -66,7 +66,7 @@ def update_client():
     if id_client != client_data.get('id_client') and confirm_change_id == None:
             return jsonify({
                 'message': 'client IDs not matching, confirmation needed !',
-                'current_ID': client.id_client,
+                'current_ID': id_client,
                 'new_id': client_data.get('id_client'),
             })
 
@@ -90,3 +90,78 @@ def delete_client():
     db.session.delete(client)
     db.session.commit()
     return jsonify({"message": f"Client {id_client} deleted"})
+
+@api_bp.route("/users/get_all")
+def get_all_users():
+    users: list[Utilisateur] = Utilisateur.query.all()
+    output = [{
+        'id_utilisateur': user.id_utilisateur,
+        'prenom_utilisateur': user.prenom_utilisateur,
+        'nom_utilisateur': user.nom_utilisateur,
+        'mail_utilisateur': user.mail_utilisateur,
+        'mdp_utilisateur': user.mdp_utilisateur,
+        'id_role': user.id_role,
+    } for user in users]
+    return jsonify(output)
+
+@api_bp.get("/users")
+def get_user():
+    id_utilisateur = request.args.get('id')
+    user: Utilisateur = Utilisateur.query.get_or_404(id_utilisateur)
+    output = {
+        'id_utilisateur': user.id_utilisateur,
+        'prenom_utilisateur': user.prenom_utilisateur,
+        'nom_utilisateur': user.nom_utilisateur,
+        'mail_utilisateur': user.mail_utilisateur,
+        'mdp_utilisateur': user.mdp_utilisateur,
+        'id_role': user.id_role,
+    }
+    return jsonify(output)
+
+@api_bp.post("/users")
+def add_user():
+    user_data = request.get_json()
+    user = Utilisateur(
+        id_utilisateur = user_data["id_utilisateur"],
+        prenom_utilisateur = user_data["prenom_utilisateur"],
+        nom_utilisateur = user_data["nom_utilisateur"],
+        mail_utilisateur = user_data["mail_utilisateur"],
+        mdp_utilisateur = user_data["mdp_utilisateur"],
+        id_role = user_data["id_role"]
+    )
+    db.session.add(user)
+    db.session.commit()
+    return jsonify(user_data)
+
+@api_bp.put("/users")
+def update_user():
+    user_data = request.get_json()
+    id_utilisateur = request.args.get('id')
+    confirm_change_id = request.args.get('confirm_change_id')
+    user: Utilisateur = Utilisateur.query.get_or_404(id_utilisateur) # si le client n'est pas trouvé -> 404
+
+    # On vérifie que le client modifié à bien le même ID pour éviter de futur erreurs
+    if id_utilisateur != user_data.get('id_utilisateur') and confirm_change_id == None:
+            return jsonify({
+                'message': 'users IDs not matching, confirmation needed !',
+                'current_ID': id_utilisateur,
+                'new_id': user_data.get('id_utilisateur'),
+            })
+
+    user.prenom_utilisateur = user_data.get("prenom_utilisateur", user.prenom_utilisateur)
+    user.nom_utilisateur = user_data.get("nom_utilisateur", user.nom_utilisateur)
+    user.mail_utilisateur = user_data.get("mail_utilisateur", user.mail_utilisateur)
+    user.mdp_utilisateur = user_data.get("mdp_utilisateur", user.mdp_utilisateur)
+    user.id_role = user_data.get("id_role", user.id_role)
+
+    db.session.flush()
+    db.session.commit()
+    return jsonify({"message": "User updated", "user": user_data})
+
+@api_bp.delete("/users")
+def delete_user(id_client):
+    id_utilisateur = request.args.get('id')
+    user: Utilisateur = Utilisateur.query.get_or_404(id_utilisateur)
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"message": f"User {id_client} deleted"})
