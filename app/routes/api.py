@@ -22,6 +22,21 @@ def get_all_clients():
     } for client in clients]
     return jsonify(output)
 
+@api_bp.get("/clients/<int:id_client>")
+def get_client(id_client: int):
+    client: Client = Client.query.get_or_404(id_client)
+    output = {
+        'id_client': client.id_client,
+        'raison_sociale': client.raison_sociale,
+        'mail_client': client.mail_client,
+        'telephone_client': client.telephone_client,
+        'secteur': client.secteur,
+        'date_dernier_contact': client.date_dernier_contact,
+        'latitude': client.latitude,
+        'longitude': client.longitude,
+    }
+    return jsonify(output)
+
 @api_bp.route("/clients/add", methods=["POST"])
 def add_client():
     client_data = request.get_json()
