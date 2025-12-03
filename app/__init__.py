@@ -23,6 +23,7 @@ from app.routes.intervenants import intervenants_bp
 from app.routes.clients import clients_bp
 from app.routes.projets import projets_bp
 from app.routes.interactions import interactions_bp
+from app.routes.api import api_bp
 
 
 load_dotenv()
@@ -67,5 +68,6 @@ def create_app():
     app.register_blueprint(clients_bp)
     app.register_blueprint(projets_bp)
     app.register_blueprint(interactions_bp)
+    app.register_blueprint(api_bp)
 
     return app
