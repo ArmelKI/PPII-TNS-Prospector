@@ -24,7 +24,7 @@ def get_all_clients():
 
 @api_bp.get("/clients")
 def get_client():
-    id_client = int(request.args.get('id'))
+    id_client = request.args.get('id')
     client: Client = Client.query.get_or_404(id_client)
     output = {
         'id_client': client.id_client,
@@ -41,7 +41,7 @@ def get_client():
 @api_bp.post("/clients")
 def add_client():
     client_data = request.get_json()
-    client = Client(
+    client: Client = Client(
         id_client=client_data["id_client"],
         raison_sociale=client_data["raison_sociale"],
         mail_client=client_data["mail_client"],
@@ -55,11 +55,22 @@ def add_client():
     db.session.commit()
     return jsonify(client_data)
 
-@api_bp.route("/clients", methods=["PUT"])
+@api_bp.put("/clients")
 def update_client():
     client_data = request.get_json()
-    client: Client = Client.query.get_or_404(client_data.get('id_client')) # si le client n'est pas trouvé -> 404
+    id_client = request.args.get('id')
+    confirm_change_id = request.args.get('confirm_change_id')
+    client: Client = Client.query.get_or_404(id_client) # si le client n'est pas trouvé -> 404
 
+    # On vérifie que le client modifié à bien le même ID pour éviter de futur erreurs
+    if id_client != client_data.get('id_client') and confirm_change_id == None:
+            return jsonify({
+                'message': 'client IDs not matching, confirmation needed !',
+                'current_ID': client.id_client,
+                'new_id': client_data.get('id_client'),
+            })
+
+    client.id_client = client_data.get("id_client", client.id_client)
     client.raison_sociale = client_data.get("raison_sociale", client.raison_sociale)
     client.mail_client = client_data.get("mail_client", client.mail_client)
     client.telephone_client = client_data.get("telephone_client", client.telephone_client)
