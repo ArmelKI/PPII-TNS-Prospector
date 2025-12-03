@@ -83,15 +83,10 @@ def update_client():
     db.session.commit()
     return jsonify({"message": "Client updated", "client": client_data})
 
-# TODO : Rework la route pour qu'elle soit sous le format /api/clients (comme les autres) => Récupérer l'id dans la requête
-@api_bp.route("/clients/<int:id_client>", methods=["DELETE"])
-def delete_client(id_client):
+@api_bp.delete("/clients")
+def delete_client():
+    id_client = request.args.get('id')
     client = Client.query.get_or_404(id_client)
-    try:
-        db.session.delete(client)
-        db.session.commit()
-    except ProgrammingError as e:
-        db.session.rollback()  # important pour ne pas bloquer la session
-        return jsonify({"Erreur":"", "details": str(e)}), 500
-
+    db.session.delete(client)
+    db.session.commit()
     return jsonify({"message": f"Client {id_client} deleted"})
