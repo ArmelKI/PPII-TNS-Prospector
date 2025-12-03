@@ -15,6 +15,9 @@ class StatutProjet(enum.Enum):
     BLOQUE = "Bloqué"
     STAND_BY = "Stand-By"
 
+    def __str__(self): # evite de devoir mettre projet.statut_projet.value dans l'html
+        return self.value
+
 class StatutJalon(enum.Enum):
 
     A_VENIR = "À venir"
@@ -81,6 +84,7 @@ class Utilisateur(db.Model):
 class Intervenant(db.Model):
     __tablename__ = "intervenants"
 
+
     id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur", ondelete="CASCADE"), primary_key=True)
     disponible = db.Column(db.Boolean, nullable=False, server_default=sa.text('TRUE'))
     nb_heures_dispo = db.Column(db.Integer)
@@ -90,6 +94,7 @@ class Intervenant(db.Model):
     piece_identite = db.Column(db.String(255))
     photo_identite = db.Column(db.String(255))
     cv = db.Column(db.String(255))
+
 
     utilisateur = db.relationship("Utilisateur", back_populates="intervenant")
     competences = db.relationship("Competence", secondary=intervenant_competence, back_populates="intervenants")
@@ -115,6 +120,7 @@ class EtatRelation(db.Model):
     libelle_relation = db.Column(db.String(150), nullable=False)
 
     interactions = db.relationship("InteractionClient", back_populates="etat_relation")
+
 
 class Client(db.Model):
     __tablename__ = "clients"
@@ -183,6 +189,7 @@ class Projet(db.Model):
     __tablename__ = "projets"
 
     id_projet = db.Column(db.Integer, primary_key=True)
+
     nom_projet = db.Column(db.String(200), nullable = False)
     statut_projet = db.Column(
         SAEnum(StatutProjet, name="statut_projet_enum"), 
@@ -229,3 +236,4 @@ class Tache(db.Model):
 
     def __repr__(self):
         return f"<Tache {self.nom_tache}>"
+

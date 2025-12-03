@@ -1,8 +1,21 @@
-from flask import Blueprint, render_template
 
-projets_bp = Blueprint("projets", __name__)
+from flask import render_template, url_for, Blueprint# url_for  pour ajouter un projet , Blueprint pour les routes
+from app.models import Projet 
 
-@projets_bp.route("/projets")
+
+projets_bp = Blueprint('projets',__name__,url_prefix="/projets")
+
+@projets_bp.route('/')
 def liste_projets():
-    return render_template("projets.html", projets=[])
-    # affichage temporaire pour éviter les erreurs
+    projets = Projet.query.all()  # SELECT * FROM projets
+    return render_template('projets.html', projets = projets)
+
+@projets_bp.route('/<int:id>' ,methods=['GET']) # Détail d'un projet
+def detail_projet(id):
+    projet = Projet.query.get_or_404(id)
+    return render_template('detail_projet.html',projet = projet)
+    
+@projets_bp.route('/add/<int:id>' ,methods=['GET'])
+def ajouter_projet(id):
+    pass
+

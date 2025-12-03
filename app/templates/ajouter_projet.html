@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Ajouter un Projet{% endblock %}
+{% block content %}
+ 
+<!-- Interface d'ajout d'un projet  -->
+
+<div class="container">
+    <h1> Ajout de projets  </h1>
+
+    <!-- Méthode form pour ajouter un projet -->
+    <form action="submit">
+        <label for="Nom">Nom du projet :</label>
+        <input type="text" name="Nom" id="Nom">
+        <label for="Client">Client du projet :</label>
+        <input type="text" name="Client" id="Client">
+        <label for="DateD">Date de début :</label>
+        <input type="text" id="DateD">
+        <label for="DateF">Date de fin :</label>
+        <input type="text" id="DateF">
+    </form>
+
+    
+</div>
+
+{% endblock %}

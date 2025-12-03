@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Projets{% endblock %}
+<<<<<<< Updated upstream
 
 {% block content %}
 <h1 class="fade-in">Projets</h1>
@@ -16,4 +17,54 @@
   {% endfor %}
 </div>
 
+=======
+{% block content %}
+
+<h1> Affichage des projets </h1>
+
+<div class="project-tab">
+
+
+    <!-- Disposition des données en fonction de la db-->
+    <!-- id_projet |  nom_projet | statut_projet | date_debut_projet | date_fin_projet | id_client | id_utilisateur_creation  -->
+    <table>
+    <caption>
+         Table des projets 
+    </caption>
+    <thead>
+        <tr>
+            <th scope="col">id projet</th>
+            <th scope="col">nom protjet</th>
+            <th scope="col">statut projet</th>
+            <th scope="col">date debut projet</th>
+            <th scope="col">date fin projet</th>
+            <th scope="col">id client</th>
+            <th scope="col">id utilisateur création</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for projet in projets %}
+        <tr>
+        <th scope="row">{{projet.id_projet}}</th>
+            <td>{{ projet.nom_projet }} </td>
+            <td>{{ projet.statut_projet }}</td>
+            <td>{{ projet.date_debut_projet }}</td>
+            <td>{{ projet.date_fin_projet }}</td>
+            <td>{{ projet.id_client }}</td>
+            <td>{{ projet.id_utilisateur_creation }}</td>
+            <td><div href=# class="btn">Infos</div></td>
+        </tr>
+        <!--  Prochaine étape ; enlever des informations pour faire une nouvelle page -->
+        <!--  avec un query parameter id pour avoir des détails sur un projet -->
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <a href="{{ url_for('projet.ajouter_projet') }}" class="btn">Ajouter un projet ✏️</a>
+    </tfoot>
+    </table>
+
+    
+</div>
+    
+>>>>>>> Stashed changes
 {% endblock %}

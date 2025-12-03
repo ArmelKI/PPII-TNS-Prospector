@@ -353,3 +353,54 @@ a:hover { text-decoration: underline; }
 /* plus de style pour les boutons */
 .btn { box-shadow: 0 6px 18px rgba(0,86,179,0.08); transition: transform .12s ease; }
 .btn:active { transform: translateY(1px) scale(.997); }
+
+/*  Tableau pour l'affichage des projets */ 
+.project-tab {
+  width: 90%;
+  max-width: 700px;
+  margin: 50px auto; 
+  background-color: var(--tns-white);
+  border-radius: 10px
+}
+
+.project-tab table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  border: 2px solid rgb(140 140 140);
+  font-family: sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+
+
+.project-tab thead, tfoot {
+  background-color: rgb(228 240 245);
+}
+
+.project-tab th,td {
+  border: 1px solid rgb(160 160 160);
+  padding: 8px 10px;
+}
+
+.project-tab td:last-of-type {
+  text-align: center;
+}
+
+.project-tab tbody > tr:nth-of-type(even) {
+  background-color: rgb(237 238 242);
+}
+
+.project-tab tfoot th {
+  text-align: right;
+}
+
+.project-tab tfoot td {
+  font-weight: bold;
+}
+
+.project-container { 
+  display: flex;
+  justify-content: center;
+}
+
