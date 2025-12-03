@@ -22,13 +22,15 @@ from app.routes.dashboard import dashboard_bp
 from app.routes.intervenants import intervenants_bp
 from app.routes.clients import clients_bp
 from app.routes.projets import projets_bp
+from app.routes.interactions import interactions_bp
 from app.routes.api import api_bp
+
+
 
 load_dotenv()
 
 def create_app():
 
-    
     DB_USER = os.getenv("DB_USER")
     DB_PASSWORD = quote(os.getenv("DB_PASSWORD"))
     DB_HOST = os.getenv("DB_HOST")
