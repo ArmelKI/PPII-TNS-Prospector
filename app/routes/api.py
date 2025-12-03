@@ -22,8 +22,9 @@ def get_all_clients():
     } for client in clients]
     return jsonify(output)
 
-@api_bp.get("/clients/<int:id_client>")
-def get_client(id_client: int):
+@api_bp.get("/clients")
+def get_client():
+    id_client = int(request.args.get('id'))
     client: Client = Client.query.get_or_404(id_client)
     output = {
         'id_client': client.id_client,
@@ -37,7 +38,7 @@ def get_client(id_client: int):
     }
     return jsonify(output)
 
-@api_bp.route("/clients/add", methods=["POST"])
+@api_bp.post("/clients")
 def add_client():
     client_data = request.get_json()
     client = Client(
@@ -54,7 +55,7 @@ def add_client():
     db.session.commit()
     return jsonify(client_data)
 
-@api_bp.route("/clients/<int:id_client>", methods=["PUT"])
+@api_bp.route("/clients", methods=["PUT"])
 def update_client(id_client):
     client_data = request.get_json()
     client = Client.query.get_or_404(id_client) # si le client n'est pas trouvé -> 404
@@ -70,6 +71,7 @@ def update_client(id_client):
     db.session.commit()
     return jsonify({"message": "Client updated", "client": client_data})
 
+# TODO : Rework la route pour qu'elle soit sous le format /api/clients (comme les autres) => Récupérer l'id dans la requête
 @api_bp.route("/clients/<int:id_client>", methods=["DELETE"])
 def delete_client(id_client):
     client = Client.query.get_or_404(id_client)
