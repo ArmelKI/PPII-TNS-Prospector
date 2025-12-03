@@ -8,11 +8,17 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 @api_bp.route("/clients/get_all")
-def get_clients():
-    clients = Client.query.all()
+def get_all_clients():
+    clients: list[Client] = Client.query.all()
     output = [{
+        'id_client': client.id_client,
         'raison_sociale': client.raison_sociale,
-        'mail_client': client.mail_client
+        'mail_client': client.mail_client,
+        'telephone_client': client.telephone_client,
+        'secteur': client.secteur,
+        'date_dernier_contact': client.date_dernier_contact,
+        'latitude': client.latitude,
+        'longitude': client.longitude,
     } for client in clients]
     return jsonify(output)
 
