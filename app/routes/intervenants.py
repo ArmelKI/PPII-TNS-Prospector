@@ -26,8 +26,7 @@ def liste_intervenants():
         )
 
     if dispo:
-        dispo_bool = dispo.lower() == "disponible"
-        q = q.filter_by(Intervenant.disponible_actuellement == dispo_bool)
+        intervenants = intervenants.filter_by(disponibilite=dispo)
 
     pagination = q.order_by(Utilisateur.nom_utilisateur).paginate(page=page, per_page=per_page, error_out=False)
 
