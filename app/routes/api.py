@@ -56,18 +56,19 @@ def add_client():
     return jsonify(client_data)
 
 @api_bp.route("/clients", methods=["PUT"])
-def update_client(id_client):
+def update_client():
     client_data = request.get_json()
-    client = Client.query.get_or_404(id_client) # si le client n'est pas trouvé -> 404
+    client: Client = Client.query.get_or_404(client_data.get('id_client')) # si le client n'est pas trouvé -> 404
 
     client.raison_sociale = client_data.get("raison_sociale", client.raison_sociale)
     client.mail_client = client_data.get("mail_client", client.mail_client)
     client.telephone_client = client_data.get("telephone_client", client.telephone_client)
     client.secteur = client_data.get("secteur", client.secteur)
-    client.dernier_contact = client_data.get("dernier_contact", client.dernier_contact)
+    client.date_dernier_contact = client_data.get("date_dernier_contact", client.date_dernier_contact)
     client.latitude = client_data.get("latitude", client.latitude)
     client.longitude = client_data.get("longitude", client.longitude)
 
+    db.session.flush()
     db.session.commit()
     return jsonify({"message": "Client updated", "client": client_data})
 
