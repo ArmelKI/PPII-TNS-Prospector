@@ -5,3 +5,4 @@ pytest>=9.0
 pytest-flask>=1.2
 psycopg2-binary>=2.9
 flask-login>=0.6.3
+Flask-WTF>=1.2.2

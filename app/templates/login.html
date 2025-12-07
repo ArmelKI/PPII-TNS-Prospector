@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<h1>Connexion</h1>
+<form action="" method="post" novalidate>
+    <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.usermail.label }}<br>
+        {{ form.usermail(size=32) }}<br>
+        {% for error in form.usermail.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(size=32) }}<br>
+        {% for error in form.password.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+    <p>{{ form.submit() }}</p>
+</form>
+
+{% endblock %}
