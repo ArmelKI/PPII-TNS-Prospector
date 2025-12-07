@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user, logout_user
+from urllib.parse import urlsplit
 from app.forms import LoginForm
 from app.models import Utilisateur
 
@@ -27,8 +28,13 @@ def login_page():
         return redirect(url_for('auth.login_page'))
 
     login_user(user, remember=form.remember_me.data)
+    # Gestion de la redirection
+    next_page = request.args.get('next')
+    # Vérification que l'url ne sort pas du site
+    if not next_page or urlsplit(next_page).netloc != '':
+        next_page = '/'
     flash(f'Utilisateur {user.prenom_utilisateur} {user.nom_utilisateur} connecté')
-    return redirect('/')
+    return redirect(next_page)
 
 @auth_bp.route('/logout')
 def logout():

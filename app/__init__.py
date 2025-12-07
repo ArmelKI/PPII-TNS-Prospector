@@ -52,6 +52,7 @@ def create_app():
 
     # Initialisation du login manager
     login_manager.init_app(app)
+    login_manager.login_view = 'auth.login_page'
 
     # Gestion d'erreur 404
     @app.errorhandler(404)
