@@ -79,11 +79,6 @@ class Utilisateur(db.Model, UserMixin):
     role = db.relationship("Role", back_populates="utilisateurs")
     intervenant = db.relationship("Intervenant", uselist=False, back_populates="utilisateur")
 
-    @login_manager.user_loader
-    @classmethod
-    def load_user(clc, user_id):
-        return clc.quer
-
     def __repr__(self):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
@@ -238,3 +233,7 @@ class Tache(db.Model):
 
     def __repr__(self):
         return f"<Tache {self.nom_tache}>"
+
+@login_manager.user_loader
+def load_user(user_id) -> Utilisateur:
+    return Utilisateur.query.get(user_id)
