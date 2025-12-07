@@ -16,7 +16,7 @@ from urllib.parse import quote
 from sqlalchemy.exc import ProgrammingError
 from app.models import *
 from datetime import datetime
-from flask_login import LoginManager
+from app.config import login_manager
 
 # Blueprints imports
 from app.routes.dashboard import dashboard_bp
@@ -29,7 +29,6 @@ from app.routes.api import api_bp
 
 
 load_dotenv()
-login_manager = LoginManager()
 
 
 def create_app():

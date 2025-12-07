@@ -3,7 +3,9 @@ import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum as SAEnum, CheckConstraint, Numeric
 from flask_login import UserMixin
-from app import login_manager
+from app.config import login_manager
+
+
 
 db = SQLAlchemy()
 
