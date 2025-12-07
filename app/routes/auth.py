@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import current_user, login_user
 from app.forms import LoginForm
+from app.models import Utilisateur
 
 
 
@@ -9,10 +10,21 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login_page():
+    # Si l'utilisateur est déjà connecté, on saute la page
+    if current_user.is_authenticated:
+        return redirect('/')
+
     form = LoginForm()
 
     # Si le formulaire a été submit (méthode POST)
     if form.validate_on_submit():
+        user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
+
+        if user is None or not user.check_password(form.password.data):
+            print("Invalid username or password")
+            return redirect(url_for('auth.login_page'))
+
+        login_user(user, remember=form.remember_me.data)
         return redirect('/')
 
     return render_template('login.html', form=form)
