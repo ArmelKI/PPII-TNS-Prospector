@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import current_user, login_user, logout_user
 from app.forms import LoginForm
 from app.models import Utilisateur
@@ -21,10 +21,11 @@ def login_page():
         user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
 
         if user is None or not user.check_password(form.password.data):
-            print("Invalid username or password")
+            flash("Invalid username or password")
             return redirect(url_for('auth.login_page'))
 
         login_user(user, remember=form.remember_me.data)
+        flash(f'Utilisateur {user.prenom_utilisateur} {user.nom_utilisateur} connecté')
         return redirect('/')
 
     return render_template('login.html', form=form)
