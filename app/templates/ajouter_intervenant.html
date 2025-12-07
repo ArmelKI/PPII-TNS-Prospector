@@ -1,26 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Ajouter un Intervenant{% endblock %}
+{% block title %}Ajouter un intervenant{% endblock %}
+
 {% block content %}
+<div class="card">
+  <h1>Ajouter un intervenant</h1>
 
-<div class="container">
-  <h1>Ajouter un Intervenant</h1>
+  <form method="POST">
+    <label>Associer un utilisateur existant (optionnel)</label>
+    <select name="id_utilisateur">
+      <option value="">-- Nouveau utilisateur --</option>
+      {% for u in utilisateurs %}
+        <option value="{{ u.id_utilisateur }}">{{ u.nom_utilisateur }} {{ u.prenom_utilisateur }} — {{ u.mail_utilisateur }}</option>
+      {% endfor %}
+    </select>
 
-  <form method="POST" action="{{ url_for('intervenants.ajouter_intervenant') }}">
-    <label for="nom">Nom</label><br>
-    <input type="text" id="nom" name="nom" required><br><br>
+    <hr>
 
-    <label for="competences">Compétences</label><br>
-    <input type="text" id="competences" name="competences" required><br><br>
+    <label>Prénom</label>
+    <input type="text" name="prenom_utilisateur" placeholder="Anne Clair">
 
-    <label for="disponibilite">Disponibilité</label><br>
-    <select id="disponibilite" name="disponibilite" required>
-      <option value="Disponible">Disponible</option>
-      <option value="Indisponible">Indisponible</option>
-    </select><br><br>
+    <label>Nom</label>
+    <input type="text" name="nom_utilisateur" placeholder="Heutel">
 
-    <button type="submit" class="btn">✅ Ajouter</button>
-    <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">⬅ Retour</a>
+    <label>Email</label>
+    <input type="email" name="email_utilisateur" placeholder="anne-claire@example.com">
+
+    <label>Compétences (séparées par ; ou ,)</label>
+    <input type="text" name="competences">
+
+    <label>Disponible</label>
+    <input type="checkbox" name="disponible">
+
+    <label>Heures disponibles</label>
+    <input type="number" step="0.5" name="heures" value="0">
+
+    <button type="submit" class="btn">Enregistrer</button>
+    <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">Annuler</a>
   </form>
 </div>
-
 {% endblock %}

@@ -1,30 +1,94 @@
 {% extends "base.html" %}
-{% block title %}Détails de l'Intervenant{% endblock %}
+{% block title %}Profil Intervenant{% endblock %}
 {% block content %}
+<div class="profile-grid container">
+  <div class="profile-card card fade-in">
+    <div class="profile-header">
+      <img src="{{ url_for('static', filename=intervenant.utilisateur.photo_url or 'images/avatar-placeholder.svg') }}" alt="photo" class="avatar">
+      <div class="profile-meta">
+        <h2>{{ intervenant.utilisateur.prenom_utilisateur }} {{ intervenant.utilisateur.nom_utilisateur }}</h2>
+        <p class="muted">{{ intervenant.utilisateur.mail_utilisateur }}</p>
+        <p><strong>Disponibilité :</strong> {{ 'Disponible' if intervenant.disponible_actuellement else 'Indisponible' }}</p>
+        <p><strong>Heures dispos :</strong> {{ intervenant.nombre_heures_disponibles or 0 }}</p>
+      </div>
+    </div>
 
-<div class="container">
-  <h1>Détails de l'Intervenant</h1>
+    <div class="profile-actions">
+      <a href="{{ url_for('intervenants.modifier_intervenant', id=intervenant.id_intervenant) }}" class="btn">✏️ Modifier</a>
+      <form method="post" action="{{ url_for('intervenants.supprimer_intervenant', id=intervenant.id_intervenant) }}" style="display:inline;" onsubmit="return confirm('Supprimer ?');">
+        <button class="btn btn-danger" type="submit">🗑 Supprimer</button>
+      </form>
+    </div>
 
-  <div class="card">
-    <h2>{{ intervenant.nom }}</h2>
-    <p><strong>Compétences :</strong> {{ intervenant.competences }}</p>
-    <p>
-      <strong>Disponibilité :</strong>
-      <span class="badge {{ 'green' if intervenant.disponibilite == 'Disponible' else 'red' }}">
-        {{ intervenant.disponibilite }}
-      </span>
-    </p>
+    <hr>
+
+    <div class="profile-section">
+      <h3>Compétences</h3>
+      <p>
+        {% for c in intervenant.competences %}
+          <span class="badge">{{ c.nom_competence }}</span>
+        {% else %}
+          <em>Aucune compétence renseignée.</em>
+        {% endfor %}
+      </p>
+    </div>
+
+    <div class="profile-section">
+      <h3>Documents</h3>
+      <!-- Liste des documents : on suppose qu'il y a une view docs_list côté backend qui rend les docs -->
+      {% if documents %}
+        <ul class="doc-list">
+        {% for d in documents %}
+          <li>
+            <a href="{{ url_for('static', filename=d.file_url) }}" target="_blank">{{ d.filename }}</a>
+            <small class="muted"> — {{ d.doc_type }} — {{ d.uploaded_at }}</small>
+          </li>
+        {% endfor %}
+        </ul>
+      {% else %}
+        <p><em>Aucun document.</em></p>
+      {% endif %}
+    </div>
+
+    <div class="profile-section">
+      <h3>Ajouter / Mettre à jour</h3>
+      <form id="photoForm" method="post" enctype="multipart/form-data" action="{{ url_for('media.upload_profile_photo', id=intervenant.utilisateur.id_utilisateur) }}">
+        <label>Photo de profil</label>
+        <input type="file" name="photo" accept="image/*" onchange="previewImage(this, '#photoPreview')">
+        <img id="photoPreview" src="{{ url_for('static', filename=intervenant.utilisateur.photo_url or 'images/avatar-placeholder.svg') }}" class="avatar small" alt="preview">
+        <button class="btn" type="submit">Téléverser photo</button>
+      </form>
+
+      <form id="docForm" method="post" enctype="multipart/form-data" action="{{ url_for('media.upload_document', id=intervenant.id_intervenant) }}">
+        <label>Ajouter document (CV / certificat)</label>
+        <select name="doc_type">
+          <option value="cv">CV</option>
+          <option value="certificat">Certificat</option>
+          <option value="other">Autre</option>
+        </select>
+        <input type="file" name="document" accept=".pdf,.doc,.docx,.jpg,.png">
+        <button class="btn" type="submit">Téléverser document</button>
+      </form>
+    </div>
+
   </div>
 
-    <div style="margin-top: 20px;">
-        <a href="{{ url_for('intervenants.modifier_intervenant', id=intervenant.id) }}" class="btn">✏️ Modifier</a>
-        
-        <form method="POST" action="{{ url_for('intervenants.supprimer_intervenant', id=intervenant.id) }}" class="delete-form" style="display:inline;" onsubmit="return confirmDelete();">
-        <button type="submit" class="delete">🗑 Supprimer</button>
-        </form>
-        
-        <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">⬅ Retour</a>
-    </div>
+  <div class="profile-right card fade-in">
+    <h3>Résumé</h3>
+    <p><!-- place for project list, involvement timeline, KPIs — render from backend --></p>
+
+    <h4>Projets assignés</h4>
+    <ul>
+      {% for p in intervenant.projets %}
+        <li><a href="{{ url_for('projets.projet_details', id=p.id_projet) }}">{{ p.nom_projet }}</a> — {{ p.statut_projet.value if p.statut_projet else 'N/A' }}</li>
+      {% else %}
+        <li>Aucun projet</li>
+      {% endfor %}
+    </ul>
+
+    <h4>Activité récente</h4>
+    <div><!-- timeline / interactions --></div>
+  </div>
 </div>
 
 {% endblock %}
