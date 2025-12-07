@@ -16,19 +16,19 @@ def login_page():
 
     form = LoginForm()
 
-    # Si le formulaire a été submit (méthode POST)
-    if form.validate_on_submit():
-        user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
+    # Si le formulaire n'a pas été envoyé correctement
+    if not form.validate_on_submit():
+        return render_template('login.html', form=form)
 
-        if user is None or not user.check_password(form.password.data):
-            flash("Invalid username or password")
-            return redirect(url_for('auth.login_page'))
+    # On vérifie les données fournies
+    user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
+    if user is None or not user.check_password(form.password.data):
+        flash("Invalid username or password")
+        return redirect(url_for('auth.login_page'))
 
-        login_user(user, remember=form.remember_me.data)
-        flash(f'Utilisateur {user.prenom_utilisateur} {user.nom_utilisateur} connecté')
-        return redirect('/')
-
-    return render_template('login.html', form=form)
+    login_user(user, remember=form.remember_me.data)
+    flash(f'Utilisateur {user.prenom_utilisateur} {user.nom_utilisateur} connecté')
+    return redirect('/')
 
 @auth_bp.route('/logout')
 def logout():
