@@ -22,7 +22,9 @@
       <li><a href="{{ url_for('projets.liste_projets') }}">Projets</a></li>
       <li><a href="{{ url_for('interactions.liste_interactions') }}">Interactions</a></li>
       <li><a href="{{ url_for('intervenants.exporter_intervenants') }}">Export CSV</a></li>
+      {% if not current_user.is_authenticated %}
       <li><a href="{{ url_for('auth.login_page') }}">Register/Login</a></li>
+      {% endif %}
     </ul>
   </nav>
 </header>
