@@ -83,6 +83,7 @@ class Utilisateur(db.Model, UserMixin):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
     def check_password(self, pw_candidate) -> bool:
+        # TODO : Le mdp est en clair pour le moment...
         return self.mdp_utilisateur == pw_candidate
 
     def get_id(self):
