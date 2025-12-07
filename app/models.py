@@ -82,6 +82,9 @@ class Utilisateur(db.Model, UserMixin):
     def __repr__(self):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
+    def check_password(self, pw_candidate) -> bool:
+        return self.mdp_utilisateur == pw_candidate
+
 class Intervenant(db.Model):
     __tablename__ = "intervenants"
 
