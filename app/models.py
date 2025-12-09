@@ -137,16 +137,7 @@ class Client(db.Model):
     conventions = db.relationship("Convention", back_populates="client")
     interactions = db.relationship("InteractionClient", back_populates="client")
 
-    def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur,
-                 date_dernier_contact, latitude, longitude):
-        self.id_client = id_client
-        self.raison_sociale = raison_sociale
-        self.mail_client = mail_client
-        self.telephone_client = telephone_client
-        self.secteur = secteur
-        self.date_dernier_contact = date_dernier_contact
-        self.latitude = latitude
-        self.longitude = longitude
+    #j'ai supprimé la méthode __init__ car sqlalchemy s'en occupe déjà et que ca crée des conflits avec les id
 
     def __repr__(self):
         return f"Client {self.raison_sociale}"
@@ -191,10 +182,20 @@ class Projet(db.Model):
     id_projet = db.Column(db.Integer, primary_key=True)
 
     nom_projet = db.Column(db.String(200), nullable = False)
+
+
     statut_projet = db.Column(
         SAEnum(StatutProjet, name="statut_projet_enum"), 
         nullable=False, 
         default=StatutProjet.PAS_COMMENCE)
+
+    statut_projet = db.Column(
+    db.Enum(StatutProjet, 
+            values_callable=lambda obj: [e.value for e in obj], name="statut_projet"),
+            # Cette fonction transforme l'enum
+            nullable=False,
+            default=StatutProjet.PAS_COMMENCE )
+    
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)

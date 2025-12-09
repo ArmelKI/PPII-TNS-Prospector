@@ -52,7 +52,7 @@ def ponderate(intervenant,ponderation) :# donne la pondération  d'un intervenan
     # finaalement la ponderationd est effectivemnt à sens unique en fonction de la préférence du projet et l'avis d'un intervenant ne compte pas vraiement pour le moment
     
 
-# --- 1. LES DONNÉES (Générées précédemment) ---
+# -- DONNES TEST --- 
 intervenants = [
     {"id": 1, "nom": "Alice", "metier": "Data Scientist", "techno": "Python", "niveau": "Senior", "ville": "Paris", "dispo": "Immédiate"},
     {"id": 2, "nom": "Bob", "metier": "Dev Backend", "techno": "Java", "niveau": "Junior", "ville": "Lyon", "dispo": "3 mois"},
@@ -65,7 +65,6 @@ projets_preferences = {
     "Projet Web": {"React": 20, "Télétravail": 15, "JavaScript": 15, "Junior": 2, "AWS": 30}
 }
 
-# --- 2. TON ALGORITHME CORRIGÉ ---
 def matching(projets: dict, intervenants: list):
     projets_preferences_result = {}
     for projet_nom, ponderation in projets.items():

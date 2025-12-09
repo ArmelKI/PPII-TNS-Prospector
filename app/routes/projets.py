@@ -7,7 +7,18 @@ projets_bp = Blueprint('projets',__name__,url_prefix="/projets")
 
 @projets_bp.route('/')
 def liste_projets():
+    
     projets = Projet.query.all()  # SELECT * FROM projets
+
+    # --- AJOUTEZ CECI POUR LE DEBUG  voir si la db n'est pas vide---
+    print("--- DEBUG START ---")
+    print(f"Type de l'objet: {type(projets)}")
+    print(f"Contenu de la liste: {projets}")
+    print(f"Nombre de projets trouvés: {len(projets)}")
+    print("--- DEBUG END ---")
+    # ----------------------------------
+
+    
     return render_template('projets.html', projets = projets)
 
 @projets_bp.route('/<int:id>' ,methods=['GET']) # Détail d'un projet
@@ -15,7 +26,10 @@ def detail_projet(id):
     projet = Projet.query.get_or_404(id)
     return render_template('detail_projet.html',projet = projet)
     
-@projets_bp.route('/add/<int:id>' ,methods=['GET'])
-def ajouter_projet(id):
-    pass
+@projets_bp.route('/add' ,methods=['GET'])
+def ajouter_projet():
+    return render_template('ajouter_projet.html')
 
+@projets_bp.route('/edit/<int:id>', methods=['GET'])
+def modifier_projet():
+    pass

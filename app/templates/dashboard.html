@@ -32,18 +32,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  new Chart(document.getElementById("projetsChart"), {
-    type: "bar",
-    data: {
-      labels: {{ projets_labels | safe }},
-      datasets: [{
-        label: "Projets par mois",
-        data: {{ projets_counts | safe }}
-      }]
-    }
+  document.addEventListener("DOMContentLoaded", () => {
+    new Chart(document.getElementById("projetsChart"), {
+      type: "bar",
+      data: {
+        labels: {{ projets_labels | safe }},
+        datasets: [{
+          label: "Projets par mois",
+          data: {{ projets_counts | safe }}
+        }]
+      }
+    });
   });
-});
 </script>
 
 {% endblock %}

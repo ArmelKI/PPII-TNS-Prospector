@@ -1,24 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Projets{% endblock %}
-<<<<<<< Updated upstream
-
 {% block content %}
-<h1 class="fade-in">Projets</h1>
 
-<a href="#" class="btn" style="margin-bottom:20px;">Nouveau projet</a>
-
-<div class="cards fade-in">
-  {% for p in projets %}
-  <div class="card">
-    <h2>{{ p.nom_projet }}</h2>
-    <p>{{ p.description_projet }}</p>
-    <a class="btn-secondary">Détails</a>
-  </div>
-  {% endfor %}
-</div>
-
-=======
-{% block content %}
 
 <h1> Affichage des projets </h1>
 
@@ -31,6 +14,8 @@
     <caption>
          Table des projets 
     </caption>
+
+
     <thead>
         <tr>
             <th scope="col">id projet</th>
@@ -52,19 +37,22 @@
             <td>{{ projet.date_fin_projet }}</td>
             <td>{{ projet.id_client }}</td>
             <td>{{ projet.id_utilisateur_creation }}</td>
-            <td><div href=# class="btn">Infos</div></td>
+            <td><div href="{{ url_for('projets.detail_projet',id=projet.id_projet) }}" class="btn">Infos</div></td> <!-- le lien ne marchera tant qu'on aura pas de donées-->
         </tr>
         <!--  Prochaine étape ; enlever des informations pour faire une nouvelle page -->
         <!--  avec un query parameter id pour avoir des détails sur un projet -->
+        
+        
         {% endfor %}
     </tbody>
+
+    <!-- bug minime a corriger le bouton d'ajout de projet est audessus du tableau et non sur la derniere ligne -->
     <tfoot>
-        <a href="{{ url_for('projet.ajouter_projet') }}" class="btn">Ajouter un projet ✏️</a>
+        <a href="{{ url_for('projets.ajouter_projet') }}" class="btn">Ajouter un projet ✏️</a>
     </tfoot>
     </table>
 
     
 </div>
-    
->>>>>>> Stashed changes
+
 {% endblock %}
