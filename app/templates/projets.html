@@ -5,12 +5,12 @@
 
 <h1> Affichage des projets </h1>
 
-<div class="project-tab">
+<div>
 
 
     <!-- Disposition des données en fonction de la db-->
     <!-- id_projet |  nom_projet | statut_projet | date_debut_projet | date_fin_projet | id_client | id_utilisateur_creation  -->
-    <table>
+    <table class="data-table">
     <caption>
          Table des projets 
     </caption>
@@ -19,12 +19,11 @@
     <thead>
         <tr>
             <th scope="col">id projet</th>
-            <th scope="col">nom protjet</th>
+            <th scope="col">nom projet</th>
             <th scope="col">statut projet</th>
             <th scope="col">date debut projet</th>
             <th scope="col">date fin projet</th>
-            <th scope="col">id client</th>
-            <th scope="col">id utilisateur création</th>
+            <th scope="col">détails</th>
         </tr>
     </thead>
     <tbody>
@@ -35,9 +34,13 @@
             <td>{{ projet.statut_projet }}</td>
             <td>{{ projet.date_debut_projet }}</td>
             <td>{{ projet.date_fin_projet }}</td>
-            <td>{{ projet.id_client }}</td>
-            <td>{{ projet.id_utilisateur_creation }}</td>
-            <td><div href="{{ url_for('projets.detail_projet',id=projet.id_projet) }}" class="btn">Infos</div></td> <!-- le lien ne marchera tant qu'on aura pas de donées-->
+            <!-- <td>{{ projet.id_client }}</td> -->
+            <!-- <td>{{ projet.id_utilisateur_creation }}</td> -->
+            <td>
+                <a href="{{ url_for('projets.detail_projet', id=projet.id_projet) }}" class="btn">
+                    Infos
+                </a>
+            </td>
         </tr>
         <!--  Prochaine étape ; enlever des informations pour faire une nouvelle page -->
         <!--  avec un query parameter id pour avoir des détails sur un projet -->
@@ -51,8 +54,7 @@
         <a href="{{ url_for('projets.ajouter_projet') }}" class="btn">Ajouter un projet ✏️</a>
     </tfoot>
     </table>
-
-    
+     
 </div>
 
 {% endblock %}

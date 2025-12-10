@@ -180,22 +180,13 @@ class Projet(db.Model):
     __tablename__ = "projets"
 
     id_projet = db.Column(db.Integer, primary_key=True)
-
     nom_projet = db.Column(db.String(200), nullable = False)
-
-
-    statut_projet = db.Column(
-        SAEnum(StatutProjet, name="statut_projet_enum"), 
-        nullable=False, 
-        default=StatutProjet.PAS_COMMENCE)
-
-    statut_projet = db.Column(
-    db.Enum(StatutProjet, 
+    statut_projet = db.Column(db.Enum(
+            StatutProjet, 
             values_callable=lambda obj: [e.value for e in obj], name="statut_projet"),
             # Cette fonction transforme l'enum
             nullable=False,
             default=StatutProjet.PAS_COMMENCE )
-    
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)

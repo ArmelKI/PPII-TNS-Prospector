@@ -10,13 +10,6 @@ def liste_projets():
     
     projets = Projet.query.all()  # SELECT * FROM projets
 
-    # --- AJOUTEZ CECI POUR LE DEBUG  voir si la db n'est pas vide---
-    print("--- DEBUG START ---")
-    print(f"Type de l'objet: {type(projets)}")
-    print(f"Contenu de la liste: {projets}")
-    print(f"Nombre de projets trouvés: {len(projets)}")
-    print("--- DEBUG END ---")
-    # ----------------------------------
 
     
     return render_template('projets.html', projets = projets)
