@@ -1,5 +1,5 @@
 """
-app.py — point d'entrée pour exécution locale
+app.py est le point d'entrée pour exécution locale
 
 Ce fichier importe la factory create_app et lance l'application.
 Ne contient pas de logique métier.
