@@ -1,14 +1,12 @@
 import enum
-import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Enum as SAEnum, CheckConstraint, Numeric
+from sqlalchemy import Enum as SAEnum, CheckConstraint
 
 db = SQLAlchemy()
 
+# Enum types for project, milestone, and task statuses.
+# These are not tables, just Python enums for clarity and type safety.
 class StatutProjet(enum.Enum):
-    # les statuts de projets, de tâches et de jalons sont des types énumérés, et non pas des tables
-    # par conséquent on n'ajoute pas de dunder tablename
-
     PAS_COMMENCE = "Pas commencé"
     EN_COURS = "En cours"
     TERMINE = "Terminé"
@@ -16,7 +14,6 @@ class StatutProjet(enum.Enum):
     STAND_BY = "Stand-By"
 
 class StatutJalon(enum.Enum):
-
     A_VENIR = "À venir"
     ACTUEL = "Actuel"
     PASSE = "Passé"
@@ -28,10 +25,8 @@ class StatutTache(enum.Enum):
     BLOQUE = "Bloqué"
     STAND_BY = "Stand-By"
 
-# Tables d'associations (pour les relations plusieurs-à-plusieurs)
-# Un projet peut avoir plusieurs intervenants et un intervenant peut travailler sur plusieurs projets
-# Humainement un intervenant peut peut-être pas travailler sur plusieurs projets en même temps, il peut en effectuer deux de suite par exemple
-
+# Association tables for many-to-many relationships.
+# For example, a project can have multiple contributors, and a contributor can work on multiple projects.
 intervenant_projet = db.Table(
     "intervenant_projet",
     db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
@@ -52,8 +47,10 @@ intervenant_tache = db.Table(
     db.Column("id_tache", db.Integer, db.ForeignKey("taches.id_tache", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
 )
 
-
 class Role(db.Model):
+    """
+    Stores user roles (e.g., admin, contributor).
+    """
     __tablename__ = "roles"
 
     id_role = db.Column(db.Integer, primary_key=True)
@@ -61,8 +58,10 @@ class Role(db.Model):
 
     utilisateurs = db.relationship("Utilisateur", back_populates="role")
 
-
 class Utilisateur(db.Model):
+    """
+    Represents a user in the system.
+    """
     __tablename__ = "utilisateurs"
 
     id_utilisateur = db.Column(db.Integer, primary_key=True)
@@ -70,7 +69,7 @@ class Utilisateur(db.Model):
     nom_utilisateur = db.Column(db.String(100), nullable=False)
     mail_utilisateur = db.Column(db.String(150), nullable=False, unique=True)
     mdp_utilisateur = db.Column(db.String(255), nullable=False)
-    id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"), nullable = False)
+    id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"), nullable=False)
 
     role = db.relationship("Role", back_populates="utilisateurs")
     intervenant = db.relationship("Intervenant", uselist=False, back_populates="utilisateur")
@@ -79,10 +78,13 @@ class Utilisateur(db.Model):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
 class Intervenant(db.Model):
+    """
+    Represents a contributor/intervenant, linked to a user.
+    """
     __tablename__ = "intervenants"
 
     id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur", ondelete="CASCADE"), primary_key=True)
-    disponible = db.Column(db.Boolean, nullable=False, server_default=sa.text('TRUE'))
+    disponible = db.Column(db.Boolean, nullable=False, server_default='TRUE')
     nb_heures_dispo = db.Column(db.Integer)
     bulletin_adhesion = db.Column(db.String(255))
     carte_etudiante = db.Column(db.String(255))
@@ -101,6 +103,9 @@ class Intervenant(db.Model):
         return f"Intervenant {nom}"
 
 class Competence(db.Model):
+    """
+    Represents a skill or competence.
+    """
     __tablename__ = "competences"
 
     id_competence = db.Column(db.Integer, primary_key=True)
@@ -109,6 +114,9 @@ class Competence(db.Model):
     intervenants = db.relationship("Intervenant", secondary=intervenant_competence, back_populates="competences")
 
 class EtatRelation(db.Model):
+    """
+    Represents the state of the relationship with a client at a given time.
+    """
     __tablename__ = "etats_relations"
 
     id_etat_relation = db.Column(db.Integer, primary_key=True)
@@ -117,6 +125,9 @@ class EtatRelation(db.Model):
     interactions = db.relationship("InteractionClient", back_populates="etat_relation")
 
 class Client(db.Model):
+    """
+    Represents a client.
+    """
     __tablename__ = "clients"
 
     id_client = db.Column(db.Integer, primary_key=True)
@@ -125,7 +136,7 @@ class Client(db.Model):
     telephone_client = db.Column(db.String(30))
     secteur = db.Column(db.String(100))
     date_dernier_contact = db.Column(db.Date)
-    latitude = db.Column(db.Numeric(10, 7)) # 777.7777777
+    latitude = db.Column(db.Numeric(10, 7))  # e.g., 777.7777777
     longitude = db.Column(db.Numeric(10, 7))
 
     conventions = db.relationship("Convention", back_populates="client")
@@ -145,10 +156,10 @@ class Client(db.Model):
     def __repr__(self):
         return f"Client {self.raison_sociale}"
 
-
 class InteractionClient(db.Model):
-    # Attention, ce n'est pas une table de correspondance entre deux autres tables
-    # elle permet de faire figurer, à un instant t, l'état de la relation entre TNS et le client
+    """
+    Represents an interaction with a client, including the state of the relationship at that time.
+    """
     __tablename__ = "interactions_client"
 
     id_interaction = db.Column(db.Integer, primary_key=True)
@@ -161,6 +172,9 @@ class InteractionClient(db.Model):
     etat_relation = db.relationship("EtatRelation", back_populates="interactions")
 
 class Convention(db.Model):
+    """
+    Represents a convention/contract with a client.
+    """
     __tablename__ = "conventions"
 
     id_convention = db.Column(db.Integer, primary_key=True)
@@ -180,13 +194,16 @@ class Convention(db.Model):
     )
 
 class Projet(db.Model):
+    """
+    Represents a project.
+    """
     __tablename__ = "projets"
 
     id_projet = db.Column(db.Integer, primary_key=True)
-    nom_projet = db.Column(db.String(200), nullable = False)
+    nom_projet = db.Column(db.String(200), nullable=False)
     statut_projet = db.Column(
-        SAEnum(StatutProjet, name="statut_projet_enum"), 
-        nullable=False, 
+        SAEnum(StatutProjet, name="statut_projet_enum"),
+        nullable=False,
         default=StatutProjet.PAS_COMMENCE)
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
@@ -199,8 +216,10 @@ class Projet(db.Model):
     def __repr__(self):
         return f"Projet {self.nom_projet}"
 
-
 class Jalon(db.Model):
+    """
+    Represents a milestone within a project.
+    """
     __tablename__ = "jalons"
 
     id_jalon = db.Column(db.Integer, primary_key=True)
@@ -214,6 +233,9 @@ class Jalon(db.Model):
     taches = db.relationship("Tache", back_populates="jalon")
 
 class Tache(db.Model):
+    """
+    Represents a task within a milestone.
+    """
     __tablename__ = "taches"
 
     id_tache = db.Column(db.Integer, primary_key=True)
@@ -225,7 +247,7 @@ class Tache(db.Model):
     id_intervenant_tache = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="SET NULL", onupdate="CASCADE"))
 
     jalon = db.relationship("Jalon", back_populates="taches")
-    intervenants = db.relationship("Intervenant", back_populates="taches", secondary=intervenant_tache,)
+    intervenants = db.relationship("Intervenant", back_populates="taches", secondary=intervenant_tache)
 
     def __repr__(self):
         return f"<Tache {self.nom_tache}>"
