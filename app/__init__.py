@@ -1,23 +1,20 @@
 """
-app.__init__ — Factory pour l'application TNS (version test-friendly)
+app.__init__ — Factory for the TNS application (test-friendly version)
 
-- Accepts optional `test_config` dict that will override app.config before DB init.
-- Uses `AUTO_CREATE_DB` config key to control whether to call db.create_all().
-  Tests should pass {"AUTO_CREATE_DB": False, "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"}
-  so that create_all() is not executed on the wrong DB.
+- Accepts an optional `test_config` dictionary to override app.config before initializing the database.
+- Uses the `AUTO_CREATE_DB` config key to control whether to call db.create_all().
+    For tests, set {"AUTO_CREATE_DB": False, "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"}
+    to prevent create_all() from running on the wrong database.
 """
 
-# TODO supprimer les imports en trop
 import os
-from flask import Flask, render_template, jsonify, request
-from app.models import db, Intervenant # Import des modèles
+from flask import Flask, render_template
+from app.models import db
 from dotenv import load_dotenv
 from urllib.parse import quote
-from sqlalchemy.exc import ProgrammingError
-from app.models import *
 from datetime import datetime
 
-# Blueprints imports
+# Import Blueprints for modular route organization
 from app.routes.dashboard import dashboard_bp
 from app.routes.intervenants import intervenants_bp
 from app.routes.clients import clients_bp
@@ -25,49 +22,56 @@ from app.routes.projets import projets_bp
 from app.routes.interactions import interactions_bp
 from app.routes.api import api_bp
 
-
-
 load_dotenv()
 
 def create_app():
+        """
+        Application factory function for TNS.
 
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = quote(os.getenv("DB_PASSWORD"))
-    DB_HOST = os.getenv("DB_HOST")
-    DB_PORT = os.getenv("DB_PORT")
-    DB_NAME = os.getenv("DB_NAME")
-    DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+        - Loads configuration from environment variables.
+        - Initializes the database.
+        - Registers error handlers and blueprints.
+        - Injects the current year into all templates.
+        """
 
-    app = Flask(__name__)
+        # Load database credentials from environment variables
+        DB_USER = os.getenv("DB_USER")
+        db_password = os.getenv("DB_PASSWORD")
+        DB_PASSWORD = quote(db_password.encode()) if db_password is not None else ""
+        DB_HOST = os.getenv("DB_HOST")
+        DB_PORT = os.getenv("DB_PORT")
+        DB_NAME = os.getenv("DB_NAME")
+        DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+        app = Flask(__name__)
 
-    # Initialisation de la BDD
-    db.init_app(app)  # Lie la BDD à l'app
+        # Configure the Flask app
+        app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
+        # Initialize the database with the app
+        db.init_app(app)
 
-    # Gestion d'erreur 404
-    @app.errorhandler(404)
-    def page_not_found(e):
-        return render_template('404.html'), 404
+        # Custom error handler for 404 errors
+        @app.errorhandler(404)
+        def page_not_found(e):
+                """Render a custom 404 error page."""
+                return render_template('404.html'), 404
 
+        # Inject the current year into all templates
+        def inject_current_year():
+                """Make the current year available in all templates."""
+                return {"current_year": datetime.now().year}
 
-    # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
+        app.context_processor(inject_current_year)
 
-    # Enregistrement des Blueprints
+        # Register all blueprints for modular route handling
+        app.register_blueprint(dashboard_bp)
+        app.register_blueprint(intervenants_bp)
+        app.register_blueprint(clients_bp)
+        app.register_blueprint(projets_bp)
+        app.register_blueprint(interactions_bp)
+        app.register_blueprint(api_bp)
 
-    def inject_current_year():
-        return {"current_year": datetime.now().year}
-
-    app.context_processor(inject_current_year)
-
-    app.register_blueprint(dashboard_bp)
-    app.register_blueprint(intervenants_bp)
-    app.register_blueprint(clients_bp)
-    app.register_blueprint(projets_bp)
-    app.register_blueprint(interactions_bp)
-    app.register_blueprint(api_bp)
-
-    return app
+        return app
