@@ -13,6 +13,7 @@ from app.routes.projets import projets_bp
 from app.routes.interactions import interactions_bp
 from app.routes.jalons import jalons_bp  # <--- Added
 from app.routes.api import api_bp
+from app.routes.map import map_bp
 # from app.routes.auth import auth_bp # Uncomment when auth.py is ready
 
 load_dotenv()
@@ -67,6 +68,7 @@ def create_app():
     app.register_blueprint(interactions_bp)
     app.register_blueprint(jalons_bp) # Kanban logic
     app.register_blueprint(api_bp)
+    app.register_blueprint(map_bp)
     # app.register_blueprint(auth_bp) # Register later
 
     return app

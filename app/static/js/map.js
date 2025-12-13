@@ -1,4 +1,4 @@
-let map
+let map;
 
 function init() {
     console.log("init");
@@ -11,14 +11,13 @@ function init() {
 
     map = L.map("mapid").setView([TN.lat, TN.lng], zoomLevel);
 
-    const mainLayer = L.tileLayer(
+    L.tileLayer(
         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap'
         }
-    );
-    mainLayer.addTo(map);
+    ).addTo(map);
 
     const myIconClass = L.Icon.extend({
         options: {
@@ -29,7 +28,7 @@ function init() {
     });
 
     const icon = new myIconClass({
-        iconUrl: 'tns_logo_icon_couleur.svg'
+        iconUrl: '../images/tns_logo.svg'
     });
 
     L.marker([TN.lat, TN.lng], { icon })
@@ -40,7 +39,7 @@ function init() {
 }
 
 function loadClients() {
-    fetch("http://localhost:5000/api/clients")
+    fetch("/map/api")
         .then(response => response.json())
         .then(clients => {
             console.log("Clients reçus :", clients);
