@@ -18,13 +18,13 @@ with app.app_context():
     # --- 1. Roles & Relationship States ---
     print("⚙️  Setting up roles and relationship states...")
 
-    r_admin = Role(nom_role="Administrateur")  # Admin role for privileged users
-    r_inter = Role(nom_role="Intervenant")     # Regular team member role
+    r_admin = Role(nom_role="Administrateur")  # type: ignore ; Admin role for privileged users
+    r_inter = Role(nom_role="Intervenant")     #  type: ignore ; Regular team member role
     db.session.add_all([r_admin, r_inter])
 
-    rel_prospect = EtatRelation(libelle_relation="Prospect")         # Potential client
-    rel_client = EtatRelation(libelle_relation="Client Actif")       # Active client
-    rel_ancien = EtatRelation(libelle_relation="Ancien Client")      # Former client
+    rel_prospect = EtatRelation(libelle_relation="Prospect")         # type: ignore ; Potential client
+    rel_client = EtatRelation(libelle_relation="Client Actif")       # type: ignore ; Active client
+    rel_ancien = EtatRelation(libelle_relation="Ancien Client")      # type: ignore ; Former client
     db.session.add_all([rel_prospect, rel_client, rel_ancien])
     db.session.commit()
 
@@ -35,7 +35,7 @@ with app.app_context():
     ]
     db_comps = []
     for c_name in comps_list:
-        c = Competence(nom_competence=c_name)  # Create a skill entry
+        c = Competence(nom_competence=c_name)  # type: ignore ; Create a skill entry
         db.session.add(c)
         db_comps.append(c)
     db.session.commit()
@@ -69,13 +69,13 @@ with app.app_context():
         est_dispo = (random.random() > 0.4)
 
         inter = Intervenant(
-            id_intervenant=u.id_utilisateur,
-            disponible=est_dispo,
-            nb_heures_dispo=random.choice([5, 10, 15, 20, 25]) if est_dispo else 0,
-            cv="uploads/documents/dummy.pdf",
-            photo_identite="",
-            carte_etudiante="",
-            carte_vitale=""
+            id_intervenant=u.id_utilisateur, # type: ignore
+            disponible=est_dispo, # type: ignore
+            nb_heures_dispo=random.choice([5, 10, 15, 20, 25]) if est_dispo else 0, # type: ignore
+            cv="uploads/documents/dummy.pdf", # type: ignore
+            photo_identite="", # type: ignore
+            carte_etudiante="", # type: ignore
+            carte_vitale="" # type: ignore
         )
 
         # Assign 1-4 random skills to each team member
@@ -118,19 +118,19 @@ with app.app_context():
         # Add 3-8 random interactions for each client
         for _ in range(random.randint(3, 8)):
             interact = InteractionClient(
-                id_client=c.id_client,
-                id_etat_relation=rel_client.id_etat_relation,
-                date_interaction=date.today() - timedelta(days=random.randint(0, 60)),
-                detail_interaction=random.choice(types_interaction)
+                id_client=c.id_client, # type: ignore
+                id_etat_relation=rel_client.id_etat_relation, # type: ignore
+                date_interaction=date.today() - timedelta(days=random.randint(0, 60)), # type: ignore
+                detail_interaction=random.choice(types_interaction) # type: ignore
             )
             db.session.add(interact)
 
         # Create a contract for the client
         conv = Convention(
-            id_client=c.id_client,
-            type_convention="CC",
-            date_debut_convention=date.today(),
-            prix=random.randint(5000, 45000)
+            id_client=c.id_client, # type: ignore
+            type_convention="CC", # type: ignore
+            date_debut_convention=date.today(), # type: ignore
+            prix=random.randint(5000, 45000) # type: ignore
         )
         db.session.add(conv)
         db.session.flush()  # Get convention ID for linking
@@ -142,10 +142,10 @@ with app.app_context():
         ])
 
         p = Projet(
-            nom_projet=f"Mission {secteur} - {nom_cli}",
-            statut_projet=statut_choisi,
-            date_debut_projet=date.today() - timedelta(days=random.randint(10, 120)),
-            id_convention=conv.id_convention
+            nom_projet=f"Mission {secteur} - {nom_cli}", # type: ignore
+            statut_projet=statut_choisi, # type: ignore
+            date_debut_projet=date.today() - timedelta(days=random.randint(10, 120)), # type: ignore
+            id_convention=conv.id_convention # type: ignore
         )
 
         # Assign a random team of 2-3 members to the project
@@ -171,22 +171,22 @@ with app.app_context():
                 st = StatutJalon.A_VENIR    # Upcoming milestone
 
             j = Jalon(
-                nom_jalon=etape,
-                statut_jalon=st,
-                id_projet=p.id_projet,
-                date_fin_jalon=date.today() + timedelta(days=random.randint(-10, 40))
+                nom_jalon=etape, # type: ignore
+                statut_jalon=st, # type: ignore
+                id_projet=p.id_projet, # type: ignore
+                date_fin_jalon=date.today() + timedelta(days=random.randint(-10, 40)) # type: ignore
             )
             db.session.add(j)
             db.session.flush()  # Ensure j.id_jalon is available
 
             # Add a sample task for each milestone, assigned to the first team member
             t = Tache(
-                nom_tache=f"Do {etape}",
-                description_tache="Technical task",
-                statut_tache=StatutTache.EN_COURS,
-                date_dernier_delai_tache=date.today() + timedelta(days=5),
-                id_jalon=j.id_jalon,
-                id_intervenant_tache=team[0].id_intervenant
+                nom_tache=f"Do {etape}", # type: ignore
+                description_tache="Technical task", # type: ignore
+                statut_tache=StatutTache.EN_COURS, # type: ignore
+                date_dernier_delai_tache=date.today() + timedelta(days=5), # type: ignore
+                id_jalon=j.id_jalon, # type: ignore
+                id_intervenant_tache=team[0].id_intervenant # type: ignore
             )
             db.session.add(t)
 
