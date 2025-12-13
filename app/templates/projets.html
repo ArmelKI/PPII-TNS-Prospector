@@ -3,26 +3,38 @@
 
 {% block content %}
 <div class="container fade-in">
+    <!-- Header section: page title and button to create a new project -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1>Projets en cours</h1>
         <a href="{{ url_for('projets.ajouter_projet') }}" class="btn">+ Créer un projet</a>
     </div>
 
+    <!-- Project cards container -->
     <div class="cards fade-in" style="justify-content: flex-start;">
       {% for p in projets %}
+      <!-- Each project is displayed as a card -->
       <div class="card" style="width: 320px; text-align: left; display: flex; flex-direction: column;">
+        <!-- Top row: project status and client name (if available) -->
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <span class="badge" style="background:#eee; color:#333; font-size:0.8rem;">{{ p.statut_projet.value }}</span>
-            <small class="text-muted">{{ p.convention.client.raison_sociale if p.convention else 'Client ?' }}</small>
+            <span class="badge" style="background:#eee; color:#333; font-size:0.8rem;">
+                {{ p.statut_projet.value }}
+            </span>
+            <small class="text-muted">
+                {{ p.convention.client.raison_sociale if p.convention else 'Client ?' }}
+            </small>
         </div>
         
+        <!-- Project name -->
         <h3 style="margin-top:0; margin-bottom: 10px;">{{ p.nom_projet }}</h3>
+        
+        <!-- Project start date, or a fallback if not defined -->
         <p class="text-muted" style="font-size: 0.9em; flex-grow: 1;">
             Début : {{ p.date_debut_projet.strftime('%d/%m/%Y') if p.date_debut_projet else 'Non défini' }}
         </p>
         
         <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
 
+        <!-- Action buttons: go to Kanban board or project details -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}" class="btn" style="text-align:center;">
                 📊 Kanban
@@ -34,7 +46,8 @@
         </div>
       </div>
       {% else %}
-        <p>Aucun projet trouvé.</p>
+        <!-- Message if there are no projects to display -->
+        <p>No projects found.</p>
       {% endfor %}
     </div>
 </div>
