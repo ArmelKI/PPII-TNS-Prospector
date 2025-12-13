@@ -1,0 +1,4 @@
+<div class="kanban-card" draggable="true" data-id="{{ jalon.id_jalon }}">
+  <h4>{{ jalon.nom_jalon }}</h4>
+  <p><small>Fin prévue : {{ jalon.date_fin_jalon.strftime('%d/%m/%Y') if jalon.date_fin_jalon else 'N/A' }}</small></p>
+</div>
