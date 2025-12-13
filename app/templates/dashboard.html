@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - TNS{% endblock %}
+{% block title %}Tableau de bord - TNS{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 
-<h1 class="fade-in">Dashboard</h1>
+<h1 class="fade-in">Tableau de bord</h1>
 
 <div class="cards fade-in">
   <!-- Quick stats cards for main entities -->
   <div class="card card-blue">
     <div class="icon">👥</div>
-    <h2>Contributors</h2>
+    <h2>Contributeurs</h2>
     <div class="big" data-count="{{ nb_intervenants }}">{{ nb_intervenants }}</div>
   </div>
 
   <div class="card card-green">
     <div class="icon">🚀</div>
-    <h2>Active Projects</h2>
+    <h2>Projets actifs</h2>
     <div class="big" data-count="{{ nb_projets }}">{{ nb_projets }}</div>
   </div>
 
@@ -34,15 +34,15 @@
     
     <div class="panel">
       <div class="panel-header">
-          <h3>🔥 Upcoming Deadlines (60 days)</h3>
+          <h3>🔥 Échéances à venir (60 jours)</h3>
       </div>
       
       {% if jalons_urgents %}
       <table class="data-table">
         <thead>
           <tr>
-            <th>Project</th>
-            <th>Milestone</th>
+            <th>Projet</th>
+            <th>Jalon</th>
             <th>Date</th>
             <th>Action</th>
           </tr>
@@ -66,13 +66,13 @@
       </table>
       {% else %}
         <div class="empty-state">
-            ✅ No urgent deadlines.
+            ✅ Aucune échéance urgente.
         </div>
       {% endif %}
     </div>
 
     <div class="panel">
-        <h3>📊 Project Status Overview</h3>
+        <h3>📊 Vue d'ensemble des statuts des projets</h3>
         <div class="chart-wrapper">
             
             <div class="canvas-container">
@@ -107,7 +107,7 @@
 
   <div class="side-column">
     <div class="panel">
-      <h3>📞 Latest Contacts</h3>
+      <h3>📞 Derniers contacts</h3>
       <ul class="interaction-list">
         {% for inter in dernieres_interactions %}
         <li class="interaction-item">
@@ -116,13 +116,13 @@
           <small class="interaction-date">📅 {{ inter.date_interaction.strftime('%d/%m/%Y') }}</small>
         </li>
         {% else %}
-          <li class="empty-list">No recent interactions.</li>
+          <li class="empty-list">Aucune interaction récente.</li>
         {% endfor %}
       </ul>
       <div class="see-more-container">
         <!-- Button to view the full interaction history -->
         <a href="{{ url_for('interactions.liste_interactions') }}" class="btn-block">
-            See full history
+            Voir tout l'historique
         </a>
       </div>
     </div>
