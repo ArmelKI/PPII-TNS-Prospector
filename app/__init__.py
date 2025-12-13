@@ -1,12 +1,3 @@
-"""
-app.__init__ — Factory for the TNS application (test-friendly version)
-
-- Accepts an optional `test_config` dictionary to override app.config before initializing the database.
-- Uses the `AUTO_CREATE_DB` config key to control whether to call db.create_all().
-    For tests, set {"AUTO_CREATE_DB": False, "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"}
-    to prevent create_all() from running on the wrong database.
-"""
-
 import os
 from flask import Flask, render_template
 from app.models import db
@@ -14,64 +5,68 @@ from dotenv import load_dotenv
 from urllib.parse import quote
 from datetime import datetime
 
-# Import Blueprints for modular route organization
+# Import Blueprints
 from app.routes.dashboard import dashboard_bp
 from app.routes.intervenants import intervenants_bp
 from app.routes.clients import clients_bp
 from app.routes.projets import projets_bp
 from app.routes.interactions import interactions_bp
+from app.routes.jalons import jalons_bp  # <--- Added
 from app.routes.api import api_bp
+# from app.routes.auth import auth_bp # Uncomment when auth.py is ready
 
 load_dotenv()
 
 def create_app():
-        """
-        Application factory function for TNS.
+    """
+    Application factory for TNS.
+    - Loads config from environment variables.
+    - Initializes DB.
+    - Registers blueprints.
+    """
 
-        - Loads configuration from environment variables.
-        - Initializes the database.
-        - Registers error handlers and blueprints.
-        - Injects the current year into all templates.
-        """
+    # 1. Database Configuration
+    DB_USER = os.getenv("DB_USER", "postgres")
+    db_password = os.getenv("DB_PASSWORD", "")
+    DB_PASSWORD = quote(db_password.encode()) if db_password else ""
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_NAME = os.getenv("DB_NAME", "tns_db")
+    
+    # Construct the PostgreSQL connection string
+    DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
-        # Load database credentials from environment variables
-        DB_USER = os.getenv("DB_USER")
-        db_password = os.getenv("DB_PASSWORD")
-        DB_PASSWORD = quote(db_password.encode()) if db_password is not None else ""
-        DB_HOST = os.getenv("DB_HOST")
-        DB_PORT = os.getenv("DB_PORT")
-        DB_NAME = os.getenv("DB_NAME")
-        DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    app = Flask(__name__)
 
-        app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_key_fallback')
+    
+    # Optional: Set max upload size (e.g., 16MB)
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
 
-        # Configure the Flask app
-        app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    # 2. Initialize Extensions
+    db.init_app(app)
 
-        # Initialize the database with the app
-        db.init_app(app)
+    # 3. Global Template Helpers
+    @app.errorhandler(404)
+    def page_not_found(e):
+        """Render a custom 404 error page."""
+        return render_template('404.html'), 404
 
-        # Custom error handler for 404 errors
-        @app.errorhandler(404)
-        def page_not_found(e):
-                """Render a custom 404 error page."""
-                return render_template('404.html'), 404
+    @app.context_processor
+    def inject_global_vars():
+        """Make current_year available in all templates."""
+        return {"current_year": datetime.now().year}
 
-        # Inject the current year into all templates
-        def inject_current_year():
-                """Make the current year available in all templates."""
-                return {"current_year": datetime.now().year}
+    # 4. Register Blueprints
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(intervenants_bp)
+    app.register_blueprint(clients_bp)
+    app.register_blueprint(projets_bp)
+    app.register_blueprint(interactions_bp)
+    app.register_blueprint(jalons_bp) # Kanban logic
+    app.register_blueprint(api_bp)
+    # app.register_blueprint(auth_bp) # Register later
 
-        app.context_processor(inject_current_year)
-
-        # Register all blueprints for modular route handling
-        app.register_blueprint(dashboard_bp)
-        app.register_blueprint(intervenants_bp)
-        app.register_blueprint(clients_bp)
-        app.register_blueprint(projets_bp)
-        app.register_blueprint(interactions_bp)
-        app.register_blueprint(api_bp)
-
-        return app
+    return app
