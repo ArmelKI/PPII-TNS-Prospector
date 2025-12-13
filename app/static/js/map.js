@@ -28,7 +28,7 @@ function init() {
     });
 
     const icon = new myIconClass({
-        iconUrl: '../images/tns_logo.svg'
+        iconUrl: '../static/images/tns_logo.svg'
     });
 
     L.marker([TN.lat, TN.lng], { icon })
