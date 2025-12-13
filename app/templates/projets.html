@@ -2,18 +2,40 @@
 {% block title %}Projets{% endblock %}
 
 {% block content %}
-<h1 class="fade-in">Projets</h1>
+<div class="container fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Projets en cours</h1>
+        <a href="{{ url_for('projets.ajouter_projet') }}" class="btn">+ Créer un projet</a>
+    </div>
 
-<a href="#" class="btn" style="margin-bottom:20px;">Nouveau projet</a>
+    <div class="cards fade-in" style="justify-content: flex-start;">
+      {% for p in projets %}
+      <div class="card" style="width: 320px; text-align: left; display: flex; flex-direction: column;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <span class="badge" style="background:#eee; color:#333; font-size:0.8rem;">{{ p.statut_projet.value }}</span>
+            <small class="text-muted">{{ p.convention.client.raison_sociale if p.convention else 'Client ?' }}</small>
+        </div>
+        
+        <h3 style="margin-top:0; margin-bottom: 10px;">{{ p.nom_projet }}</h3>
+        <p class="text-muted" style="font-size: 0.9em; flex-grow: 1;">
+            Début : {{ p.date_debut_projet.strftime('%d/%m/%Y') if p.date_debut_projet else 'Non défini' }}
+        </p>
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
 
-<div class="cards fade-in">
-  {% for p in projets %}
-  <div class="card">
-    <h2>{{ p.nom_projet }}</h2>
-    <p>{{ p.description_projet }}</p>
-    <a class="btn-secondary">Détails</a>
-  </div>
-  {% endfor %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}" class="btn" style="text-align:center;">
+                📊 Kanban
+            </a>
+            
+            <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn-secondary" style="text-align:center;">
+                Détails
+            </a>
+        </div>
+      </div>
+      {% else %}
+        <p>Aucun projet trouvé.</p>
+      {% endfor %}
+    </div>
 </div>
-
 {% endblock %}
