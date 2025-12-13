@@ -58,6 +58,6 @@ function addClientMarker(client) {
         .addTo(map)
         .bindPopup(`
             <strong>${client.name}</strong><br>
-            ID : ${client.id}
+            Secteur : ${client.id}
         `);
 }

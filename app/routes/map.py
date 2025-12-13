@@ -13,8 +13,9 @@ def clients_api():
 
     return jsonify([ # c'est pour la carte qui est faite en JS : elle a besoin de JSON
         {
-            "id": c.id,
+            "id": c.id_client,
             "name": c.raison_sociale,
+            "secteur": c.secteur,
             "lat": c.latitude,
             "lng": c.longitude
         }
