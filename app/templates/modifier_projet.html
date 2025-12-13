@@ -19,8 +19,8 @@
 
                 <div class="form-group">
                     <label>Client</label>
-                    <input type="text" value="{{ projet.convention.client.raison_sociale }}" disabled style="background-color: #eee; cursor: not-allowed;">
-                    <small class="text-muted">Client cannot be changed here.</small>
+                    <input type="text" value="{{ projet.convention.client.raison_sociale }}" disabled style="background-color: #eee;">
+                    <small class="text-muted">Client cannot be modified here.</small>
                 </div>
 
                 <div class="form-group">
@@ -40,36 +40,31 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Target End Date</label>
+                    <label>End Date</label>
                     <input type="date" name="date_fin" value="{{ projet.date_fin_projet }}">
                 </div>
             </div>
 
             <div>
                 <h3 class="panel-title">👥 Team Assignment</h3>
-                
-                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 6px; background: #fff;">
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 6px;">
                     {% for i in intervenants %}
-                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
                         <input type="checkbox" name="intervenants" value="{{ i.id_intervenant }}" id="int_{{ i.id_intervenant }}"
-                            {% if i in projet.intervenants %}checked{% endif %} 
-                            style="width:auto; margin:0;">
+                            {% if i in projet.intervenants %}checked{% endif %}>
                         
-                        <label for="int_{{ i.id_intervenant }}" style="margin:0; cursor:pointer; width:100%; display: flex; flex-direction: column;">
-                            <span style="font-weight: 500;">{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</span>
-                            <small class="text-muted" style="font-size: 0.85em;">
-                                {% for c in i.competences %}
-                                    {{ c.nom_competence }}{% if not loop.last %}, {% endif %}
-                                {% endfor %}
+                        <label for="int_{{ i.id_intervenant }}" style="margin:0; cursor:pointer;">
+                            <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong><br>
+                            <small class="text-muted">
+                                {% for c in i.competences %}{{ c.nom_competence }} {% endfor %}
                             </small>
                         </label>
                     </div>
                     {% endfor %}
                 </div>
-                <p class="text-muted" style="margin-top: 8px; font-size: 0.9em;">Check the box to assign an intervenant to this project.</p>
             </div>
 
-            <div style="grid-column: 1 / -1; margin-top: 20px; text-align: right; border-top: 1px solid #eee; padding-top: 20px;">
+            <div style="grid-column: 1 / -1; margin-top: 20px; text-align: right;">
                 <a href="{{ url_for('projets.details_projet', id=projet.id_projet) }}" class="btn-secondary">Cancel</a>
                 <button type="submit" class="btn">Save Changes</button>
             </div>
