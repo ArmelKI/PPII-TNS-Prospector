@@ -1,53 +1,76 @@
+<!--
+This template displays the details of a specific project.
+It shows project info, team members, convention details, and quick actions.
+-->
+
 {% extends "base.html" %}
 {% block title %}{{ projet.nom_projet }}{% endblock %}
 
 {% block content %}
 <div class="container fade-in">
+    <!-- Header: Project name and client info -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
             <h1>{{ projet.nom_projet }}</h1>
-            <p class="text-muted">Client : <a href="{{ url_for('clients.details_client', id=projet.convention.id_client) }}">{{ projet.convention.client.raison_sociale }}</a></p>
+            <!-- Link to the client details page -->
+            <p class="text-muted">
+                Client: 
+                <a href="{{ url_for('clients.details_client', id=projet.convention.id_client) }}">
+                    {{ projet.convention.client.raison_sociale }}
+                </a>
+            </p>
         </div>
         <div>
+            <!-- Project status badge -->
             <span class="badge" style="font-size: 1.2rem;">{{ projet.statut_projet.value }}</span>
         </div>
     </div>
 
     <div class="dashboard-grid">
         <div class="main-column">
+            <!-- Project Team Panel -->
             <div class="panel">
-                <h3>👥 Équipe Projet</h3>
+                <h3>👥 Project Team</h3>
                 {% if projet.intervenants %}
                     <ul class="interaction-list">
                     {% for i in projet.intervenants %}
                         <li class="interaction-item" style="display:flex; justify-content:space-between;">
+                            <!-- Display team member's full name -->
                             <span>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</span>
                             <small class="text-muted">
-                                {% for c in i.competences %}{{ c.nom_competence }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                <!-- List all skills for this member, separated by commas -->
+                                {% for c in i.competences %}
+                                    {{ c.nom_competence }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
                             </small>
                         </li>
                     {% endfor %}
                     </ul>
                 {% else %}
-                    <p>Aucun intervenant assigné.</p>
+                    <!-- If no team members are assigned -->
+                    <p>No team members assigned.</p>
                 {% endif %}
-                </div>
+            </div>
 
+            <!-- Convention Details Panel -->
             <div class="panel">
                 <h3>💰 Convention</h3>
-                <p><strong>Type :</strong> {{ projet.convention.type_convention }}</p>
-                <p><strong>Budget :</strong> {{ projet.convention.prix }} €</p>
-                <p><strong>Date début :</strong> {{ projet.date_debut_projet }}</p>
+                <p><strong>Type:</strong> {{ projet.convention.type_convention }}</p>
+                <p><strong>Budget:</strong> {{ projet.convention.prix }} €</p>
+                <p><strong>Start Date:</strong> {{ projet.date_debut_projet }}</p>
             </div>
         </div>
 
         <div class="side-column">
+            <!-- Project Actions Panel -->
             <div class="panel">
-                <h3>Pilotage</h3>
+                <h3>Project Management</h3>
+                <!-- Button to open the Kanban board for this project -->
                 <a href="{{ url_for('jalons.voir_kanban', id_projet=projet.id_projet) }}" class="btn" style="width:100%; text-align:center; margin-bottom:10px;">
-                    📊 Ouvrir le Kanban
+                    📊 Open Kanban Board
                 </a>
-                <button class="btn-secondary" style="width:100%;">Editer le projet</button>
+                <!-- Button to edit the project (functionality to be implemented) -->
+                <button class="btn-secondary" style="width:100%;">Edit Project</button>
             </div>
         </div>
     </div>
