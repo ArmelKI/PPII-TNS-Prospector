@@ -1,0 +1,104 @@
+.kanban-board {
+  """
+  Main container for the Kanban board.
+  Uses flexbox to lay out columns horizontally with spacing and scrolling.
+  """
+  display: flex;
+  gap: 16px;                # Adds space between columns
+  overflow-x: auto;         # Allows horizontal scrolling if needed
+  padding: 20px 0;          # Top and bottom padding for breathing room
+  align-items: flex-start;  # Align columns to the top
+  min-height: 400px;        # Ensures the board has a minimum height
+}
+
+.kanban-column {
+  """
+  Represents a single column in the Kanban board.
+  Fixed width, rounded corners, and vertical stacking for cards.
+  """
+  flex: 0 0 280px;          # Fixed width for each column
+  background-color: #f4f5f7;# Light gray background for clarity
+  border-radius: 6px;       # Rounded corners for a softer look
+  padding: 12px;            # Padding inside the column
+  display: flex;
+  flex-direction: column;   # Stack header and cards vertically
+}
+
+.kanban-column h3 {
+  """
+  Header for each Kanban column.
+  Styled for visibility and separation.
+  """
+  font-size: 14px;
+  text-transform: uppercase;# Makes headers stand out
+  color: #5e6c84;           # Subtle text color
+  margin: 0 0 12px 4px;     # Space below header, slight left indent
+  font-weight: 600;
+  padding-bottom: 8px;      # Space below text before border
+  border-bottom: 2px solid transparent; # Border color changes by status
+}
+
+[data-statut="À venir"] h3 { border-color: #dfe1e6; }   # Upcoming status: light gray border
+[data-statut="Actuel"] h3 { border-color: #ffb142; }    # Current status: orange border
+[data-statut="Passé"] h3 { border-color: #28a745; }     # Past status: green border
+
+.kanban-list {
+  """
+  Container for the list of cards in a column.
+  Grows to fill available space and ensures drop targets are always visible.
+  """
+  flex: 1;                  # Fills vertical space in the column
+  min-height: 100px;        # Ensures empty columns are still droppable
+}
+
+.kanban-card {
+  """
+  Represents an individual Kanban card.
+  Styled for clarity, interactivity, and separation.
+  """
+  background: white;
+  border-radius: 4px;       # Slightly rounded corners
+  padding: 10px 12px;       # Space inside the card
+  margin-bottom: 8px;       # Space between cards
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25); # Subtle shadow for depth
+  cursor: grab;             # Indicates draggable
+  transition: background 0.1s, transform 0.2s; # Smooth hover/drag effects
+}
+
+.kanban-card:hover {
+  background-color: #ebecf0; # Light highlight on hover for feedback
+}
+
+.kanban-card h4 {
+  """
+  Title of the Kanban card.
+  """
+  margin: 0 0 5px 0;        # Space below the title
+  font-size: 15px;
+  color: #172b4d;           # Darker color for emphasis
+}
+
+.kanban-card p {
+  """
+  Description or details inside the card.
+  """
+  margin: 0;
+  font-size: 12px;
+  color: #5e6c84;           # Subtle text color for less emphasis
+}
+
+.kanban-card.dragging {
+  """
+  Visual feedback when a card is being dragged.
+  """
+  opacity: 0.5;             # Makes the card semi-transparent
+  transform: rotate(3deg);  # Adds a playful tilt
+  cursor: grabbing;         # Indicates active drag
+}
+
+.kanban-column.drag-over {
+  """
+  Highlight a column when a card is dragged over it.
+  """
+  background-color: #e3eefc; # Soft blue to show drop target
+}
