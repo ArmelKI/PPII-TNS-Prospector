@@ -1,5 +1,6 @@
 let map;
 let searchCircle;
+let prospectMarkers = [];
 
 function drawRadius(lat, lng, radius) {
     if (searchCircle) {
@@ -78,7 +79,29 @@ function addClientMarker(client) {
         `);
 }
 
+function addProspectMarker(p) {
+    const marker = L.circleMarker([p.lat, p.lng], {
+        radius: 6,
+        color: 'blue',
+        fillOpacity: 0.8
+    }).addTo(map)
+      .bindPopup(`
+        <strong>${p.name}</strong><br>
+        Type : ${p.type}<br>
+        Prospect OSM
+    `);
+
+    prospectMarkers.push(marker);
+}
+
+function clearProspectMarkers() {
+    prospectMarkers.forEach(m => map.removeLayer(m)); // supprime chaque marqueur
+    prospectMarkers = []; // vide le tableau
+}
+
 function loadProspects() {
+    clearProspectMarkers(); // supprime les anciens avant d'ajouter les nouveaux
+
     const radius = document.getElementById("radius").value;
 
     drawRadius(48.66895, 6.15547, radius);
@@ -86,23 +109,7 @@ function loadProspects() {
     fetch(`/map/${radius}`)
         .then(res => res.json())
         .then(prospects => {
-            console.log("Prospects reçus :", prospects);
             prospects.forEach(p => addProspectMarker(p));
         })
         .catch(err => console.error(err));
-}
-
-
-function addProspectMarker(p) {
-    L.circleMarker([p.lat, p.lng], {
-        radius: 6,
-        color: 'blue',
-        fillOpacity: 0.8
-    })
-    .addTo(map)
-    .bindPopup(`
-        <strong>${p.name}</strong><br>
-        Type : ${p.type}<br>
-        Prospect OSM
-    `);
 }
