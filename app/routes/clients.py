@@ -12,13 +12,15 @@ def liste_clients():
 @clients_bp.route("/add", methods=["GET", "POST"])
 def ajouter_client():
     if request.method == "POST":
-        # Récupération du formulaire
         nom = request.form.get("raison_sociale")
         mail = request.form.get("mail_client")
         tel = request.form.get("telephone_client")
         secteur = request.form.get("secteur")
+
+        if not nom:
+            flash("Le nom du client est obligatoire !", "danger")
+            return render_template("ajouter_client.html")
         
-        # Création
         new_client = Client(
             id_client=None, # Laisse la BDD gérer l'ID
             raison_sociale=nom,
@@ -26,7 +28,7 @@ def ajouter_client():
             telephone_client=tel,
             secteur=secteur,
             date_dernier_contact=date.today(),
-            latitude=0, longitude=0 # On gérera la géoloc plus tard (API Bonus)
+            latitude=0, longitude=0
         )
         db.session.add(new_client)
         db.session.commit()

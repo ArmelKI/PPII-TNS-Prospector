@@ -39,6 +39,21 @@ def test_ajouter_client_post(client, app):
         assert client_db is not None
         assert client_db.mail_client == "entreprise@modale.com"
 
+def test_ajouter_client_post_missing_field(client, app):
+    with app.app_context():
+        response = client.post(
+            "/clients/add",
+            data={
+                "mail_client": "missing@test.com",
+                "telephone_client": "0612345678",
+                "secteur": "Test",
+            },
+            follow_redirects=True
+        )
+        html = response.get_data(as_text=True)
+        assert response.status_code == 200
+        assert "Nouveau Client" in html
+
 def test_details_client(client, app):
     with app.app_context():
         new_client = Client(
