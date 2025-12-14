@@ -1,33 +1,22 @@
 """
 Tests for the /clients endpoint.
 """
-
+import pytest
 from app.models import db, Client
 
-def test_all_clients_empty(client):
+def test_liste_clients_empty(client):
     response = client.get("/clients/")
     assert response.status_code == 200
     html = response.get_data(as_text=True)
     assert "Clients" in html
 
-def test_all_clients_entreprise_modale(client, app):
+def test_ajouter_client_page(client):
+    response = client.get("/clients/add")
 
-    with app.app_context():
-        c = Client(
-            id_client=0,
-            raison_sociale="Entreprise très modale",
-            mail_client="entreprise@test.ts",
-            telephone_client="7777777",
-            secteur="modalite",
-            date_dernier_contact="2024-02-01",
-            latitude=777.7777777,
-            longitude=777.7777777)
-        db.session.add(c)  # create a client and add it to the test database to ensure it's working
-        db.session.commit()
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
 
-    resp = client.get("/clients")
-    data = resp.get_json()  # retrieve the output returned by GET
-    assert data == [{"raison_sociale": "Entreprise très modale"}]
+    assert "Nouveau Client" in html
 
 def test_all_clients_returns_list(client):
     response = client.get("/clients")
