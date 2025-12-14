@@ -1,6 +1,7 @@
 let map;
 let searchCircle;
 let prospectMarkers = [];
+let clientMarkers = [];
 
 function drawRadius(lat, lng, radius) {
     if (searchCircle) {
