@@ -70,14 +70,28 @@ function addClientMarker(client) {
 }
 
 function loadProspects() {
-    const radius = document.getElementById("radius").value;
+const radius = document.getElementById("radius").value;
 
-    fetch(`/map/${radius}`)
-        .then(res => res.json())
-        .then(data => {
-            console.log("Rayon reçu :", data.radius);
-            drawRadius(data.center.lat, data.center.lng, data.radius);
-        })
-        .catch(err => console.error(err));
+fetch(`/map/${radius}`)
+    .then(res => res.json())
+    .then(prospects => {
+        console.log("Prospects reçus :", prospects);
+        prospects.forEach(p => addProspectMarker(p));
+    })
+    .catch(err => console.error(err));
 }
 
+
+function addProspectMarker(p) {
+    L.circleMarker([p.lat, p.lng], {
+        radius: 6,
+        color: 'blue',
+        fillOpacity: 0.8
+    })
+    .addTo(map)
+    .bindPopup(`
+        <strong>${p.name}</strong><br>
+        Type : ${p.type}<br>
+        Prospect OSM
+    `);
+}
