@@ -75,3 +75,7 @@ def test_details_client(client, app):
     assert response.status_code == 200
     html = response.get_data(as_text=True)
     assert "Client Détail" in html
+
+def test_details_client_404(client):
+    response = client.get("/clients/999999")  # ID non existant
+    assert response.status_code == 404
