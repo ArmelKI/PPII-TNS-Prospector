@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, render_template
 from app.models import Client
+import requests
 
 map_bp = Blueprint("map", __name__, url_prefix="/map")
 
@@ -28,12 +29,39 @@ def prospects_api(radius):
     CENTER_LAT = 48.66895
     CENTER_LNG = 6.15547
 
-    return jsonify({
-        "radius": radius,
-        "center": {
-            "lat": CENTER_LAT,
-            "lng": CENTER_LNG
-        }
-    })
+    query = f"""
+    [out:json];
+    (
+      node["shop"](around:{radius},{CENTER_LAT},{CENTER_LNG});
+      node["office"](around:{radius},{CENTER_LAT},{CENTER_LNG});
+      node["craft"](around:{radius},{CENTER_LAT},{CENTER_LNG});
+    );
+    out;
+    """
+
+    response = requests.post(
+        "https://overpass-api.de/api/interpreter",
+        data=query
+    )
+
+    data = response.json()
+
+    prospects = []
+    for el in data["elements"]:
+        tags = el.get("tags", {})
+
+        prospects.append({
+            "name": tags.get("name", "Entreprise inconnue"),
+            "type": (
+                tags.get("shop")
+                or tags.get("office")
+                or tags.get("craft")
+                or "inconnu"
+            ),
+            "lat": el["lat"],
+            "lng": el["lon"]
+        })
+    
+    return jsonify(prospects)
 
 
