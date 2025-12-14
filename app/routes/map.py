@@ -77,6 +77,15 @@ def add_prospect():
 
     if not all([lat, lng, name, type_]):
         return jsonify({"success": False, "message": "Données manquantes"}), 400
+    
+    existing = Client.query.filter_by(
+        raison_sociale=name,
+        latitude=lat,
+        longitude=lng
+    ).first()
+
+    if existing:
+        return jsonify({"success": False, "message": "Client déjà présent dans la base"}), 200
 
     prospect = Client(
         id_client=None,
@@ -92,5 +101,17 @@ def add_prospect():
     db.session.commit()
 
     return jsonify({"success": True, "id": prospect.id_client})
+
+@map_bp.route("/delete_client/<int:client_id>", methods=["DELETE"])
+def delete_client(client_id):
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({"success": False, "message": "Client introuvable"}), 404
+
+    db.session.delete(client)
+    db.session.commit()
+
+    return jsonify({"success": True})
+
 
 

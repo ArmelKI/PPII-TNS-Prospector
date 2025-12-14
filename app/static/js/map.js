@@ -139,8 +139,34 @@ function addProspectToDB(lat, lng, name, type) {
         if (data.success) {
             alert(`${name} ajouté à la BDD !`);
         } else {
-            alert('Erreur : ' + data.message);
+            alert('Attention : ' + data.message);
         }
     })
     .catch(err => console.error(err));
 }
+
+function deleteClient(clientId, button) {
+    if (!confirm("Voulez-vous vraiment supprimer ce client ?")) return;
+
+    fetch(`/map/delete_client/${clientId}`, {
+        method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("Client supprimé !");
+            
+            // Retirer le marker de la carte
+            const clientData = clientMarkers.find(c => c.id === clientId);
+            if (clientData) {
+                map.removeLayer(clientData.marker);
+                // Supprimer du tableau
+                clientMarkers = clientMarkers.filter(c => c.id !== clientId);
+            }
+        } else {
+            alert("Erreur : " + data.message);
+        }
+    })
+    .catch(err => console.error(err));
+}
+
