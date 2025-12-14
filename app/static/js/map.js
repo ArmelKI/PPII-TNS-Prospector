@@ -35,6 +35,13 @@ function init() {
         .addTo(map)
         .bindPopup('TNS');
 
+    L.circle([TN.lat, TN.lng], {
+    radius: 500,         
+    color: 'red',      
+    fillColor: 'red',
+    fillOpacity: 0.2
+    }).addTo(map);
+
     loadClients();
 }
 
