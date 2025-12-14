@@ -2,6 +2,7 @@
 Tests for the /clients endpoint.
 """
 import pytest
+from datetime import date   
 from app.models import db, Client
 
 def test_liste_clients_empty(client):
@@ -38,19 +39,24 @@ def test_ajouter_client_post(client, app):
         assert client_db is not None
         assert client_db.mail_client == "entreprise@modale.com"
 
-def test_all_clients_right_keys(client, app):
+def test_details_client(client, app):
     with app.app_context():
-        c = Client(
-            id_client=0,
-            raison_sociale="Entreprise très modale",
-            mail_client="entreprise@test.ts",
-            telephone_client="7777777",
-            secteur="modalite",
-            date_dernier_contact="2024-02-01",
-            latitude=777.7777777,
-            longitude=777.7777777)
-        db.session.add(c)  # create a client and add it to the test database to ensure it's working
+        new_client = Client(
+            id_client=None,
+            raison_sociale="Client Détail",
+            mail_client="detail@test.com",
+            telephone_client="0611111111",
+            secteur="Test",
+            date_dernier_contact=date.today(),
+            latitude=0,
+            longitude=0
+        )
+        db.session.add(new_client)
         db.session.commit()
+        client_id = new_client.id_client
 
-    data = client.get("/clients").get_json()
-    assert list(data[0].keys()) == ["raison_sociale"]  # modify when other client info should be displayed
+    response = client.get(f"/clients/{client_id}")
+
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    assert "Client Détail" in html
