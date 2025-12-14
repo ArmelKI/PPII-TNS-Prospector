@@ -108,12 +108,12 @@ function addProspectMarker(p) {
 }
 
 function clearProspectMarkers() {
-    prospectMarkers.forEach(m => map.removeLayer(m)); // supprime chaque marqueur
-    prospectMarkers = []; // vide le tableau
+    prospectMarkers.forEach(m => map.removeLayer(m));
+    prospectMarkers = [];
 }
 
 function loadProspects() {
-    clearProspectMarkers(); // supprime les anciens avant d'ajouter les nouveaux
+    clearProspectMarkers(); 
 
     const radius = document.getElementById("radius").value;
 
@@ -157,11 +157,9 @@ function deleteClient(clientId, button) {
         if (data.success) {
             alert("Client supprimé !");
             
-            // Retirer le marker de la carte
             const clientData = clientMarkers.find(c => c.id === clientId);
             if (clientData) {
                 map.removeLayer(clientData.marker);
-                // Supprimer du tableau
                 clientMarkers = clientMarkers.filter(c => c.id !== clientId);
             }
         } else {
@@ -170,4 +168,3 @@ function deleteClient(clientId, button) {
     })
     .catch(err => console.error(err));
 }
-
