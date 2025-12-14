@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify, render_template, request
 from app.models import Client
 
 map_bp = Blueprint("map", __name__, url_prefix="/map")
@@ -21,3 +21,19 @@ def clients_api():
         }
         for c in clients
     ])
+
+@map_bp.route("/<int:radius>")
+def prospects_api(radius):
+
+    CENTER_LAT = 48.66895
+    CENTER_LNG = 6.15547
+
+    return jsonify({
+        "radius": radius,
+        "center": {
+            "lat": CENTER_LAT,
+            "lng": CENTER_LNG
+        }
+    })
+
+

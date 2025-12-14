@@ -72,10 +72,12 @@ function addClientMarker(client) {
 function loadProspects() {
     const radius = document.getElementById("radius").value;
 
-    fetch(`/map/prospects?radius=${radius}`)
+    fetch(`/map/${radius}`)
         .then(res => res.json())
         .then(data => {
-            console.log("Prospects :", data);
-            data.forEach(p => addProspectMarker(p));
-        });
+            console.log("Rayon reçu :", data.radius);
+            drawRadius(data.center.lat, data.center.lng, data.radius);
+        })
+        .catch(err => console.error(err));
 }
+
