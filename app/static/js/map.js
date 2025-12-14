@@ -71,26 +71,38 @@ function loadClients() {
 }
 
 function addClientMarker(client) {
-    L.marker([client.lat, client.lng])
-        .addTo(map)
-        .bindPopup(`
-            <strong>${client.name}</strong><br>
-            Secteur : ${client.id}
-        `);
+    const marker = L.marker([client.lat, client.lng])
+        .addTo(map);
+
+    const popupContent = `
+        <strong>${client.name}</strong><br>
+        Secteur : ${client.secteur}<br>
+        <button onclick="deleteClient(${client.id}, this)">Supprimer</button>
+    `;
+
+    marker.bindPopup(popupContent);
+
+    clientMarkers.push({ id: client.id, marker: marker });
 }
+
 
 function addProspectMarker(p) {
     const marker = L.circleMarker([p.lat, p.lng], {
         radius: 6,
         color: 'blue',
         fillOpacity: 0.8
-    }).addTo(map)
-      .bindPopup(`
-        <strong>${p.name}</strong><br>
-        Secteur (EN) : ${p.type}<br>
-        Prospect OSM
-    `);
+    }).addTo(map);
 
+    const popupContent = `
+        <strong>${p.name}</strong><br>
+        Type : ${p.type}<br>
+        Prospect OSM<br>
+        <button onclick="addProspectToDB(${p.lat}, ${p.lng}, '${p.name}', '${p.type}')">
+            Ajouter à ma liste de prospects
+        </button>
+    `;
+
+    marker.bindPopup(popupContent);
     prospectMarkers.push(marker);
 }
 
@@ -112,4 +124,23 @@ function loadProspects() {
             prospects.forEach(p => addProspectMarker(p));
         })
         .catch(err => console.error(err));
+}
+
+function addProspectToDB(lat, lng, name, type) {
+    fetch('/map/add_prospect', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ lat, lng, name, type })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(`${name} ajouté à la BDD !`);
+        } else {
+            alert('Erreur : ' + data.message);
+        }
+    })
+    .catch(err => console.error(err));
 }

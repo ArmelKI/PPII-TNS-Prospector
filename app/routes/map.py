@@ -1,5 +1,5 @@
-from flask import Blueprint, jsonify, render_template
-from app.models import Client
+from flask import Blueprint, jsonify, render_template, request
+from app.models import Client, db
 import requests
 
 map_bp = Blueprint("map", __name__, url_prefix="/map")
@@ -63,5 +63,34 @@ def prospects_api(radius):
         })
     
     return jsonify(prospects)
+
+@map_bp.route("/add_prospect", methods=["POST"])
+def add_prospect():
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "message": "Aucune donnée reçue"}), 400
+
+    lat = data.get("lat")
+    lng = data.get("lng")
+    name = data.get("name")
+    type_ = data.get("type")
+
+    if not all([lat, lng, name, type_]):
+        return jsonify({"success": False, "message": "Données manquantes"}), 400
+
+    prospect = Client(
+        id_client=None,
+        raison_sociale=name,
+        mail_client=None,
+        telephone_client=None,
+        date_dernier_contact=None,
+        secteur=type_,
+        latitude=lat,
+        longitude=lng
+    )
+    db.session.add(prospect)
+    db.session.commit()
+
+    return jsonify({"success": True, "id": prospect.id_client})
 
 
