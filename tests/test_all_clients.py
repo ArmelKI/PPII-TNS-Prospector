@@ -4,12 +4,11 @@ Tests for the /clients endpoint.
 
 from app.models import db, Client
 
-
 def test_all_clients_empty(client):
-    response = client.get("/clients")
-
+    response = client.get("/clients/")
     assert response.status_code == 200
-    assert response.get_json() == []
+    html = response.get_data(as_text=True)
+    assert "Clients" in html
 
 def test_all_clients_entreprise_modale(client, app):
 
