@@ -1,4 +1,20 @@
 let map;
+let searchCircle;
+
+function drawRadius(lat, lng, radius) {
+    if (searchCircle) {
+        map.removeLayer(searchCircle);
+    }
+
+    searchCircle = L.circle([lat, lng], {
+        radius: radius,
+        color: 'red',
+        fillColor: 'red',
+        fillOpacity: 0.2
+    }).addTo(map);
+
+    map.fitBounds(searchCircle.getBounds());
+}
 
 function init() {
     console.log("init");
@@ -35,13 +51,6 @@ function init() {
         .addTo(map)
         .bindPopup('TNS');
 
-    L.circle([TN.lat, TN.lng], {
-    radius: 500,         
-    color: 'red',      
-    fillColor: 'red',
-    fillOpacity: 0.2
-    }).addTo(map);
-
     loadClients();
 }
 
@@ -70,15 +79,17 @@ function addClientMarker(client) {
 }
 
 function loadProspects() {
-const radius = document.getElementById("radius").value;
+    const radius = document.getElementById("radius").value;
 
-fetch(`/map/${radius}`)
-    .then(res => res.json())
-    .then(prospects => {
-        console.log("Prospects reçus :", prospects);
-        prospects.forEach(p => addProspectMarker(p));
-    })
-    .catch(err => console.error(err));
+    drawRadius(48.66895, 6.15547, radius);
+
+    fetch(`/map/${radius}`)
+        .then(res => res.json())
+        .then(prospects => {
+            console.log("Prospects reçus :", prospects);
+            prospects.forEach(p => addProspectMarker(p));
+        })
+        .catch(err => console.error(err));
 }
 
 

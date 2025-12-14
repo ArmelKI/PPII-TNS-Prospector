@@ -22,11 +22,10 @@
     <h1>
         Vos prospects
     </h1>
-    <div>
-        <label>Rayon (mètres)</label>
-        <input type="number" id="radius" value="1000" min="100">
-        <button onclick="loadProspects()">Rechercher prospects</button>
-    </div>
+    <label for="radius">Rayon (mètres) :</label>
+    <input type="number" id="radius" value="500" min="100" step="100">
+    <button onclick="loadProspects()">Mettre à jour le rayon</button>
+
      <div id="mapid"></div>
 
     
