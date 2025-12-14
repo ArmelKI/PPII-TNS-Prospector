@@ -54,6 +54,23 @@ def test_ajouter_client_post_missing_field(client, app):
         assert response.status_code == 200
         assert "Nouveau Client" in html
 
+def test_ajouter_client_duplicate(client, app):
+    data = {
+        "raison_sociale": "Entreprise Modale",
+        "mail_client": "dup@test.com",
+        "telephone_client": "0123456789",
+        "secteur": "Test",
+    }
+
+    client.post("/clients/add", data=data, follow_redirects=True)
+    with app.app_context():
+        clients_in_db = Client.query.filter_by(raison_sociale="Entreprise Modale").all()
+        assert len(clients_in_db) == 1 
+    client.post("/clients/add", data=data, follow_redirects=True)
+    with app.app_context():
+        clients_in_db = Client.query.filter_by(raison_sociale="Entreprise Modale").all()
+        assert len(clients_in_db) == 1
+
 def test_details_client(client, app):
     with app.app_context():
         new_client = Client(
@@ -77,5 +94,5 @@ def test_details_client(client, app):
     assert "Client Détail" in html
 
 def test_details_client_404(client):
-    response = client.get("/clients/999999")  # ID non existant
+    response = client.get("/clients/999999")  # ID inconnu
     assert response.status_code == 404

@@ -21,6 +21,10 @@ def ajouter_client():
             flash("Le nom du client est obligatoire !", "danger")
             return render_template("ajouter_client.html")
         
+        if Client.query.filter_by(raison_sociale=nom).first():
+            flash("Ce client existe déjà !", "error")
+            return render_template("ajouter_client.html")
+        
         new_client = Client(
             id_client=None, # Laisse la BDD gérer l'ID
             raison_sociale=nom,
