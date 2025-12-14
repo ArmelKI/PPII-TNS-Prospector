@@ -404,3 +404,8 @@ a:hover { text-decoration: underline; }
   justify-content: center;
 }
 
+
+.add-container {
+  display : flex;
+  justify-content: center;
+}

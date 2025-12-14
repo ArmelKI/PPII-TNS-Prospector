@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Clients{% endblock %}
 
+
 {% block content %}
 <h1 class="fade-in">Clients</h1>
 
@@ -15,10 +16,10 @@
 
   {% for c in clients %}
   <tr>
-    <td>{{ c.nom_client }}</td>
-    <td>{{ c.email_client }}</td>
+    <td>{{ c.raison_sociale }}</td>
+    <td>{{ c.mail_client }}</td>
     <td>
-      <button class="btn-secondary">Voir</button>
+      <button class="btn">Voir</button>
     </td>
   </tr>
   {% endfor %}
