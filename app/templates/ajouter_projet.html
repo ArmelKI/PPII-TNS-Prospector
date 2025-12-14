@@ -8,27 +8,44 @@
     <h1> Ajout de projets  </h1>
     <div class = "add-container">
         <div class = "card">
+
+            
             <!-- Méthode form pour ajouter un projet -->
-            <form action="submit">
-                <label for="Nom">Nom du projet :</label>
-                <input type="text" name="Nom" id="Nom">
+            <form method="POST" action="">
+                <label for="nom_projet">Nom du projet :</label>
+                <input type="text" name="nom_projet" id="nom_projet">
+                
+                <!-- Option select pour statut -->
+                <label for="statut_projet" >Statut Projet: </label>
+                <select name="statut_projet" id="statut_projet">
+                    <option value="En cours">En cours</option>
+                    <option value="Pas commencé">Pas commencé</option>
+                    <option value="Bloqué">Bloqué</option>
+                    <option value="Stand-By">Stand-By</option>
+                    <option value="Terminé">Terminé</option>
+                </select>
+                <br>
+
                 <label for="date_debut_projet">Date de début :</label>
-                <input type="date" id="date_debut_projet">
+                <input type="date" name="date_debut_projet" id="date_debut_projet">
                 <br>
+                
                 <label for="date_fin_projet">Date de fin :</label>
-                <input type="date" id="date_fin_projet">
+                <input type="date" name="date_fin_projet" id="date_fin_projet">
                 <br>
+                
                 <label for="id_convention">id convention</label>
-                <input type="int" id="id_convention">
+                <input type="number" name="id_convention" id="id_convention">
                 
-                
-                <select id="filter-dispo">
+                <!-- Pour le moment l'option intervenant n'est pas fonctionnel -->
+                <!-- <select id="filter-dispo"> 
                     <option value="">-- Intervenants --</option>
                     <option value="Intervenant 1" {% if filter_dispo=='intervenant 1' %}selected{% endif %}>Intervenant 1</option>
                     <option value="Intervenant 2" {% if filter_dispo=='intervenant 2' %}selected{% endif %}>Intervenant 2</option>
-                </select>
-                <a href=# class="btn">Enregister</a> <a href="{{ url_for('projets.liste_projets') }}">Annuler</a>
+                </select> -->
+                <button type="submit" class="btn">Enregister</button> <a href="{{ url_for('projets.liste_projets') }}">Annuler</a>
             </form>
+            
         </div>
     </div>
     

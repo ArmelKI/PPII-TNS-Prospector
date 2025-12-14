@@ -1,5 +1,5 @@
 
-from flask import render_template, Blueprint, jsonify, request , session # Blueprint pour les routes
+from flask import render_template, Blueprint, jsonify, request , session, redirect, url_for # Blueprint pour les routes
 from app.models import Projet , db
 
 
@@ -39,24 +39,50 @@ def ajouter_projet_form():
 
 @projets_bp.route('/add' ,methods=['POST'])
 def ajouter_projet_data():
-    projetData = request.get_json()
+    if request.is_json:
+        projetData = request.get_json()
+    else:
+        projetData = request.form # pas de () c'est un attribut
+
+    # On adapte la synthaxe pour quelle fonctionne avec postman et form
+
+    nom = projetData.get("nom_projet")
+    statut = projetData.get("statut_projet")
+    date_debut = projetData.get("date_debut_projet"),
+    date_fin = projetData.get("date_fin_projet"),
+
+    try: 
+        convention_id = int(projetData.get("id_convention"))
+    except (ValueError, TypeError): 
+        return jsonify({"erreur": "L'ID client ou convention doit être un nombre"}), 400
+
+    
+        
     nouveau_projet = Projet (
-        nom_projet =  projetData["nom_projet"],
-        statut_projet = projetData["statut_projet"],
-        date_debut_projet = projetData["date_debut_projet"],
-        date_fin_projet = projetData["date_fin_projet"],
-        id_convention = projetData["id_convention"]
+        nom_projet =  nom,
+        statut_projet = statut,
+        date_debut_projet = date_debut,
+        date_fin_projet = date_fin,
+        id_convention = convention_id
         ) 
     # On récupére les infos du nouveau projet dans la requete
 
 
-    # 3. On sauvegarde dans la DB 
+    # de meme pour la creation dans la DB 
     try:
         db.session.add(nouveau_projet)
         db.session.commit()
-        return jsonify({"message": "Succès ! Projet créé", "id": nouveau_projet.id_projet}), 201
+
+
+    
+        if request.is_json: 
+            return jsonify({"message": "Succès ! Projet créé", "id": nouveau_projet.id_projet}), 201
+        else:
+            return redirect(url_for('projets.liste_projets'))
+
     except Exception as e:
-        return jsonify({"erreur": str(e)}), 400
+        db.session.rollback()
+        return jsonify({"erreur": str(e)}), 500
     
 
 # on pourra editer un projet via un bouton sur détail projet et peut etre aussi
