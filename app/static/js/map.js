@@ -87,7 +87,7 @@ function addProspectMarker(p) {
     }).addTo(map)
       .bindPopup(`
         <strong>${p.name}</strong><br>
-        Type : ${p.type}<br>
+        Secteur (EN) : ${p.type}<br>
         Prospect OSM
     `);
 
