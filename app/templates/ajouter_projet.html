@@ -17,13 +17,13 @@
                 
                 <!-- Option select pour statut -->
                 <label for="statut_projet" >Statut Projet: </label>
-                <select name="statut_projet" id="statut_projet">
-                    <option value="En cours">En cours</option>
-                    <option value="Pas commencé">Pas commencé</option>
-                    <option value="Bloqué">Bloqué</option>
-                    <option value="Stand-By">Stand-By</option>
-                    <option value="Terminé">Terminé</option>
-                </select>
+                {% set options = ['En cours', 'Pas commencé', 'Bloqué', 'Stand-By', 'Terminé'] %}
+
+                <select name="statut_projet" id="statut_projet"  class="form-select">
+                    {% for option in options %}
+                    <option value="{{ option }}">{{option}}</option>     
+                {% endfor %}  
+                </select>  
                 <br>
 
                 <label for="date_debut_projet">Date de début :</label>

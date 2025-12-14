@@ -11,7 +11,7 @@ projets_bp = Blueprint('projets',__name__,url_prefix="/projets")
 @projets_bp.route('/')
 def liste_projets():
     
-    projets = Projet.query.all()  # SELECT * FROM projets
+    projets = Projet.query.order_by(Projet.id_projet).all()  # SELECT * FROM projets ORDER BY projets.id_projets
     return render_template('projets.html', projets = projets)
 
 
@@ -85,7 +85,42 @@ def ajouter_projet_data():
         return jsonify({"erreur": str(e)}), 500
     
 
+
+
 # on pourra editer un projet via un bouton sur détail projet et peut etre aussi
 @projets_bp.route('/edit/<int:id>', methods=['GET'])
-def modifier_projet():
-    pass
+def modifier_projet_get(id):
+    projet = Projet.query.get_or_404(id)
+    return render_template('modifier_projet.html',projet=projet)
+
+
+@projets_bp.route('/edit/<int:id>', methods=['POST'])
+def modifier_projet_post(id):
+    projet = Projet.query.get_or_404(id)
+
+    
+    
+    if request.is_json:
+        projetData = request.get_json()
+    else:
+        projetData = request.form # pas de () c'est un attribut
+    
+    # SQLalchmey vérifie automaiquement si les valeurs sont différentes donc on a seulement besoin de les modifier
+    
+
+    projet.nom_projet = projetData.get("nom_projet")
+    projet.statut_projet = projetData.get("statut_projet")
+    projet.date_debut_projet = projetData.get("date_debut_projet"),
+    projet.date_fin_projet = projetData.get("date_fin_projet"),
+
+    try: 
+        projet.id_convention = int(projetData.get("id_convention"))
+    except (ValueError, TypeError): 
+        return jsonify({"erreur": "L'ID client ou convention doit être un nombre"}), 400
+
+    try:
+        db.session.commit()
+        return redirect(url_for('projets.detail_projet', id=projet.id_projet))
+    except Exception as e:
+        db.session.rollback()
+        return f"Erreur lors de la modification : {e}"

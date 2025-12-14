@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Ajouter un Projet{% endblock %}
+{% block content %}
+
+<!-- Interface de modification d'un projet  -->
+
+<div class="container">
+    <h1> Modification de Projets  </h1>
+    <div class = "add-container">
+        <div class = "card">
+
+            
+            <!-- Méthode form pour ajouter un projet -->
+            <form method="POST" action="">
+                <!-- <label for="nom_projet">Nom du projet :</label>
+                <input type="text" name="nom_projet" id="nom_projet" placeholder=""> -->
+                <label for="nom_projet">Projet :</label>
+                <input type="text" name="nom_projet" id="nom_projet" value="{{ projet.nom_projet }}">
+                <br>
+                <!-- Option select pour statut -->
+                <label for="statut_projet" >Statut Projet: </label>
+                {% set options = ['En cours', 'Pas commencé', 'Bloqué', 'Stand-By', 'Terminé'] %}
+
+                <!--  On met l'autocomplete en "off" pour que le cache du navigateur n'interfere pas avec le placeholder -->
+                <!--  Le  |string|trim est important car il effectue le filtrage sur les données pour que le if fonctionne -->
+                <select name="statut_projet" id="statut_projet" autocomplete="off"  class="form-select">
+                    {% for option in options %}
+                        <option value="{{ option }}" 
+                            {% if projet.statut_projet|string|trim == option %}selected{% endif %}>
+                            {{ option }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <br>
+
+                <!--  Pour les attribut date le place holder ne fonctionne pas bien donc on veut préremplir les valeur à la place -->
+                <!--  On met aussi un condition au cas ou la date est vide  par sécurité -->
+                <label for="date_debut_projet">Date de début :</label>
+                <input type="date" name="date_debut_projet" id="date_debut_projet" value="{{projet.date_debut_projet if projet.date_debut_projet else '' }}">
+                <br>
+                
+                <label for="date_fin_projet">Date de fin :</label>
+                <input type="date" name="date_fin_projet" id="date_fin_projet" value="{{projet.date_fin_projet if projet.date_fin_projet else '' }}">
+                <br>
+                
+                <label for="id_convention">id convention</label>
+                <input type="number" name="id_convention" id="id_convention" value= "{{projet.id_convention}}" >
+                
+                <!-- Pour le moment l'option intervenant n'est pas fonctionnel -->
+                <!-- <select id="filter-dispo"> 
+                    <option value="">-- Intervenants --</option>
+                    <option value="Intervenant 1" {% if filter_dispo=='intervenant 1' %}selected{% endif %}>Intervenant 1</option>
+                    <option value="Intervenant 2" {% if filter_dispo=='intervenant 2' %}selected{% endif %}>Intervenant 2</option>
+                </select> -->
+                <button type="submit" class="btn">Enregister</button> <a href="{{ url_for('projets.liste_projets') }}">Annuler</a>
+            </form>
+            
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}

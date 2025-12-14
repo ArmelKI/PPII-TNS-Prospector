@@ -18,11 +18,11 @@
 
     <thead>
         <tr>
-            <th scope="col">id projet</th>
-            <th scope="col">nom projet</th>
-            <th scope="col">statut projet</th>
-            <th scope="col">date debut projet</th>
-            <th scope="col">date fin projet</th>
+            <th scope="col">id</th>
+            <th scope="col">nom</th>
+            <th scope="col">statut</th>
+            <th scope="col">date de début</th>
+            <th scope="col">date de fin</th>
             <th scope="col">détails</th>
         </tr>
     </thead>
@@ -40,16 +40,12 @@
                 <a href="{{ url_for('projets.detail_projet', id=projet.id_projet) }}" class="btn">
                     Infos
                 </a>
+                <a href="{{ url_for('projets.modifier_projet_get', id=projet.id_projet)}}" class="btn">Modifier</a>
             </td>
-        </tr>
-        <!--  Prochaine étape ; enlever des informations pour faire une nouvelle page -->
-        <!--  avec un query parameter id pour avoir des détails sur un projet -->
-        
-        
+        </tr>       
         {% endfor %}
     </tbody>
 
-    <!-- bug minime a corriger le bouton d'ajout de projet est audessus du tableau et non sur la derniere ligne -->
     <tfoot>
         <a href="{{ url_for('projets.ajouter_projet_form') }}" class="btn">Ajouter un projet ✏️</a>
     </tfoot>
