@@ -68,3 +68,14 @@ function addClientMarker(client) {
             Secteur : ${client.id}
         `);
 }
+
+function loadProspects() {
+    const radius = document.getElementById("radius").value;
+
+    fetch(`/map/prospects?radius=${radius}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log("Prospects :", data);
+            data.forEach(p => addProspectMarker(p));
+        });
+}
