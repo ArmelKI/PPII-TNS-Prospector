@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum as SAEnum, CheckConstraint
 from flask_login import UserMixin
 from app.config import login_manager
+from bcrypt import hashpw, gensalt, checkpw
 
 
 
@@ -82,8 +83,12 @@ class Utilisateur(db.Model, UserMixin):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
     def check_password(self, pw_candidate) -> bool:
-        # TODO : Le mdp est en clair pour le moment...
-        return self.mdp_utilisateur == pw_candidate
+        pw_candidate = bytes(pw_candidate, 'UTF8')
+        return checkpw(pw_candidate, bytes(self.mdp_utilisateur, 'UTF8'))   # BUG : Je ne peux pas stocker de bytes dans un StringField
+
+    def set_password(self, new_password):
+        new_password = bytes(new_password, 'UTF8')
+        self.mdp_utilisateur = hashpw(new_password, gensalt())   # BUG : Je ne peux pas stocker de bytes dans un StringField
 
     def get_id(self):
         return self.id_utilisateur
