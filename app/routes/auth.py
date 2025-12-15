@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user, logout_user
 from urllib.parse import urlsplit
-from app.forms import LoginForm
-from app.models import Utilisateur
+from app.forms import LoginForm, RegisterForm
+from app.models import db, Utilisateur
 
 
 
@@ -40,3 +40,31 @@ def login_page():
 def logout():
     logout_user()
     return redirect(url_for('auth.login_page'))
+
+# TODO : Réserver la page register aux personnes autorisées
+
+@auth_bp.route('/register', methods=['GET', 'POST'])
+def register_page():
+    # Si l'utilisateur est déjà connecté, on saute la page
+    if current_user.is_authenticated:
+        return redirect('/')
+
+    form = RegisterForm()
+
+    # Si le formulaire n'a pas été envoyé correctement
+    if not form.validate_on_submit():
+        return render_template('register.html', form=form)
+
+    new_user = Utilisateur(
+        prenom_utilisateur=form.first_name.data,
+        nom_utilisateur=form.name.data,
+        mail_utilisateur=form.usermail.data,
+        id_role=1 # XXX Valeur par défaut
+    )
+    new_user.set_password(form.password.data)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    flash(f'Utilisateur {form.first_name.data} {form.name.data} a été créé.')
+    return redirect(url_for('auth.register_page'))
