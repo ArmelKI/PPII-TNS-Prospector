@@ -1,5 +1,5 @@
 
-from flask import render_template, Blueprint, jsonify, request , session, redirect, url_for # Blueprint pour les routes
+from flask import render_template, Blueprint, jsonify, request , session, redirect, url_for , flash # Blueprint pour les routes
 from app.models import Projet , db
 
 
@@ -20,9 +20,18 @@ def liste_projets():
 # Les suppressions de projets ne pose pas de probleme pour  le moment mais il faudra faire attention au effet de cascade 
 # On ne peut pas supprimer un client qui est déja relié à un projet (par sécurité)
 
-@projets_bp.route('/', methods=['POST'])
+@projets_bp.route('/supprimer_projet/<int:id>', methods=['POST'])
 def  supprimer_projet(id): 
-    pass
+    print(id)
+    try: 
+        db.session.query(Projet).filter_by(id_projet=id).delete()
+        db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify ("erreur de ses morts :" + str(e))
+    return redirect(url_for('projets.liste_projets'))
+
 
 
 @projets_bp.route('/<int:id>' ,methods=['GET']) # Détail d'un projet
@@ -97,7 +106,6 @@ def modifier_projet_get(id):
 @projets_bp.route('/edit/<int:id>', methods=['POST'])
 def modifier_projet_post(id):
     projet = Projet.query.get_or_404(id)
-
     
     
     if request.is_json:

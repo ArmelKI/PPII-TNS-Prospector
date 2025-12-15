@@ -37,15 +37,23 @@
             <!-- <td>{{ projet.id_client }}</td> -->
             <!-- <td>{{ projet.id_utilisateur_creation }}</td> -->
             <td>
-                <a href="{{ url_for('projets.detail_projet', id=projet.id_projet) }}" class="btn">
-                    Infos
-                </a>
+                <a href="{{ url_for('projets.detail_projet', id=projet.id_projet) }}" class="btn">Info</a>
                 <a href="{{ url_for('projets.modifier_projet_get', id=projet.id_projet)}}" class="btn">Modifier</a>
+
+                
+                <form action="{{ url_for('projets.supprimer_projet', id=projet.id_projet) }}" 
+                    method="POST" 
+                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce projet ?');">
+                    
+                    <button type="submit" class="btn">
+                        Supprimer
+                    </button>
+                    
+                </form>
             </td>
         </tr>       
         {% endfor %}
     </tbody>
-
     <tfoot>
         <a href="{{ url_for('projets.ajouter_projet_form') }}" class="btn">Ajouter un projet ✏️</a>
     </tfoot>
