@@ -1,0 +1,76 @@
+.kanban-board {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 20px 0;
+  align-items: flex-start;
+  min-height: 400px;
+}
+
+.kanban-column {
+  flex: 0 0 280px;
+  background-color: #f4f5f7; /* Notion gray */
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Column header */
+.kanban-column h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #5e6c84;
+  margin: 0 0 12px 4px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 2px solid transparent;
+}
+
+/* Specific colors by status */
+[data-statut="À venir"] h3 { border-color: #dfe1e6; }
+[data-statut="Actuel"] h3 { border-color: #ffb142; }
+[data-statut="Passé"] h3 { border-color: #28a745; }
+
+.kanban-list {
+  flex: 1;
+  min-height: 100px; /* Important to allow dropping in an empty column */
+}
+
+/* The Card */
+.kanban-card {
+  background: white;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25);
+  cursor: grab;
+  transition: background 0.1s, transform 0.2s;
+}
+
+.kanban-card:hover {
+  background-color: #ebecf0;
+}
+
+.kanban-card h4 {
+  margin: 0 0 5px 0;
+  font-size: 15px;
+  color: #172b4d;
+}
+
+.kanban-card p {
+  margin: 0;
+  font-size: 12px;
+  color: #5e6c84;
+}
+
+/* Drag & Drop states */
+.kanban-card.dragging {
+  opacity: 0.5;
+  transform: rotate(3deg);
+  cursor: grabbing;
+}
+
+.kanban-column.drag-over {
+  background-color: #e3eefc; /* Very pale blue when hovered */
+}

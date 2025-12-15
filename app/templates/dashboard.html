@@ -1,49 +1,140 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Tableau de bord - TNS{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="icon" type="image/svg" href="{{ url_for('static', filename='images/tns_logo.svg') }}">
 
 <h1 class="fade-in">Tableau de bord</h1>
 
 <div class="cards fade-in">
+  <!-- Quick stats cards for main entities -->
   <div class="card card-blue">
-    <div class="icon">👤</div>
-    <h2>Intervenants</h2>
-    <div class="big">{{ total_intervenants }}</div>
+    <div class="icon">👥</div>
+    <h2>Contributeurs</h2>
+    <div class="big" data-count="{{ nb_intervenants }}">{{ nb_intervenants }}</div>
   </div>
 
   <div class="card card-green">
-    <div class="icon">🏢</div>
-    <h2>Clients</h2>
-    <div class="big">{{ total_clients }}</div>
+    <div class="icon">🚀</div>
+    <h2>Projets actifs</h2>
+    <div class="big" data-count="{{ nb_projets }}">{{ nb_projets }}</div>
   </div>
 
   <div class="card card-orange">
-    <div class="icon">📂</div>
-    <h2>Projets</h2>
-    <div class="big">{{ total_projets }}</div>
+    <div class="icon">🏢</div>
+    <h2>Clients</h2>
+    <div class="big" data-count="{{ nb_clients }}">{{ nb_clients }}</div>
   </div>
 </div>
 
-<div class="chart-container fade-in">
-  <canvas id="projetsChart"></canvas>
+<div class="dashboard-grid fade-in">
+  
+  <div class="main-column">
+    
+    <div class="panel">
+      <div class="panel-header">
+          <h3>🔥 Échéances à venir (60 jours)</h3>
+      </div>
+      
+      {% if jalons_urgents %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Projet</th>
+            <th>Jalon</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for j in jalons_urgents %}
+          <tr>
+            <td><strong>{{ j.projet.nom_projet }}</strong></td>
+            <td>{{ j.nom_jalon }}</td>
+            <!-- Highlight the most urgent deadline -->
+            <td class="date-cell {% if j.date_fin_jalon < jalons_urgents[0].date_fin_jalon %}urgent-warning{% endif %}">
+                {{ j.date_fin_jalon.strftime('%d/%m') }}
+            </td>
+            <td class="action-cell">
+                <!-- Link to the Kanban board for this project -->
+                <a href="{{ url_for('jalons.voir_kanban', id_projet=j.id_projet) }}" class="btn-xs">Kanban</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <div class="empty-state">
+            ✅ Aucune échéance urgente.
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+        <h3>📊 Vue d'ensemble des statuts des projets</h3>
+        <div class="chart-wrapper">
+            
+            <div class="canvas-container">
+                <!-- Chart.js canvas for project status breakdown -->
+                <canvas id="projetsChart" 
+                        data-labels='{{ projets_labels | tojson }}' 
+                        data-counts='{{ projets_counts | tojson }}'>
+                </canvas>
+            </div>
+
+            <div class="stats-list">
+                {% for label, count in stats_dict.items() %}
+                <div class="stat-item">
+                    <div class="stat-header">
+                        <span>{{ label }}</span>
+                        <strong>{{ count }}</strong>
+                    </div>
+                    <div class="progress-track">
+                        {% set total = nb_projets if nb_projets > 0 else 1 %}
+                        <!-- Progress bar shows the proportion of each status -->
+                        <div class="progress-fill {{ label|replace(' ', '-')|lower }}" 
+                             data-width="{{ (count / total) * 100 }}">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+  </div>
+
+  <div class="side-column">
+    <div class="panel">
+      <h3>📞 Derniers contacts</h3>
+      <ul class="interaction-list">
+        {% for inter in dernieres_interactions %}
+        <li class="interaction-item">
+          <div class="client-name">{{ inter.client.raison_sociale }}</div>
+          <div class="interaction-detail">{{ inter.detail_interaction }}</div>
+          <small class="interaction-date">📅 {{ inter.date_interaction.strftime('%d/%m/%Y') }}</small>
+        </li>
+        {% else %}
+          <li class="empty-list">Aucune interaction récente.</li>
+        {% endfor %}
+      </ul>
+      <div class="see-more-container">
+        <!-- Button to view the full interaction history -->
+        <a href="{{ url_for('interactions.liste_interactions') }}" class="btn-block">
+            Voir tout l'historique
+        </a>
+      </div>
+    </div>
+  </div>
+
 </div>
+{% endblock %}
 
+{% block scripts %}
+<!-- Chart.js for rendering project status charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  new Chart(document.getElementById("projetsChart"), {
-    type: "bar",
-    data: {
-      labels: {{ projets_labels | safe }},
-      datasets: [{
-        label: "Projets par mois",
-        data: {{ projets_counts | safe }}
-      }]
-    }
-  });
-});
-</script>
-
+<!-- Custom dashboard logic (animations, chart setup, etc.) -->
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

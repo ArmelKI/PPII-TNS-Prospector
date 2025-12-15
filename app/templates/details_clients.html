@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ client.raison_sociale }}{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h1>{{ client.raison_sociale }}</h1>
+        <span class="badge" style="font-size:1rem;">{{ client.secteur }}</span>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="main-column">
+            <div class="panel">
+                <h3>Coordonnées</h3>
+                <p>📧 <a href="mailto:{{ client.mail_client }}">{{ client.mail_client }}</a></p>
+                <p>📞 {{ client.telephone_client }}</p>
+            </div>
+
+            <div class="panel">
+                <h3>Projets associés</h3>
+                <ul>
+                    {% for conv in client.conventions %}
+                        {% for p in conv.projets %}
+                        <li>
+                            <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}">
+                                <strong>{{ p.nom_projet }}</strong>
+                            </a> 
+                            - <small>{{ p.statut_projet.value }}</small>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li>Aucun projet pour ce client.</li>
+                    {% endfor %}
+                </ul>
+                <a href="{{ url_for('projets.ajouter_projet') }}?client={{ client.id_client }}" class="btn">+ Créer un projet</a>
+            </div>
+        </div>
+
+        <div class="side-column">
+    <div class="panel">
+        <h3>Nouvelle Interaction</h3>
+        <form action="{{ url_for('interactions.ajouter_interaction') }}" method="POST">
+            <input type="hidden" name="id_client" value="{{ client.id_client }}">
+            
+            <div class="form-group">
+                <label>Type d'échange</label>
+                <textarea name="detail" rows="3" placeholder="Appel téléphonique, Déjeuner..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Nouvel état de la relation</label>
+                <select name="id_etat_relation" style="width:100%; padding:8px; margin-top:5px;">
+                    {% for etat in etats %}
+                        <option value="{{ etat.id_etat_relation }}">
+                            {{ etat.libelle_relation }}
+                         </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn" style="width:100%; margin-top:10px;">Enregistrer</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

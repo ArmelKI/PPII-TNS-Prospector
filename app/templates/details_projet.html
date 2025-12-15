@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ projet.nom_projet }}{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h1>{{ projet.nom_projet }}</h1>
+            <p class="text-muted">Client : {{ projet.convention.client.raison_sociale }}</p>
+        </div>
+        <div>
+            <span class="badge" style="font-size: 1.2rem;">{{ projet.statut_projet.value }}</span>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="main-column">
+            <div class="panel">
+                <h3>👥 Team</h3>
+                {% if projet.intervenants %}
+                    <ul class="interaction-list">
+                    {% for i in projet.intervenants %}
+                        <li class="interaction-item">
+                            <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong>
+                            <br>
+                            <small class="text-muted">
+                                {% for c in i.competences %}{{ c.nom_competence }} {% endfor %}
+                            </small>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No team assigned.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="side-column">
+            <div class="panel">
+                <h3>Actions</h3>
+                <a href="{{ url_for('jalons.voir_kanban', id_projet=projet.id_projet) }}" class="btn" style="width:100%; text-align:center; margin-bottom:10px;">
+                    📊 Kanban
+                </a>
+                
+                <a href="{{ url_for('projets.modifier_projet', id=projet.id_projet) }}" class="btn-secondary" style="display:block; width:100%; text-align:center;">
+                    ✏️ Modifier le projet
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

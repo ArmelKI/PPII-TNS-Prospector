@@ -353,3 +353,55 @@ a:hover { text-decoration: underline; }
 /* plus de style pour les boutons */
 .btn { box-shadow: 0 6px 18px rgba(0,86,179,0.08); transition: transform .12s ease; }
 .btn:active { transform: translateY(1px) scale(.997); }
+
+
+/* --- DASHBOARD SPECIFIC --- */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.panel {
+  background: var(--tns-white);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+.panel-title {
+  border-bottom: 2px solid #ffb142;
+  display: inline-block;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.interaction-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+}
+
+.interaction-item {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.date-urgent {
+  color: #d35400;
+  font-weight: bold;
+}
+
+.btn-xs {
+    padding: 2px 8px;
+    font-size: 0.8rem;
+}
+
+/* --- KANBAN SPECIFIC --- */
+.kanban-header-todo { border-bottom: 3px solid #4a8bed; }
+.kanban-header-doing { border-bottom: 3px solid #ffb142; }
+.kanban-header-done { border-bottom: 3px solid #28a745; }
