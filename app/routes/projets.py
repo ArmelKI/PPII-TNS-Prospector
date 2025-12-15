@@ -1,134 +1,110 @@
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from app.models import Projet, Client, Convention, StatutProjet, Intervenant, db
+from datetime import date, datetime
 
-from flask import render_template, Blueprint, jsonify, request , session, redirect, url_for , flash # Blueprint pour les routes
-from app.models import Projet , db
+projets_bp = Blueprint("projets", __name__, url_prefix="/projets")
 
-
-projets_bp = Blueprint('projets',__name__,url_prefix="/projets")
-
-
-
-
-@projets_bp.route('/')
+@projets_bp.route("/")
 def liste_projets():
-    
-    projets = Projet.query.order_by(Projet.id_projet).all()  # SELECT * FROM projets ORDER BY projets.id_projets
-    return render_template('projets.html', projets = projets)
+    """
+    Displays the main list of projects.
+    Fetches all projects from the database to be displayed in cards.
+    """
+    tous_les_projets = Projet.query.all()
+    return render_template("projets.html", projets=tous_les_projets)
 
+@projets_bp.route("/add", methods=["GET", "POST"])
+def ajouter_projet():
+    """
+    Handles the creation of a new project and its associated convention.
+    """
+    if request.method == "POST":
+        id_client = request.form.get("id_client")
+        nom_projet = request.form.get("nom_projet")
+        prix = request.form.get("prix", type=float)
+        type_convention = request.form.get("type_convention")
 
+        # 1. Create Convention
+        conv = Convention(
+            id_client=id_client, # type: ignore
+            type_convention=type_convention, # type: ignore
+            date_debut_convention=date.today(), # type: ignore
+            prix=prix # type: ignore
+        )
+        db.session.add(conv)
+        db.session.flush()
 
-
-# Les suppressions de projets ne pose pas de probleme pour  le moment mais il faudra faire attention au effet de cascade 
-# On ne peut pas supprimer un client qui est déja relié à un projet (par sécurité)
-
-@projets_bp.route('/supprimer_projet/<int:id>', methods=['POST'])
-def  supprimer_projet(id): 
-    print(id)
-    try: 
-        db.session.query(Projet).filter_by(id_projet=id).delete()
+        # 2. Create Project
+        proj = Projet(
+            nom_projet=nom_projet, # type: ignore
+            statut_projet=StatutProjet.PAS_COMMENCE, # type: ignore
+            date_debut_projet=date.today(), # type: ignore
+            id_convention=conv.id_convention # type: ignore
+        )
+        db.session.add(proj)
         db.session.commit()
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify ("erreur de ses morts :" + str(e))
-    return redirect(url_for('projets.liste_projets'))
+        flash("Project successfully created.", "success")
+        return redirect(url_for('jalons.voir_kanban', id_projet=proj.id_projet))
 
+    clients = Client.query.order_by(Client.raison_sociale).all() # type: ignore
+    selected_client = request.args.get('client', type=int)
+    return render_template("ajouter_projet.html", clients=clients, selected_client=selected_client)
 
-
-@projets_bp.route('/<int:id>' ,methods=['GET']) # Détail d'un projet
-def detail_projet(id):
+@projets_bp.route("/details/<int:id>")
+def details_projet(id):
+    """
+    Shows the details of a specific project (Team, Budget, Status).
+    """
     projet = Projet.query.get_or_404(id)
-    return render_template('detail_projet.html',projet = projet)
-    
+    return render_template("details_projet.html", projet=projet)
 
+@projets_bp.route("/edit/<int:id>", methods=["GET", "POST"])
+def modifier_projet(id):
+    """
+    Route to edit an existing project.
+    Allows updating status, dates, and assigned team members.
+    """
+    projet = Projet.query.get_or_404(id)
 
-@projets_bp.route('/add' ,methods=['GET'])
-def ajouter_projet_form():
-    return render_template('ajouter_projet.html')
+    if request.method == "POST":
+        # Update scalar fields
+        projet.nom_projet = request.form.get("nom_projet")
 
+        # Date parsing
+        date_debut = request.form.get("date_debut")
+        date_fin = request.form.get("date_fin")
 
-@projets_bp.route('/add' ,methods=['POST'])
-def ajouter_projet_data():
-    if request.is_json:
-        projetData = request.get_json()
-    else:
-        projetData = request.form # pas de () c'est un attribut
+        if date_debut:
+            projet.date_debut_projet = datetime.strptime(date_debut, '%Y-%m-%d').date()
+        if date_fin:
+            projet.date_fin_projet = datetime.strptime(date_fin, '%Y-%m-%d').date()
 
-    # On adapte la synthaxe pour quelle fonctionne avec postman et form
+        # Update Status
+        new_statut = request.form.get("statut_projet")
+        for s in StatutProjet:
+            if s.value == new_statut:
+                projet.statut_projet = s
+                break
 
-    nom = projetData.get("nom_projet")
-    statut = projetData.get("statut_projet")
-    date_debut = projetData.get("date_debut_projet"),
-    date_fin = projetData.get("date_fin_projet"),
+        # Update Team (Many-to-Many)
+        intervenant_ids = request.form.getlist("intervenants")
+        projet.intervenants = [] # Reset
+        for i_id in intervenant_ids:
+            intervenant = Intervenant.query.get(int(i_id))
+            if intervenant:
+                projet.intervenants.append(intervenant)
 
-    try: 
-        convention_id = int(projetData.get("id_convention"))
-    except (ValueError, TypeError): 
-        return jsonify({"erreur": "L'ID client ou convention doit être un nombre"}), 400
-
-    
-        
-    nouveau_projet = Projet (
-        nom_projet =  nom,
-        statut_projet = statut,
-        date_debut_projet = date_debut,
-        date_fin_projet = date_fin,
-        id_convention = convention_id
-        ) 
-    # On récupére les infos du nouveau projet dans la requete
-
-
-    # de meme pour la creation dans la DB 
-    try:
-        db.session.add(nouveau_projet)
         db.session.commit()
+        flash("Project updated successfully.", "success")
+        return redirect(url_for("projets.details_projet", id=projet.id_projet))
 
+    # GET: Prepare form data
+    tous_intervenants = Intervenant.query.all()
 
-    
-        if request.is_json: 
-            return jsonify({"message": "Succès ! Projet créé", "id": nouveau_projet.id_projet}), 201
-        else:
-            return redirect(url_for('projets.liste_projets'))
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"erreur": str(e)}), 500
-    
-
-
-
-# on pourra editer un projet via un bouton sur détail projet et peut etre aussi
-@projets_bp.route('/edit/<int:id>', methods=['GET'])
-def modifier_projet_get(id):
-    projet = Projet.query.get_or_404(id)
-    return render_template('modifier_projet.html',projet=projet)
-
-
-@projets_bp.route('/edit/<int:id>', methods=['POST'])
-def modifier_projet_post(id):
-    projet = Projet.query.get_or_404(id)
-    
-    
-    if request.is_json:
-        projetData = request.get_json()
-    else:
-        projetData = request.form # pas de () c'est un attribut
-    
-    # SQLalchmey vérifie automaiquement si les valeurs sont différentes donc on a seulement besoin de les modifier
-    
-
-    projet.nom_projet = projetData.get("nom_projet")
-    projet.statut_projet = projetData.get("statut_projet")
-    projet.date_debut_projet = projetData.get("date_debut_projet"),
-    projet.date_fin_projet = projetData.get("date_fin_projet"),
-
-    try: 
-        projet.id_convention = int(projetData.get("id_convention"))
-    except (ValueError, TypeError): 
-        return jsonify({"erreur": "L'ID client ou convention doit être un nombre"}), 400
-
-    try:
-        db.session.commit()
-        return redirect(url_for('projets.detail_projet', id=projet.id_projet))
-    except Exception as e:
-        db.session.rollback()
-        return f"Erreur lors de la modification : {e}"
+    return render_template(
+        "modifier_projet.html",
+        projet=projet,
+        intervenants=tous_intervenants,
+        StatutProjet=StatutProjet
+    )

@@ -1,63 +1,74 @@
 {% extends "base.html" %}
-{% block title %}Ajouter un Projet{% endblock %}
+{% block title %}Edit Project{% endblock %}
+
 {% block content %}
+<div class="container fade-in">
+    <h1>Edit Project</h1>
+    <p class="text-muted">Editing: {{ projet.nom_projet }}</p>
 
-<!-- Interface de modification d'un projet  -->
+    <div class="panel">
+        <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
 
-<div class="container">
-    <h1> Modification de Projets  </h1>
-    <div class = "add-container">
-        <div class = "card">
+            <div>
+                <h3 class="panel-title">📝 Information</h3>
 
-            
-            <!-- Méthode form pour ajouter un projet -->
-            <form method="POST" action="">
-                <!-- <label for="nom_projet">Nom du projet :</label>
-                <input type="text" name="nom_projet" id="nom_projet" placeholder=""> -->
-                <label for="nom_projet">Projet :</label>
-                <input type="text" name="nom_projet" id="nom_projet" value="{{ projet.nom_projet }}">
-                <br>
-                <!-- Option select pour statut -->
-                <label for="statut_projet" >Statut Projet: </label>
-                {% set options = ['En cours', 'Pas commencé', 'Bloqué', 'Stand-By', 'Terminé'] %}
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" name="nom_projet" value="{{ projet.nom_projet }}" required>
+                </div>
 
-                <!--  On met l'autocomplete en "off" pour que le cache du navigateur n'interfere pas avec le placeholder -->
-                <!--  Le  |string|trim est important car il effectue le filtrage sur les données pour que le if fonctionne -->
-                <select name="statut_projet" id="statut_projet" autocomplete="off"  class="form-select">
-                    {% for option in options %}
-                        <option value="{{ option }}" 
-                            {% if projet.statut_projet|string|trim == option %}selected{% endif %}>
-                            {{ option }}
-                        </option>
+                <div class="form-group">
+                    <label>Client</label>
+                    <input type="text" value="{{ projet.convention.client.raison_sociale }}" disabled style="background-color: #eee;">
+                    <small class="text-muted">Client cannot be modified here.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="statut_projet">
+                        {% for s in StatutProjet %}
+                            <option value="{{ s.value }}" {% if projet.statut_projet == s %}selected{% endif %}>
+                                {{ s.value }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" name="date_debut" value="{{ projet.date_debut_projet }}">
+                </div>
+
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" name="date_fin" value="{{ projet.date_fin_projet }}">
+                </div>
+            </div>
+
+            <div>
+                <h3 class="panel-title">👥 Team Assignment</h3>
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 6px;">
+                    {% for i in intervenants %}
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                        <input type="checkbox" name="intervenants" value="{{ i.id_intervenant }}" id="int_{{ i.id_intervenant }}"
+                            {% if i in projet.intervenants %}checked{% endif %}>
+
+                        <label for="int_{{ i.id_intervenant }}" style="margin:0; cursor:pointer;">
+                            <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong><br>
+                            <small class="text-muted">
+                                {% for c in i.competences %}{{ c.nom_competence }} {% endfor %}
+                            </small>
+                        </label>
+                    </div>
                     {% endfor %}
-                </select>
-                <br>
+                </div>
+            </div>
 
-                <!--  Pour les attribut date le place holder ne fonctionne pas bien donc on veut préremplir les valeur à la place -->
-                <!--  On met aussi un condition au cas ou la date est vide  par sécurité -->
-                <label for="date_debut_projet">Date de début :</label>
-                <input type="date" name="date_debut_projet" id="date_debut_projet" value="{{projet.date_debut_projet if projet.date_debut_projet else '' }}">
-                <br>
-                
-                <label for="date_fin_projet">Date de fin :</label>
-                <input type="date" name="date_fin_projet" id="date_fin_projet" value="{{projet.date_fin_projet if projet.date_fin_projet else '' }}">
-                <br>
-                
-                <label for="id_convention">id convention</label>
-                <input type="number" name="id_convention" id="id_convention" value= "{{projet.id_convention}}" >
-                
-                <!-- Pour le moment l'option intervenant n'est pas fonctionnel -->
-                <!-- <select id="filter-dispo"> 
-                    <option value="">-- Intervenants --</option>
-                    <option value="Intervenant 1" {% if filter_dispo=='intervenant 1' %}selected{% endif %}>Intervenant 1</option>
-                    <option value="Intervenant 2" {% if filter_dispo=='intervenant 2' %}selected{% endif %}>Intervenant 2</option>
-                </select> -->
-                <button type="submit" class="btn">Enregister</button> <a href="{{ url_for('projets.liste_projets') }}">Annuler</a>
-            </form>
-            
-        </div>
+            <div style="grid-column: 1 / -1; margin-top: 20px; text-align: right;">
+                <a href="{{ url_for('projets.details_projet', id=projet.id_projet) }}" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn">Save Changes</button>
+            </div>
+        </form>
     </div>
-    
 </div>
-
 {% endblock %}

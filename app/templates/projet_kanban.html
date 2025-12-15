@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Kanban{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+  <h1>{{ projet.nom_projet }}</h1>
+  
+  <div class="kanban-board">
+    
+    <div class="kanban-column" data-statut="À venir">
+      <h3>À venir</h3>
+      <div class="kanban-list">
+        {% for j in jalons if j.statut_jalon.value == "À venir" %}
+           <div class="kanban-card" draggable="true" data-id="{{ j.id_jalon }}">
+             <h4>{{ j.nom_jalon }}</h4>
+             <p>{{ j.date_fin_jalon }}</p>
+           </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="kanban-column" data-statut="Actuel">
+      <h3>Actuel</h3>
+      <div class="kanban-list">
+        {% for j in jalons if j.statut_jalon.value == "Actuel" %}
+           <div class="kanban-card" draggable="true" data-id="{{ j.id_jalon }}">
+             <h4>{{ j.nom_jalon }}</h4>
+             <p>{{ j.date_fin_jalon }}</p>
+           </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="kanban-column" data-statut="Passé">
+      <h3>Terminé</h3>
+      <div class="kanban-list">
+        {% for j in jalons if j.statut_jalon.value == "Passé" %}
+           <div class="kanban-card" draggable="true" data-id="{{ j.id_jalon }}">
+             <h4>{{ j.nom_jalon }}</h4>
+             <p>{{ j.date_fin_jalon }}</p>
+           </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/kanban.css') }}">
+<script src="{{ url_for('static', filename='js/kanban.js') }}"></script>
+{% endblock %}

@@ -7,5 +7,5 @@
 # VSCode config
 .vscode
 
-# variables d'environnement privées
+# Private environment variables
 .env

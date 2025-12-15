@@ -1,5 +1,5 @@
 """
-app.py — point d'entrée pour exécution locale
+app.py est le point d'entrée pour exécution locale
 
 Ce fichier importe la factory create_app et lance l'application.
 Ne contient pas de logique métier.
@@ -11,4 +11,4 @@ app = create_app()
 
 if __name__ == "__main__":
     # debug=True uniquement en dev local
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="localhost", port=8000, debug=True)

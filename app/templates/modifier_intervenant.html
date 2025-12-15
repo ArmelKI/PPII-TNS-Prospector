@@ -2,19 +2,74 @@
 {% block title %}Modifier Intervenant{% endblock %}
 
 {% block content %}
-<h1>Modifier Intervenant</h1>
+<div class="container fade-in">
+    <h1>Modifier Intervenant</h1>
+    
+    <div class="panel">
+        <form method="POST" enctype="multipart/form-data" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            
+            <div>
+                <h3 class="panel-title">👤 Identité</h3>
+                <div style="background: #f4f5f7; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                    <strong>{{ intervenant.utilisateur.prenom_utilisateur }} {{ intervenant.utilisateur.nom_utilisateur }}</strong><br>
+                    <span class="text-muted">{{ intervenant.utilisateur.mail_utilisateur }}</span>
+                </div>
 
-<form method="POST">
-  <label>Disponible</label>
-  <input type="checkbox" name="disponible" {% if intervenant.disponible_actuellement %}checked{% endif %}>
+                <h3 class="panel-title">🎓 Compétences</h3>
+                <div class="form-group">
+                    <label>Tags (séparés par des points-virgules)</label>
+                    <input type="text" name="competences" value="{{ competences_str }}">
+                </div>
 
-  <label>Heures disponibles</label>
-  <input type="number" step="0.5" name="heures" value="{{ intervenant.nombre_heures_disponibles or 0 }}">
+                <h3 class="panel-title" style="margin-top:20px;">Statut</h3>
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px; background: #f9f9f9; padding: 10px; border-radius: 5px;">
+                    <input type="checkbox" name="disponible" id="dispo" {% if intervenant.disponible %}checked{% endif %} style="width: auto;">
+                    <label for="dispo" style="margin:0; cursor:pointer;">Actuellement Disponible</label>
+                </div>
+                <div class="form-group">
+                    <label>Heures dispo / semaine</label>
+                    <input type="number" name="heures" value="{{ intervenant.nb_heures_dispo or 0 }}">
+                </div>
+            </div>
 
-  <label>Compétences (séparées par ;)</label>
-  <input type="text" name="competences" value="{{ competences_str }}">
+            <div>
+                <h3 class="panel-title">📄 Mettre à jour les documents</h3>
+                <p class="text-muted" style="font-size: 0.9em;">Laissez vide pour conserver les fichiers actuels.</p>
 
-  <button type="submit" class="btn">Enregistrer</button>
-  <a href="{{ url_for('intervenants.details_intervenant', id=intervenant.id_intervenant) }}" class="btn-secondary">Annuler</a>
-</form>
+                <div class="form-group">
+                    <label>Remplacer le CV (PDF)</label>
+                    {% if intervenant.cv %}
+                        <small>Actuel : <a href="{{ url_for('static', filename=intervenant.cv) }}" target="_blank">Voir le CV</a></small>
+                    {% endif %}
+                    <input type="file" name="cv_file" accept=".pdf">
+                </div>
+
+                <div class="form-group">
+                    <label>Remplacer la Photo</label>
+                    {% if intervenant.photo_identite %}
+                        <div style="margin-bottom:5px;">
+                            <img src="{{ url_for('static', filename=intervenant.photo_identite) }}" style="height:40px; border-radius:4px;">
+                        </div>
+                    {% endif %}
+                    <input type="file" name="photo_file" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label>Remplacer Carte Étudiante</label>
+                    <input type="file" name="carte_etu_file">
+                </div>
+                
+                <div class="form-group">
+                    <label>Remplacer Carte Vitale</label>
+                    <input type="file" name="carte_vitale_file">
+                </div>
+            </div>
+
+            <div style="grid-column: 1 / -1; margin-top: 20px; text-align: right;">
+                <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">Annuler</a>
+                <button type="submit" class="btn">Enregistrer les modifications</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
