@@ -2,14 +2,19 @@ import pytest
 from datetime import date   
 from app.models import db, Projet
 
-def test_liste_projets_empty(projet):
+def test_liste_projets_right_page(projet):
     response = projet.get("/projets/")
     assert response.status_code == 200
     html = response.get_data(as_text=True)
     assert "Projets" in html
 
 def test_ajouter_projet_is_right_page(projet):
-    pass
+    response = projet.get("/projets/add")
+
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+
+    assert "Nouveau Projet" in html
 
 def test_ajouter_projet_post(projet, app):
     pass
