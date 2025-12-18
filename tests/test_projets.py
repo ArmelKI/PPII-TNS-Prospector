@@ -3,7 +3,10 @@ from datetime import date
 from app.models import db, Projet
 
 def test_liste_projets_empty(projet):
-    pass
+    response = projet.get("/projets/")
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    assert "Projets" in html
 
 def test_ajouter_projet_is_right_page(projet):
     pass
