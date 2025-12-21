@@ -24,7 +24,14 @@ def ajouter_projet():
         prix = request.form.get("prix", type=float)
         type_convention = request.form.get("type_convention")
 
-        # 1. Create Convention
+        if not id_client or not nom_projet or not type_convention:
+            flash("Veuillez remplir tous les champs obligatoires.", "danger")
+            # On recharge la liste des clients pour réafficher le formulaire proprement
+            clients = Client.query.order_by(Client.raison_sociale).all()
+            return render_template("ajouter_projet.html", 
+                                 clients=clients, 
+                                 selected_client=id_client), 200
+
         conv = Convention(
             id_client=id_client, # type: ignore
             type_convention=type_convention, # type: ignore
