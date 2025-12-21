@@ -58,7 +58,7 @@ def add_client():
 @api_bp.put("/clients")
 def update_client():
     client_data = request.get_json()
-    id_client = request.args.get('id')
+    id_client = request.args.get('id', type=int)
     confirm_change_id = request.args.get('confirm_change_id')
     client: Client = Client.query.get_or_404(id_client) # si le client n'est pas trouvé -> 404
 
