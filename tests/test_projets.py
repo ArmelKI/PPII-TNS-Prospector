@@ -146,5 +146,54 @@ def test_details_projet_404(projet):
     response = projet.get("/projets/999999")  # ID inconnu
     assert response.status_code == 404
 
-def test_modifier_projet_deadline_7_jan(projet):
-    pass
+def test_modifier_projet_deadline_7_jan(projet, app):
+    with app.app_context():
+        client_test = Client(
+            raison_sociale="Client Test",
+            mail_client="test@test.com",
+            secteur="IT",
+            date_dernier_contact="2025-12-21",
+            telephone_client="77777777",
+            latitude="777.7777777",
+            longitude="777.7777777",
+            id_client=1
+        )
+        db.session.add(client_test)
+        db.session.flush()
+
+        conv = Convention(
+            id_client=client_test.id_client,
+            type_convention="CC",
+            date_debut_convention=date(2025, 1, 1)
+        )
+        db.session.add(conv)
+        db.session.flush()
+
+        new_projet = Projet(
+            nom_projet="Projet Initial",
+            id_convention=conv.id_convention,
+            statut_projet=StatutProjet.PAS_COMMENCE,
+            date_debut_projet=date(2025, 1, 1)
+        )
+        db.session.add(new_projet)
+        db.session.commit()
+        
+        projet_id = new_projet.id_projet
+    nouvelle_deadline = "2026-01-07"
+    response = projet.post(
+        f"/projets/edit/{projet_id}",
+        data={
+            "nom_projet": "Projet avec Deadline",
+            "date_debut": "2025-01-01",
+            "date_fin": nouvelle_deadline,
+            "statut_projet": "En cours"
+        },
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    
+    with app.app_context():
+        projet_modifie = Projet.query.get(projet_id)
+        assert projet_modifie.date_fin_projet == date(2026, 1, 7)
+        assert projet_modifie.nom_projet == "Projet avec Deadline"
