@@ -5,7 +5,7 @@ from io import StringIO
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, current_app
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
-from app.models import Intervenant, Utilisateur, Competence, db
+from app.models import Intervenant, Utilisateur, Competence, db, MaitriseCompetence
 
 intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants")
 
@@ -47,9 +47,9 @@ def liste_intervenants():
     page = request.args.get('page', 1, type=int)
     per_page = 8
 
-    q = Intervenant.query.options(
-        joinedload(Intervenant.utilisateur), # type: ignore
-        joinedload(Intervenant.maitrise_details)  # type: ignore
+    q = Intervenant.query.join(Utilisateur).options(
+        joinedload(Intervenant.utilisateur),
+        joinedload(Intervenant.maitrise_details)
     )
 
     if search:
@@ -137,7 +137,13 @@ def ajouter_intervenant():
             if not comp:
                 comp = Competence(nom_competence=cname) # type: ignore
                 db.session.add(comp)
-            intervenant.maitrise_details.append(comp)
+                db.session.flush()
+            
+            lien = MaitriseCompetence(
+            intervenant=intervenant,
+            competence=comp,
+            niveau_maitrise=0)
+            db.session.add(lien)
 
         db.session.add(intervenant)
         db.session.commit()
@@ -173,13 +179,15 @@ def modifier_intervenant(id):
         # Compétences (Reset & Add)
         competences_raw = request.form.get("competences", "")
         comps = [c.strip() for c in competences_raw.replace(",", ";").split(";") if c.strip()]
-        intervenant.maitrise_details = []
+        MaitriseCompetence.query.filter_by(id_intervenant=intervenant.id_intervenant).delete()
         for cname in comps:
             comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
             if not comp:
                 comp = Competence(nom_competence=cname) # type: ignore
                 db.session.add(comp)
-            intervenant.maitrise_details.append(comp)
+                db.session.flush()
+            lien = MaitriseCompetence(intervenant=intervenant, competence=comp, niveau_maitrise=0)
+            db.session.add(lien)
 
         db.session.commit()
         flash("Profil mis à jour.", "info")

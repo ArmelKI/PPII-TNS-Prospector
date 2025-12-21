@@ -1,6 +1,7 @@
 import pytest
 import io
 from app.models import Role, Utilisateur, db, Intervenant
+from flask import get_flashed_messages
 
 @pytest.fixture
 def base_setup(app):
@@ -27,3 +28,25 @@ def test_liste_intervenants_filters(client, app, base_setup):
     # Test filtre disponibilité
     response_dispo = client.get("/intervenants/?disponibilite=disponible")
     assert b"Zola" in response_dispo.data
+
+def test_ajouter_intervenant_fichiers_manquants(client, app):
+    """Vérifie que l'erreur est bien générée dans la session Flask."""
+    data = {
+        "nom_utilisateur": "Hugo",
+        "prenom_utilisateur": "Victor",
+        "email_utilisateur": "victor@hugo.com"
+    }
+    
+    # On utilise le gestionnaire de contexte pour intercepter les messages flash
+    with client:
+        response = client.post(
+            "/intervenants/add", 
+            data=data, 
+            content_type='multipart/form-data', 
+            follow_redirects=True
+        )
+        
+        # On vérifie directement dans les messages flash de la session
+        messages = get_flashed_messages(with_categories=True)
+        assert any("Le CV est obligatoire" in msg for cat, msg in messages)
+        assert response.status_code == 200
