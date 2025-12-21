@@ -76,8 +76,33 @@ def test_ajouter_projet_post_missing_field(client, projet, app):
         assert "Nouveau Projet" in html
         assert Projet.query.count() == nb_projets_avant
 
-def test_ajouter_projet_duplicate(projet, app):
-    pass
+def test_ajouter_projet_duplicate(client, projet, app):
+    data = {
+        "nom_projet": "Projet modal",
+        "type_convention": "CC",
+        "id_client": 1,
+        "date_debut_projet": "2025-12-21",
+    }
+    client.post(
+        "/clients/add",
+        data={
+            "raison_sociale": "Entreprise modale",
+            "mail_client": "entreprise@modale.com",
+            "telephone_client": "77777777",
+            "secteur": "Statistiques",
+            "id_client":1
+        },
+        follow_redirects=True
+    )
+    projet.post("/projets/add", data=data, follow_redirects=True)
+    with app.app_context():
+        projet_in_db = Projet.query.filter_by(nom_projet="Projet modal").all()
+        assert len(projet_in_db) == 1 
+    projet.post("/clients/add", data=data, follow_redirects=True)
+    with app.app_context():
+        projet_in_db = Projet.query.filter_by(nom_projet="Projet modal").all()
+        assert len(projet_in_db) == 1
+
 
 def test_details_projet(projet, app):
     pass
