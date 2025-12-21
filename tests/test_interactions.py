@@ -1,6 +1,7 @@
 from app.models import InteractionClient, Client, EtatRelation, db
 from datetime import date, timedelta
 import pytest
+from sqlalchemy.exc import IntegrityError
 
 def test_liste_interactions_display(client, app):
     """Vérifie l'affichage de la liste des interactions."""
@@ -104,3 +105,7 @@ def test_add_interaction_db_persistence(client, app, base_data):
         assert inter.id_client == 1
         assert inter.id_etat_relation == 1
         assert inter.date_interaction == date.today()
+
+def test_add_interaction_missing_client_fails(client, app, base_data):
+    with pytest.raises(Exception): # s'attend à IntegrityError ou erreur 500
+        client.post("/interactions/add", data={"detail": "Sans client"})
