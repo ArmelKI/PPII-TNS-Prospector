@@ -69,3 +69,25 @@ def test_liste_interactions_sorting(client, app):
     assert index_recent != -1, "L'interaction récente n'est pas affichée"
     assert index_ancien != -1, "L'interaction ancienne n'est pas affichée"
     assert index_recent < index_ancien, "Le tri décroissant n'est pas respecté"
+
+@pytest.fixture
+def base_data(app):
+    with app.app_context():
+        # Création des parents nécessaires
+        client_test = Client(1, "Client Test", None, None, None, None, None, None)
+        etat_test = EtatRelation(id_etat_relation=1, libelle_relation="Prospect")
+        db.session.add_all([client_test, etat_test])
+        db.session.commit()
+    return {"id_client": 1, "id_etat": 1}
+
+def test_add_interaction_redirects(client, base_data):
+    response = client.post("/interactions/add", data={
+        "id_client": 1,
+        "detail": "Test Redirection",
+        "id_etat_relation": 1
+    })
+    
+    assert response.status_code == 302
+    # Correction ici : on vérifie la fin de l'URL de redirection
+    assert response.headers["Location"].endswith("/clients/1")
+
