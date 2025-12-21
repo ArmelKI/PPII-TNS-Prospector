@@ -49,11 +49,11 @@ def liste_intervenants():
 
     q = Intervenant.query.options(
         joinedload(Intervenant.utilisateur), # type: ignore
-        joinedload(Intervenant.competences)  # type: ignore
+        joinedload(Intervenant.maitrise_details)  # type: ignore
     )
 
     if search:
-        q = q.join(Utilisateur).outerjoin(Intervenant.competences).filter( # type: ignore
+        q = q.join(Utilisateur).outerjoin(Intervenant.maitrise_details).filter( # type: ignore
             (Utilisateur.nom_utilisateur.ilike(f"%{search}%")) |
             (Utilisateur.prenom_utilisateur.ilike(f"%{search}%")) |
             (Competence.nom_competence.ilike(f"%{search}%")) # type: ignore
@@ -137,7 +137,7 @@ def ajouter_intervenant():
             if not comp:
                 comp = Competence(nom_competence=cname) # type: ignore
                 db.session.add(comp)
-            intervenant.competences.append(comp)
+            intervenant.maitrise_details.append(comp)
 
         db.session.add(intervenant)
         db.session.commit()
@@ -173,19 +173,19 @@ def modifier_intervenant(id):
         # Compétences (Reset & Add)
         competences_raw = request.form.get("competences", "")
         comps = [c.strip() for c in competences_raw.replace(",", ";").split(";") if c.strip()]
-        intervenant.competences = []
+        intervenant.maitrise_details = []
         for cname in comps:
             comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
             if not comp:
                 comp = Competence(nom_competence=cname) # type: ignore
                 db.session.add(comp)
-            intervenant.competences.append(comp)
+            intervenant.maitrise_details.append(comp)
 
         db.session.commit()
         flash("Profil mis à jour.", "info")
         return redirect(url_for("intervenants.liste_intervenants"))
 
-    competences_str = "; ".join([c.nom_competence for c in intervenant.competences])
+    competences_str = "; ".join([c.nom_competence for c in intervenant.maitrise_details])
     return render_template("modifier_intervenant.html", intervenant=intervenant, competences_str=competences_str)
 
 
