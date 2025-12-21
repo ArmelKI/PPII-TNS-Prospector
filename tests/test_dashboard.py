@@ -5,60 +5,96 @@ from datetime import date, timedelta
 @pytest.fixture
 def setup_dashboard_data(app):
     with app.app_context():
-        # 1. Nettoyage dans l'ordre inverse des dépendances (IMPORTANT)
-        # On supprime d'abord les enfants, puis les parents
+        db.session.query(InteractionClient).delete()
         db.session.query(Jalon).delete()
         db.session.query(Projet).delete()
+        db.session.query(Convention).delete()
         db.session.query(Intervenant).delete()
         db.session.query(Utilisateur).delete()
-        db.session.query(Role).delete()  # On vide les rôles
+        db.session.query(Role).delete()
         db.session.query(Client).delete()
-        
-        # 2. Création du Rôle requis
-        # On crée le rôle avec l'ID 1 pour que l'utilisateur puisse y être lié
-        role_admin = Role(id_role=1, nom_role="Administrateur")
-        db.session.add(role_admin)
-        db.session.flush() # On pousse le rôle en base pour qu'il soit disponible
 
-        # 3. Création de l'Utilisateur
-        user_intervenant = Utilisateur(
-            id_utilisateur=10,
-            nom_utilisateur="Martin",
-            prenom_utilisateur="Jean",
-            mail_utilisateur="jean.martin@test.com",
-            mdp_utilisateur="password_hash",
-            id_role=1 # Maintenant, cet ID existe !
-        )
-        db.session.add(user_intervenant)
+        role = Role(id_role=1, nom_role="Admin")
+        db.session.add(role)
         db.session.flush()
 
-        # 4. Création de l'Intervenant
-        i1 = Intervenant(
-            id_intervenant=user_intervenant.id_utilisateur,
+        user = Utilisateur(
+            id_utilisateur=1, 
+            nom_utilisateur="Nom", 
+            prenom_utilisateur="Prenom", 
+            mail_utilisateur="i@i.com", 
+            mdp_utilisateur="hash", 
+            id_role=1
         )
-        db.session.add(i1)
+        db.session.add(user)
+        db.session.flush()
 
-        # 5. Création du Client
+        intervenant = Intervenant(id_intervenant=user.id_utilisateur)
+        db.session.add(intervenant)
+
         c1 = Client(
-            raison_sociale="Client A", 
-            mail_client="a@a.com", 
-            telephone_client="0102030405",
+            id_client=1, 
+            raison_sociale="Client Test", 
+            mail_client="c@c.com", 
+            telephone_client="1",
             secteur="IT", 
             date_dernier_contact=date.today(), 
             latitude=0.0, 
-            longitude=0.0,
-            id_client=None
+            longitude=0.0
         )
         db.session.add(c1)
+        db.session.flush()
+
+        conv = Convention(
+            id_convention=1, 
+            id_client=1, 
+            type_convention="CC", 
+            date_debut_convention=date.today()
+        )
+        db.session.add(conv)
+        db.session.flush()
+
+        # 3. Projets (2 actifs pour correspondre à votre test de compteurs)
+        p1 = Projet(
+            id_projet=1, 
+            nom_projet="Projet Alpha", 
+            statut_projet=StatutProjet.EN_COURS, 
+            id_convention=1
+        )
+        p2 = Projet(
+            id_projet=2, 
+            nom_projet="Projet Beta", 
+            statut_projet=StatutProjet.BLOQUE, 
+            id_convention=1
+        )
+        db.session.add_all([p1, p2])
+        db.session.flush()
+
+        j1 = Jalon(
+            id_jalon=1,
+            nom_jalon="Urgent", 
+            date_fin_jalon=date.today() + timedelta(days=5), 
+            statut_jalon=StatutJalon.A_VENIR, 
+            id_projet=1
+        )
+        db.session.add(j1)
+        
         db.session.commit()
 
 def test_dashboard_counts(client, setup_dashboard_data):
-    """Vérifie les compteurs de base : clients, intervenants et projets actifs."""
+    """Vérifie que les compteurs affichent les bonnes valeurs de la fixture."""
     response = client.get("/")
-    assert response.status_code == 200
     html = response.get_data(as_text=True)
     
-    # nb_projets actifs = EN_COURS + BLOQUE (donc 2 dans notre fixture)
-    assert "2" in html 
-    # nb_clients = 1
-    assert "1" in html
+    assert 'data-count="1"' in html  
+    assert 'data-count="2"' in html 
+    assert 'data-count="1"' in html 
+
+def test_dashboard_urgent_milestones_logic(client, setup_dashboard_data):
+    """Vérifie que le jalon 'Urgent' est bien rendu dans le tableau."""
+    response = client.get("/")
+    html = response.get_data(as_text=True)
+    
+    assert "Urgent" in html
+    assert "Projet Alpha" in html
+    assert "Aucune échéance urgente" not in html
