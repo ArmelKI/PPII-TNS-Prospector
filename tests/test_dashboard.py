@@ -54,7 +54,6 @@ def setup_dashboard_data(app):
         db.session.add(conv)
         db.session.flush()
 
-        # 3. Projets (2 actifs pour correspondre à votre test de compteurs)
         p1 = Projet(
             id_projet=1, 
             nom_projet="Projet Alpha", 
@@ -98,3 +97,34 @@ def test_dashboard_urgent_milestones_logic(client, setup_dashboard_data):
     assert "Urgent" in html
     assert "Projet Alpha" in html
     assert "Aucune échéance urgente" not in html
+
+def test_dashboard_stats_fallback(client, app):
+    """Vérifie qu'un statut non prévu est bien comptabilisé dans 'En cours'."""
+    with app.app_context():
+        db.session.query(Projet).delete()
+        db.session.query(Convention).delete()
+        db.session.query(Client).delete()
+
+        c = Client(id_client=99, raison_sociale="C", mail_client="c@c.com", telephone_client="1",
+                   secteur="IT", date_dernier_contact=date.today(), latitude=0, longitude=0)
+        db.session.add(c)
+        db.session.flush()
+
+        conv = Convention(id_convention=99, id_client=99, type_convention="CC", date_debut_convention=date.today())
+        db.session.add(conv)
+        db.session.flush()
+
+        p_special = Projet(
+            id_projet=99, 
+            nom_projet="Projet Spécial", 
+            statut_projet=StatutProjet.STAND_BY,
+            id_convention=99
+        )
+        db.session.add(p_special)
+        db.session.commit()
+
+    response = client.get("/")
+    html = response.get_data(as_text=True)
+
+    assert "En cours" in html
+    assert "1" in html

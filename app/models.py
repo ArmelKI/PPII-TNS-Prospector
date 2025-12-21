@@ -103,7 +103,8 @@ class Intervenant(db.Model):
     cv = db.Column(db.String(255))
 
     utilisateur = db.relationship("Utilisateur", back_populates="intervenant")
-    maitrise_details = db.relationship("MaitriseCompetence", back_populates="intervenant", cascade="all, delete-orphan")    projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
+    maitrise_details = db.relationship("MaitriseCompetence", back_populates="intervenant", cascade="all, delete-orphan")    
+    projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
     taches = db.relationship("Tache", secondary=intervenant_tache, back_populates="intervenants")
 
     def __repr__(self):
