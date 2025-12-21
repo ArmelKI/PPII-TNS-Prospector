@@ -143,7 +143,8 @@ def test_details_projet(projet, app):
     assert "Projet Détail Test" in html
 
 def test_details_projet_404(projet):
-    pass
+    response = projet.get("/projets/999999")  # ID inconnu
+    assert response.status_code == 404
 
 def test_modifier_projet_deadline_7_jan(projet):
     pass
