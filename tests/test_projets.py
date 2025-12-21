@@ -16,8 +16,37 @@ def test_ajouter_projet_is_right_page(projet):
 
     assert "Nouveau Projet" in html
 
-def test_ajouter_projet_post(projet, app):
-    pass
+def test_ajouter_projet_post(client, projet, app):
+    client.post(
+        "/clients/add",
+        data={
+            "raison_sociale": "Entreprise modale",
+            "mail_client": "entreprise@modale.com",
+            "telephone_client": "77777777",
+            "secteur": "Statistiques",
+            "id_client":1
+        },
+        follow_redirects=True
+    )
+    response = projet.post(
+        "/projets/add",
+        data={
+            "nom_projet": "Projet modal",
+            "type_convention": "CC",
+            "date_debut_projet": "2025-12-21",
+            "prix": "7",
+            "id_client":1
+        },
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    with app.app_context():
+        projet_db = Projet.query.filter_by(
+            nom_projet="Projet modal"
+        ).first()
+
+        assert projet_db is not None
+        assert projet_db.date_debut_projet == date(2025, 12, 21)
 
 def test_ajouter_projet_post_missing_field(projet, app):
     pass
