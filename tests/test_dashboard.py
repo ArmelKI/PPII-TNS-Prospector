@@ -5,33 +5,60 @@ from datetime import date, timedelta
 @pytest.fixture
 def setup_dashboard_data(app):
     with app.app_context():
-        # Nettoyage
+        # 1. Nettoyage dans l'ordre inverse des dépendances (IMPORTANT)
+        # On supprime d'abord les enfants, puis les parents
         db.session.query(Jalon).delete()
         db.session.query(Projet).delete()
+        db.session.query(Intervenant).delete()
+        db.session.query(Utilisateur).delete()
+        db.session.query(Role).delete()  # On vide les rôles
         db.session.query(Client).delete()
         
-        # 1. Clients et Intervenants
-        c1 = Client(raison_sociale="Client A", mail_client="a@a.com", telephone_client="1", 
-                    secteur="IT", date_dernier_contact=date.today(), latitude=0, longitude=0)
-        i1 = Intervenant(nom_intervenant="Nom", prenom_intervenant="Prenom", mail_intervenant="i@i.com")
-        db.session.add_all([c1, i1])
+        # 2. Création du Rôle requis
+        # On crée le rôle avec l'ID 1 pour que l'utilisateur puisse y être lié
+        role_admin = Role(id_role=1, nom_role="Administrateur")
+        db.session.add(role_admin)
+        db.session.flush() # On pousse le rôle en base pour qu'il soit disponible
+
+        # 3. Création de l'Utilisateur
+        user_intervenant = Utilisateur(
+            id_utilisateur=10,
+            nom_utilisateur="Martin",
+            prenom_utilisateur="Jean",
+            mail_utilisateur="jean.martin@test.com",
+            mdp_utilisateur="password_hash",
+            id_role=1 # Maintenant, cet ID existe !
+        )
+        db.session.add(user_intervenant)
         db.session.flush()
 
-        # 2. Projets avec différents statuts
-        p1 = Projet(nom_projet="P_EN_COURS", statut_projet=StatutProjet.EN_COURS, id_convention=1)
-        p2 = Projet(nom_projet="P_BLOQUE", statut_projet=StatutProjet.BLOQUE, id_convention=1)
-        p3 = Projet(nom_projet="P_TERMINE", statut_projet=StatutProjet.TERMINE, id_convention=1)
-        db.session.add_all([p1, p2, p3])
-        db.session.flush()
+        # 4. Création de l'Intervenant
+        i1 = Intervenant(
+            id_intervenant=user_intervenant.id_utilisateur,
+        )
+        db.session.add(i1)
 
-        # 3. Jalons (Un urgent, un lointain, un passé)
-        j1 = Jalon(nom_jalon="Urgent", date_fin_jalon=date.today() + timedelta(days=10), 
-                   statut_jalon=StatutJalon.A_VENIR, id_projet=p1.id_projet)
-        j2 = Jalon(nom_jalon="Lointain", date_fin_jalon=date.today() + timedelta(days=100), 
-                   statut_jalon=StatutJalon.A_VENIR, id_projet=p1.id_projet)
-        j3 = Jalon(nom_jalon="Déjà Fait", date_fin_jalon=date.today() + timedelta(days=5), 
-                   statut_jalon=StatutJalon.PASSE, id_projet=p1.id_projet)
-        
-        db.session.add_all([j1, j2, j3])
+        # 5. Création du Client
+        c1 = Client(
+            raison_sociale="Client A", 
+            mail_client="a@a.com", 
+            telephone_client="0102030405",
+            secteur="IT", 
+            date_dernier_contact=date.today(), 
+            latitude=0.0, 
+            longitude=0.0,
+            id_client=None
+        )
+        db.session.add(c1)
         db.session.commit()
-        yield
+
+def test_dashboard_counts(client, setup_dashboard_data):
+    """Vérifie les compteurs de base : clients, intervenants et projets actifs."""
+    response = client.get("/")
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    
+    # nb_projets actifs = EN_COURS + BLOQUE (donc 2 dans notre fixture)
+    assert "2" in html 
+    # nb_clients = 1
+    assert "1" in html
