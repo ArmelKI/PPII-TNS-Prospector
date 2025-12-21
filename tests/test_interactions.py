@@ -91,3 +91,16 @@ def test_add_interaction_redirects(client, base_data):
     # Correction ici : on vérifie la fin de l'URL de redirection
     assert response.headers["Location"].endswith("/clients/1")
 
+def test_add_interaction_db_persistence(client, app, base_data):
+    client.post("/interactions/add", data={
+        "id_client": 1,
+        "detail": "Vérification SQL",
+        "id_etat_relation": 1
+    })
+    
+    with app.app_context():
+        inter = InteractionClient.query.filter_by(detail_interaction="Vérification SQL").first()
+        assert inter is not None
+        assert inter.id_client == 1
+        assert inter.id_etat_relation == 1
+        assert inter.date_interaction == date.today()
