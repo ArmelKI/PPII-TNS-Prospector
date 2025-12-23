@@ -110,7 +110,7 @@ class Competence(db.Model):
 
     id_competence = db.Column(db.Integer, primary_key=True)
     nom_competence = db.Column(db.String(150), nullable=False)
-    # note_competence = db.Column(db.Integer) # Note /10 de la compétence
+  
     intervenants = db.relationship("Intervenant", secondary=intervenant_competence, back_populates="competences")
 
 class EtatRelation(db.Model):

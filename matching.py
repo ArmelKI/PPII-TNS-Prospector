@@ -1,128 +1,4 @@
-"""
-def gale_shapley(men_preferences, women_preferences):
-    n = len(men_preferences)
-    free_men = list(men_preferences.keys())  # All men start out free
-    engaged_pairs = {}  # To store engaged pairs
-    men_proposals = {man: [] for man in men_preferences}  # Track proposals
 
-    # While there are free men who haven't proposed to all women
-    while free_men:
-        man = free_men[0]  # Grab the first free man
-        man_pref = men_preferences[man]
-        for woman in man_pref:
-            if woman not in men_proposals[man]:
-                men_proposals[man].append(woman)  # Record the proposal
-
-                # If the woman is free, engage them
-                if woman not in engaged_pairs.values():
-                    engaged_pairs[man] = woman
-                    free_men.remove(man)
-                    break
-                else:
-                    # If the woman is already engaged, check if she prefers the new man
-                    current_man = next(m for m, w in engaged_pairs.items() if w == woman)
-                    woman_pref = women_preferences[woman]
-                    if woman_pref.index(man) < woman_pref.index(current_man):
-                        # Engage the new man and free the current one
-                        engaged_pairs[man] = woman
-                        free_men.remove(man)
-                        free_men.append(current_man)
-                        del engaged_pairs[current_man]
-                        break
-
-    return engaged_pairs
-
-# Example usage
-men_preferences = {
-    'Man1': ['Woman1', 'Woman2', 'Woman3'],
-    'Man2': ['Woman2', 'Woman3', 'Woman1'],
-    'Man3': ['Woman3', 'Woman1', 'Woman2'],
-}
-
-women_preferences = {
-    'Woman1': ['Man2', 'Man1', 'Man3'],
-    'Woman2': ['Man1', 'Man2', 'Man3'],
-    'Woman3': ['Man3', 'Man1', 'Man2'],
-}
-
-result = gale_shapley(men_preferences, women_preferences)
-print(result) 
-
-def ponderate(intervenant,ponderation) :# donne la pondération  d'un intervenant par un projet 
-    return {key:ponderation[val] for key,val in intervenant.items() if val in ponderation}
-    # finaalement la ponderationd est effectivemnt à sens unique en fonction de la préférence du projet et l'avis d'un intervenant ne compte pas vraiement pour le moment
-    
-
-# -- DONNES TEST --- 
-intervenants = [
-    {"id": 1, "nom": "Alice", "metier": "Data Scientist", "techno": "Python", "niveau": "Senior", "ville": "Paris", "dispo": "Immédiate"},
-    {"id": 2, "nom": "Bob", "metier": "Dev Backend", "techno": "Java", "niveau": "Junior", "ville": "Lyon", "dispo": "3 mois"},
-    {"id": 3, "nom": "Charlie", "metier": "Dev Frontend", "techno": "React", "niveau": "Confirmé", "ville": "Télétravail", "dispo": "Immédiate"},
-    {"id": 4, "nom": "David", "metier": "Dev Fullstack", "techno": "JavaScript", "niveau": "Junior", "ville": "Paris", "dispo": "2 semaines"}
-]
-
-projets_preferences = {
-    "Projet IA": {"Python": 20, "Data Scientist": 15, "Senior": 10, "Paris": 5, "Immédiate": 5},
-    "Projet Web": {"React": 20, "Télétravail": 15, "JavaScript": 15, "Junior": 2, "AWS": 30}
-}
-
-def matching(projets: dict, intervenants: list):
-    projets_preferences_result = {}
-    for projet_nom, ponderation in projets.items():
-        intervenantsScore = []
-        
-        for intervenant in intervenants:
-            score_brut = 0
-            valeurs_intervenant = list(intervenant.values())
-            
-            # On calcule le score total
-            for valeur in valeurs_intervenant:
-                if valeur in ponderation:
-                    score_brut += ponderation[valeur]
-            
-            # On fait la moyenne pour obtenir le score 
-            n = len(valeurs_intervenant) 
-            if n > 0:
-                score_final = (1/n) * score_brut
-            else:
-                score_final = 0
-            intervenantsScore.append((intervenant, score_final))
-        intervenantsScore.sort(key=lambda x: x[1], reverse=True)
-        projets_preferences_result[projet_nom] = intervenantsScore
-        
-    return projets_preferences_result
-
-# --- 3. TEST ---
-resultats = matching(projets_preferences, intervenants)
-
-# Affichage propre des résultats
-for projet, liste_candidats in resultats.items():
-    print(f"\n--- Résultat pour : {projet} ---")
-    for candidat in liste_candidats:
-        nom = candidat[0]['nom']
-        score = round(candidat[1], 2) # Arrondi pour la lisibilité
-        print(f"Intervenant : {nom} | Score : {score}")
-
-
-
-
-
-
-    # Algo de matching (gale Shapley modifié): 
-    # Finalement il faudrait plutot que pour chaque projet il y ai ses intervenants préférés et de meme une préférence d'un projet  pour un intervenant particulié pour avoir un tableau à double enrée 
-   
-    # Maintenant le problème de la pondération est quelle est a sens unique et que elle ne permettrait que de classer les intervenants entre eux et non de définir un odre de préférence par rapport aux projets 
-    # On est quand meme dans une situtation qui pourrait etre résolu par un gale shapley car on a n intervenant pour n projet et un intervenant par projet.
-    # Ce qu'il retournera sera un tableau avec une solution de stable matching 
-    # L'ordre de préférence qui définira les suggestions d'intervenant dans l'ordre décroissant de préférence  sera à renvoyer  avant pour effectuer la liste de suggestion ( plutot qu'un reel matching)
-
-
-    # On peut résoudre ce problème en attribuant à chaque projet sa propre pondération, puis à crée une pondération. 
-
-
-
-print(matching(projets_preferences,intervenants))
-"""
 # Première ébauche du programme mais il faut améliorer la pondération
 
 ########## INTERFACE CALL API IA ####################
@@ -163,11 +39,79 @@ import json
 
 
 load_dotenv()
+
+key = os.getenv("API_KEY")
+api_model = os.getenv("API_MODEL")
+
+
+def create_ai_prompt(mission,intervenants_dispos ):
+    """
+    Missions = Projets 
+    mission est un élément de Projets
+    {% for mission in Projets %}
+        create_ai_prompt(mission,intervenants_dispots )
+    {% endfor %}
+
+    intervenants_dispos = Intervenant.query.filter(Intervenants.disponible == True).all()
+
+    """
+    
+
+    
+    mission_data = {
+        "titre": mission.nom_projet, # Class Projets
+        "competence_requise" : "java", # on peut avoir plusieurs compétences requises 
+        "charge_estimée" : 15, # heures par défaut
+        "deadline_semaines" : 10 #
+    }
+    pool = [] # Liste de dictionnaire contenant les infos des intervenant dispos
+    for intervenant in intervenants_dispos:
+        # On construit le dict des compétences de l'intervenant
+        #  skills = {c.nom_competence: intervnant_competence.id_intervenant for c in i.competences} # Inaccessible tant que la db n'est pas modifié
+        pool.append({
+            "id": intervenant.id_intervenant,
+            "nom": str(intervenant),
+            "skills": "skills",
+            "dispo_h": intervenant.nb_heures_dispo or 0
+        })
+
+
+    prompt_system = """
+    Tu es un algorithme expert d'affectation de ressources pour Telecom Nancy Services.
+    Tes objectifs sont :
+    1. Trouver la meilleure équipe d'intervenants pour la mission donnée[cite: 3].
+    2. Assurer que TOUTES les compétences requises sont couvertes (niveau maximal prioriser).
+    3. Minimiser le nombre d'intervenants (1 personne est mieux que 2).
+    4. Vérifier que la disponibilité totale est suffisante.
+
+    Format de réponse attendu : Uniquement un JSON valide contenant une liste 'suggestions'.
+    Chaque suggestion doit avoir : 'equipe' (liste des noms), 'score' (0-100), et 'raison'.
+    """
+
+    prompt_user = f"""
+    Voici la Mission : {json.dumps(mission_data)}
+
+    Voici le Pool d'Intervenants Disponibles : {json.dumps(pool_intervenants)}
+
+    Trouve les 3 meilleures combinaisons. Réponds seulement par le JSON.
+    """
+
+    return prompt_system,prompt_user
+
+
+    
+
+        
+     
+        
+
+    
+
 # --- 1. DONNÉES À ENVOYER (JSON) ---
 # Dans ton app Flask, ces données viendront de tes objets SQLAlchemy convertis en dict
 mission_data = {
     "titre": "Plateforme SaaS Complète",
-    "competences_requises": {"Python": 6, "React": 6, "Docker": 5},
+    "competences_requises": ["Python", "React", "Docker"],
     "charge_estimee": 150,
     "deadline_semaines": 10
 }
@@ -183,16 +127,24 @@ pool_intervenants = [
 # On injecte les règles métier directement dans le prompt
 prompt_system = """
 Tu es un algorithme expert d'affectation de ressources pour Telecom Nancy Services.
-Tes objectifs sont :
-1. Trouver la meilleure équipe d'intervenants pour la mission donnée[cite: 3].
-2. Assurer que TOUTES les compétences requises sont couvertes (niveau max de l'équipe >= niveau requis).
-3. Minimiser le nombre d'intervenants (1 personne est mieux que 2).
-4. Vérifier que la disponibilité totale est suffisante.
+Ton but est de composer l'équipe la plus performante possible (Elite Matching).
 
-Format de réponse attendu : Uniquement un JSON valide contenant une liste 'suggestions'.
-Chaque suggestion doit avoir : 'equipe' (liste des noms), 'score' (0-100), et 'raison'.
+TES OBJECTIFS PAR ORDRE DE PRIORITÉ :
+1. **COUVERTURE & EXPERTISE (Priorité Absolue)** : Pour chaque compétence demandée par la mission, tu DOIS sélectionner l'intervenant disponible ayant le **niveau le plus élevé possible**.
+   - Ne te contente pas d'un niveau moyen. Cherche l'excellence (le score le plus proche de 10).
+   - Il n'y a pas de niveau minimum requis : prends simplement le meilleur profil disponible.
+
+2. **MINIMISATION DE L'ÉQUIPE** : Si un seul intervenant est expert dans toutes les compétences, choisis-le (Solo). Sinon, combine les experts (Duo/Trio) pour couvrir tous les besoins au meilleur niveau.
+
+3. **FAISABILITÉ** : Vérifie que la somme des disponibilités (heures/semaine) de l'équipe est cohérente avec la charge de travail.
+
+FORMAT DE RÉPONSE :
+Réponds UNIQUEMENT par un JSON valide (sans texte avant/après) contenant une liste 'suggestions'.
+Chaque suggestion doit avoir :
+- 'equipe': liste des noms
+- 'score': note de 0 à 100 (basée sur la moyenne des compétences des intervenants choisis pour la mission)
+- 'raison': explique pourquoi ces experts ont été choisis (ex: "Alice est la meilleure en Python (9/10)").
 """
-
 prompt_user = f"""
 Voici la Mission : {json.dumps(mission_data)}
 
@@ -205,15 +157,15 @@ Trouve les 3 meilleures combinaisons. Réponds seulement par le JSON.
 def call_ai_matching():
     url = "https://openrouter.ai/api/v1/chat/completions"
     
-    # Remplace par ta vraie clé API (celle dans ton code précédent semblait être une clé de test ou expirée)
-    api_key = "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"
+    
+    api_key = key
     payload = {
-        "model": "mistralai/devstral-2512:free",
+        "model": api_model,
         "messages": [
             {"role": "system", "content": prompt_system},
             {"role": "user", "content": prompt_user}
         ],
-        "temperature": 0.2, # Faible pour être logique et déterministe
+        "temperature": 0.2, # Faible -> déteministe
         # "response_format": { "type": "json_object" } # Utile si le modèle le supporte
     }
     
@@ -262,21 +214,10 @@ if __name__ == "__main__":
         print(json.dumps(resultats, indent=2, ensure_ascii=False))
 
 
-"""
-CHOSE A CORRIGER DANS LE FONCTIONNEMENT ACTUEL DU SITE
-
-L'export csv ne redonne que le fichier contenant les  intervenants ce qui n'a pas l'air d'etre demandé et n'a pas trop de sens 
-Ajouter la possibilité d'un import d'un fichier csv qui ajoute des clients. Pour le moement on a pas cette fonctionalité  
-
-Il faut aussi une page historique des missions (semble être les taches dans la DB) + export des données en csv et import ( pas trop de sens de devoir faire un import mais bon)
-
-
-Rendre cette notion de mission clair + il faut que je vois le lien avec les projets dans le MCD
-
-Il semble que ces taches sont dans des jalons qui sont eux dans des projets  respectifs 
-
 
 
 """
+Il faudra modifier la DB en conséquence pour qu'il y'ait un dicitionaire clé/compétence requise  valeur/score de la compétence
+De meme il faut pour chaque compétence de l'intervenant qu'il y'ait un score associer (sinon par défaut on le met a 0/10)
 
-
+"""
