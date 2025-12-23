@@ -42,6 +42,9 @@
             <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn-secondary" style="text-align:center;">
                 Détails
             </a>
+            {% if p.statut_projet != "EN COURS" %}
+            <a href="{{ url_for('projets.match_projet', id=p.id_projet) }}" class="btn">Match</a>
+            {% endif %}
         </div>
       </div>
       {% else %}
