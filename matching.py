@@ -40,8 +40,6 @@ import json
 
 load_dotenv()
 
-key = os.getenv("API_KEY")
-api_model = os.getenv("API_MODEL")
 
 
 def create_ai_prompt(mission,intervenants_dispos ):
@@ -153,10 +151,18 @@ Voici le Pool d'Intervenants Disponibles : {json.dumps(pool_intervenants)}
 Trouve les 3 meilleures combinaisons. Réponds seulement par le JSON.
 """
 
+
+
 # --- 3. APPEL API OPENROUTER ---
 def call_ai_matching():
     url = "https://openrouter.ai/api/v1/chat/completions"
-    
+    key = os.getenv("API_KEY")
+    api_model = os.getenv("API_MODEL")
+     
+    if not api_key: 
+        print("Erreur:  API_KEY manquante dans le fichier .env")
+        return None
+
     
     api_key = key
     payload = {
