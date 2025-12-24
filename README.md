@@ -1,48 +1,20 @@
-# PPII
-PPII des goats
+# PPII - Gestion des Intervenants 🐐
 
+Projet de gestion des intervenants et clients développé dans le cadre du PPII (S5).
 
-# Before running
+## Lancement Rapide avec Docker (Recommandé)
 
-## Python virtual environment
+Cette méthode est la plus simple car elle configure automatiquement l'application et la base de données PostgreSQL.
 
-To create and activate the python virtual environment run the following commands.
-```
-python3 -m venv .venv
-source .venv/bin/activate
-```
+### 1. Prérequis
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et lancé.
 
-⚠️ Use the write activation script, for example if you use fish you need to run `activate.fish`, for bash it's just `activate`.
+### 2. Configuration et Lancement
+Ouvrez un terminal à la racine du projet :
 
-Then to install the dependencies run the following command.
-```
-pip install -r requirements.txt
-```
+```bash
+# 1. Créer le fichier d'environnement pour l'application
+cp .env.example ./app/.env
 
-
-## Environment variables
-
-Create a texte file named `.env` in the root of the project.
-
-And put your credentials in it :
-
-```
-FLASK_SECRET_KEY=
-DB_USER=
-DB_PASSWORD=
-DB_HOST=
-DB_PORT=
-DB_NAME=
-```
-
-
-# Run the app
-
-After activating the venv, launch the server with this command :
-```
-flask --app app.py run
-```
-or this command to launch in debug mode :
-```
-flask --app app.py run --debug
-```
+# 2. Construire et lancer les conteneurs
+docker-compose --env-file ./app/.env up --build
