@@ -95,7 +95,6 @@ function addProspectMarker(p) {
         fillOpacity: 0.8
     }).addTo(map);
 
-    // Création du contenu du popup de manière sécurisée
     const container = document.createElement('div');
     container.innerHTML = `
         <strong>${p.name}</strong><br>
@@ -106,7 +105,6 @@ function addProspectMarker(p) {
     const btn = document.createElement('button');
     btn.innerText = "Ajouter à ma liste";
     
-    // On lie l'événement directement à l'objet pour éviter les problèmes de strings
     btn.onclick = function() {
         addProspectToDB(p.lat, p.lng, p.name, p.type);
     };
@@ -146,9 +144,8 @@ function addProspectToDB(lat, lng, name, type) {
     .then(data => {
         if (data.success) {
             alert(`${name} ajouté !`);
-            // On recharge tout pour nettoyer la carte
-            loadClients();   // Affiche le nouveau client
-            loadProspects(); // Relance Overpass (le point bleu disparaîtra si ton backend filtre les doublons)
+            loadClients();
+            loadProspects();
         }
     });
 }

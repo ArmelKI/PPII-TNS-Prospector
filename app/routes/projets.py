@@ -26,27 +26,25 @@ def ajouter_projet():
 
         if not id_client or not nom_projet or not type_convention:
             flash("Veuillez remplir tous les champs obligatoires.", "danger")
-            # On recharge la liste des clients pour réafficher le formulaire proprement
             clients = Client.query.order_by(Client.raison_sociale).all()
             return render_template("ajouter_projet.html", 
                                  clients=clients, 
                                  selected_client=id_client), 200
 
         conv = Convention(
-            id_client=id_client, # type: ignore
-            type_convention=type_convention, # type: ignore
-            date_debut_convention=date.today(), # type: ignore
-            prix=prix # type: ignore
+            id_client=id_client, 
+            type_convention=type_convention, 
+            date_debut_convention=date.today(),
+            prix=prix
         )
         db.session.add(conv)
         db.session.flush()
         
-        # 2. Create Project
         proj = Projet(
-            nom_projet=nom_projet, # type: ignore
-            statut_projet=StatutProjet.PAS_COMMENCE, # type: ignore
-            date_debut_projet=date.today(), # type: ignore
-            id_convention=conv.id_convention # type: ignore
+            nom_projet=nom_projet,
+            statut_projet=StatutProjet.PAS_COMMENCE,
+            date_debut_projet=date.today(),
+            id_convention=conv.id_convention
         )
         db.session.add(proj)
         db.session.commit()
@@ -54,7 +52,7 @@ def ajouter_projet():
         flash("Project successfully created.", "success")
         return redirect(url_for('jalons.voir_kanban', id_projet=proj.id_projet))
 
-    clients = Client.query.order_by(Client.raison_sociale).all() # type: ignore
+    clients = Client.query.order_by(Client.raison_sociale).all() 
     selected_client = request.args.get('client', type=int)
     return render_template("ajouter_projet.html", clients=clients, selected_client=selected_client)
 
@@ -75,10 +73,8 @@ def modifier_projet(id):
     projet = Projet.query.get_or_404(id)
 
     if request.method == "POST":
-        # Update scalar fields
         projet.nom_projet = request.form.get("nom_projet")
         
-        # Date parsing
         date_debut = request.form.get("date_debut")
         date_fin = request.form.get("date_fin")
         
@@ -87,14 +83,12 @@ def modifier_projet(id):
         if date_fin:
             projet.date_fin_projet = datetime.strptime(date_fin, '%Y-%m-%d').date()
             
-        # Update Status
         new_statut = request.form.get("statut_projet")
         for s in StatutProjet:
             if s.value == new_statut:
                 projet.statut_projet = s
                 break
-
-        # Update Team (Many-to-Many)
+            
         intervenant_ids = request.form.getlist("intervenants")
         projet.intervenants = [] # Reset
         for i_id in intervenant_ids:
@@ -106,7 +100,6 @@ def modifier_projet(id):
         flash("Project updated successfully.", "success")
         return redirect(url_for("projets.details_projet", id=projet.id_projet))
 
-    # GET: Prepare form data
     tous_intervenants = Intervenant.query.all()
     
     return render_template(

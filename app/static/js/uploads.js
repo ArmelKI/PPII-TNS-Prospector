@@ -7,9 +7,7 @@ function previewImage(input, previewSelector) {
   reader.readAsDataURL(input.files[0]);
 }
 
-// ajax submit helper (optional)
 document.addEventListener("DOMContentLoaded", () => {
-  // prevent default for forms with data-ajax
   document.querySelectorAll("form[data-ajax]").forEach(form => {
     form.addEventListener("submit", async (ev) => {
       ev.preventDefault();

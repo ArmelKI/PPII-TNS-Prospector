@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const columns = document.querySelectorAll(".kanban-column");
   let draggedItem = null;
 
-  // --- 1. CARD management (What we move) ---
   cards.forEach(card => {
     card.addEventListener("dragstart", function(e) {
       draggedItem = this;
@@ -16,15 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
     card.addEventListener("dragend", function() {
       this.classList.remove("dragging");
       draggedItem = null;
-      // Visual cleanup of columns
       columns.forEach(c => c.classList.remove("drag-over"));
     });
   });
 
-  // --- 2. COLUMN management (Where we drop) ---
   columns.forEach(column => {
     column.addEventListener("dragover", function(e) {
-      e.preventDefault(); // REQUIRED to allow drop
+      e.preventDefault(); 
       this.classList.add("drag-over");
     });
 
@@ -37,18 +34,14 @@ document.addEventListener("DOMContentLoaded", () => {
       this.classList.remove("drag-over");
 
       if (draggedItem) {
-        // Visual part: Move the card into the column's list
         const list = this.querySelector(".kanban-list");
         list.appendChild(draggedItem);
 
-        // Data part: Get the IDs
         const jalonId = draggedItem.dataset.id;
-        // Use 'this' which is the column
         const newStatut = this.dataset.statut; 
 
         console.log(`⚡ Drop detected! Jalon ${jalonId} to ${newStatut}`);
 
-        // Server part (AJAX)
         try {
           const response = await fetch("/jalons/api/update_statut", {
             method: "POST",

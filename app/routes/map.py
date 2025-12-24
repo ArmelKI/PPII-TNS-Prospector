@@ -58,7 +58,6 @@ def prospects_api(radius):
     for el in data.get("elements", []):
         lat, lng = el.get("lat"), el.get("lon")
         
-        # 2. FILTRE : On n'ajoute le prospect que si ses coordonnées ne sont pas déjà chez un client
         if (lat, lng) not in client_coords:
             tags = el.get("tags", {})
             prospects.append({
