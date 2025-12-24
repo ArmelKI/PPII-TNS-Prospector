@@ -38,13 +38,18 @@ def prospects_api(radius):
     );
     out;
     """
-
-    response = requests.post(
-        "https://overpass-api.de/api/interpreter",
-        data=query
-    )
-
-    data = response.json()
+    try:
+        response = requests.post(
+            "https://overpass-api.de/api/interpreter",
+            data=query, 
+            timeout=10
+        )
+        if response.status_code != 200:
+            return jsonify([])
+        data = response.json()
+    except Exception as e:
+        print(f"Erreur API: {e}")
+        return jsonify([])
 
     prospects = []
     for el in data["elements"]:
