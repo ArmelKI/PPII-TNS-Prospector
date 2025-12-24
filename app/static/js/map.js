@@ -54,6 +54,7 @@ function init() {
         .bindPopup('TNS');
 
     loadClients();
+    loadProspects();
 }
 
 function loadClients() {

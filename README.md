@@ -7,7 +7,7 @@ Projet de gestion des intervenants et clients développé dans le cadre du PPII 
 Cette méthode est la plus simple car elle configure automatiquement l'application et la base de données PostgreSQL.
 
 ### 1. Prérequis
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et lancé.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et **lancé**.
 
 ### 2. Configuration et Lancement
 Ouvrez un terminal à la racine du projet :
