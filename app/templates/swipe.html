@@ -15,8 +15,8 @@
             <div class =card>
                 <strong>Option {{ loop.index }}</strong>
                 <span class="badge bg-light text-dark">{{ option.score }}% Match</span>
-            </div>
-            <div class="card-body">
+            
+            
                 <h5 class="card-title">Équipe proposée :</h5>
                 <ul class="list-group list-group-flush mb-3">
                     {% for nom in option.equipe %}
@@ -26,8 +26,8 @@
                 <p class="card-text text-muted small">
                     <em>"{{ option.raison }}"</em>
                 </p>
-            </div>
-            <div class="card ">
+           
+           
                 <form action="" method="POST">
                     <button type="button" class="btn">Valider cette équipe ✅</button>
                 </form>
