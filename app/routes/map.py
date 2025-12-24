@@ -29,6 +29,9 @@ def prospects_api(radius):
     CENTER_LAT = 48.66895
     CENTER_LNG = 6.15547
 
+    existing_clients = Client.query.with_entities(Client.latitude, Client.longitude).all()
+    client_coords = {(float(c.latitude), float(c.longitude)) for c in existing_clients}
+
     query = f"""
     [out:json];
     (
@@ -52,20 +55,18 @@ def prospects_api(radius):
         return jsonify([])
 
     prospects = []
-    for el in data["elements"]:
-        tags = el.get("tags", {})
-
-        prospects.append({
-            "name": tags.get("name", "Entreprise inconnue"),
-            "type": (
-                tags.get("shop")
-                or tags.get("office")
-                or tags.get("craft")
-                or "inconnu"
-            ),
-            "lat": el["lat"],
-            "lng": el["lon"]
-        })
+    for el in data.get("elements", []):
+        lat, lng = el.get("lat"), el.get("lon")
+        
+        # 2. FILTRE : On n'ajoute le prospect que si ses coordonnées ne sont pas déjà chez un client
+        if (lat, lng) not in client_coords:
+            tags = el.get("tags", {})
+            prospects.append({
+                "name": tags.get("name", "Entreprise inconnue"),
+                "type": tags.get("shop") or tags.get("office") or tags.get("craft") or "inconnu",
+                "lat": lat,
+                "lng": lng
+            })
     
     return jsonify(prospects)
 
