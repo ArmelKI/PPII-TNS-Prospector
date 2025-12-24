@@ -54,6 +54,7 @@ function init() {
         .bindPopup('TNS');
 
     loadClients();
+    loadProspects();
 }
 
 function loadClients() {
@@ -94,16 +95,22 @@ function addProspectMarker(p) {
         fillOpacity: 0.8
     }).addTo(map);
 
-    const popupContent = `
+    const container = document.createElement('div');
+    container.innerHTML = `
         <strong>${p.name}</strong><br>
         Type : ${p.type}<br>
         Prospect OSM<br>
-        <button onclick="addProspectToDB(${p.lat}, ${p.lng}, '${p.name}', '${p.type}')">
-            Ajouter à ma liste de prospects
-        </button>
     `;
 
-    marker.bindPopup(popupContent);
+    const btn = document.createElement('button');
+    btn.innerText = "Ajouter à ma liste";
+    
+    btn.onclick = function() {
+        addProspectToDB(p.lat, p.lng, p.name, p.type);
+    };
+
+    container.appendChild(btn);
+    marker.bindPopup(container);
     prospectMarkers.push(marker);
 }
 
@@ -130,20 +137,17 @@ function loadProspects() {
 function addProspectToDB(lat, lng, name, type) {
     fetch('/map/add_prospect', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lat, lng, name, type })
     })
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            alert(`${name} ajouté à la BDD !`);
-        } else {
-            alert('Attention : ' + data.message);
+            alert(`${name} ajouté !`);
+            loadClients();
+            loadProspects();
         }
-    })
-    .catch(err => console.error(err));
+    });
 }
 
 function deleteClient(clientId, button) {
