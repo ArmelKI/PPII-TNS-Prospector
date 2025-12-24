@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.models import Projet, Client, Convention, StatutProjet, Intervenant, db
 from datetime import date, datetime
-#from matching import  create_ai_prompt, call_ai_matching
+from matching import  create_ai_prompt, call_ai_matching
 
 projets_bp = Blueprint("projets", __name__, url_prefix="/projets")
 
@@ -113,20 +113,17 @@ def modifier_projet(id):
         intervenants=tous_intervenants,
         StatutProjet=StatutProjet
     )
-@projets_bp.route("match/<int:id>",methods=['GET'])
-def match_projet(id):
-    mission = Projet.query.get_or_404(id)
-    return render_template("swipe.html",mission = mission)
 
 
-# @projets_bp.route("//<int:id>/match",methods=['GET'])
-# def match_projet(id): 
-#     projet = Projet.get_or_404(id)
-#     intervenants  = Intervenant.query.filter_by (disponible = True).all()
+
+@projets_bp.route("/<int:id>/match",methods=['GET'])
+def match_projet(id): 
+    projet = Projet.query.get_or_404(id)
+    intervenants  = Intervenant.query.filter_by (disponible = True).all()
     
-#     sys_p, usr_p = create_ai_prompt(projet, intervenants)
+    sys_p, usr_p = create_ai_prompt(projet, intervenants)
     
-#     suggestions = call_ai_matching(sys_p, usr_p)
+    suggestions = call_ai_matching(sys_p, usr_p)
     
-#     return  render_template('swipe.html', suggestions=suggestions['suggestions'])
+    return  render_template('swipe.html', suggestions=suggestions['suggestions'],mission=projet)
 

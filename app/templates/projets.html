@@ -42,8 +42,10 @@
             <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn-secondary" style="text-align:center;">
                 Détails
             </a>
-            {% if p.statut_projet != "EN COURS" %}
+            {% if p.statut_projet.value != "Terminé" %} <!-- Pour récupérer la valuer de l'objet Enum -->
             <a href="{{ url_for('projets.match_projet', id=p.id_projet) }}" class="btn">Match</a>
+            {% else %} 
+            <a href=# class='btn'>Déjà terminé 🔒</a>
             {% endif %}
         </div>
       </div>

@@ -76,14 +76,23 @@ def create_ai_prompt(mission,intervenants_dispos ):
 
     prompt_system = """
     Tu es un algorithme expert d'affectation de ressources pour Telecom Nancy Services.
-    Tes objectifs sont :
-    1. Trouver la meilleure équipe d'intervenants pour la mission donnée[cite: 3].
-    2. Assurer que TOUTES les compétences requises sont couvertes (niveau maximal prioriser).
-    3. Minimiser le nombre d'intervenants (1 personne est mieux que 2).
-    4. Vérifier que la disponibilité totale est suffisante.
+    Ton but est de composer l'équipe la plus performante possible (Elite Matching).
 
-    Format de réponse attendu : Uniquement un JSON valide contenant une liste 'suggestions'.
-    Chaque suggestion doit avoir : 'equipe' (liste des noms), 'score' (0-100), et 'raison'.
+    TES OBJECTIFS PAR ORDRE DE PRIORITÉ :
+    1. **COUVERTURE & EXPERTISE (Priorité Absolue)** : Pour chaque compétence demandée par la mission, tu DOIS sélectionner l'intervenant disponible ayant le **niveau le plus élevé possible**.
+    - Ne te contente pas d'un niveau moyen. Cherche l'excellence (le score le plus proche de 10).
+    - Il n'y a pas de niveau minimum requis : prends simplement le meilleur profil disponible.
+
+    2. **MINIMISATION DE L'ÉQUIPE** : Si un seul intervenant est expert dans toutes les compétences, choisis-le (Solo). Sinon, combine les experts (Duo/Trio) pour couvrir tous les besoins au meilleur niveau.
+
+    3. **FAISABILITÉ** : Vérifie que la somme des disponibilités (heures/semaine) de l'équipe est cohérente avec la charge de travail.
+
+    FORMAT DE RÉPONSE :
+    Réponds UNIQUEMENT par un JSON valide (sans texte avant/après) contenant une liste 'suggestions'.
+    Chaque suggestion doit avoir :
+    - 'equipe': liste des noms
+    - 'score': note de 0 à 100 (basée sur la moyenne des compétences des intervenants choisis pour la mission)
+    - 'raison': explique pourquoi ces experts ont été choisis (ex: "Alice est la meilleure en Python (9/10)").
     """
 
     prompt_user = f"""
@@ -123,26 +132,7 @@ pool_intervenants = [
 
 # --- 2. CONSTRUCTION DU PROMPT ---
 # On injecte les règles métier directement dans le prompt
-prompt_system = """
-Tu es un algorithme expert d'affectation de ressources pour Telecom Nancy Services.
-Ton but est de composer l'équipe la plus performante possible (Elite Matching).
 
-TES OBJECTIFS PAR ORDRE DE PRIORITÉ :
-1. **COUVERTURE & EXPERTISE (Priorité Absolue)** : Pour chaque compétence demandée par la mission, tu DOIS sélectionner l'intervenant disponible ayant le **niveau le plus élevé possible**.
-   - Ne te contente pas d'un niveau moyen. Cherche l'excellence (le score le plus proche de 10).
-   - Il n'y a pas de niveau minimum requis : prends simplement le meilleur profil disponible.
-
-2. **MINIMISATION DE L'ÉQUIPE** : Si un seul intervenant est expert dans toutes les compétences, choisis-le (Solo). Sinon, combine les experts (Duo/Trio) pour couvrir tous les besoins au meilleur niveau.
-
-3. **FAISABILITÉ** : Vérifie que la somme des disponibilités (heures/semaine) de l'équipe est cohérente avec la charge de travail.
-
-FORMAT DE RÉPONSE :
-Réponds UNIQUEMENT par un JSON valide (sans texte avant/après) contenant une liste 'suggestions'.
-Chaque suggestion doit avoir :
-- 'equipe': liste des noms
-- 'score': note de 0 à 100 (basée sur la moyenne des compétences des intervenants choisis pour la mission)
-- 'raison': explique pourquoi ces experts ont été choisis (ex: "Alice est la meilleure en Python (9/10)").
-"""
 prompt_user = f"""
 Voici la Mission : {json.dumps(mission_data)}
 
@@ -154,12 +144,12 @@ Trouve les 3 meilleures combinaisons. Réponds seulement par le JSON.
 
 
 # --- 3. APPEL API OPENROUTER ---
-def call_ai_matching():
+def call_ai_matching(prompt_system,prompt_user):
     url = "https://openrouter.ai/api/v1/chat/completions"
     key = os.getenv("API_KEY")
     api_model = os.getenv("API_MODEL")
      
-    if not api_key: 
+    if not key: 
         print("Erreur:  API_KEY manquante dans le fichier .env")
         return None
 
