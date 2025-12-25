@@ -82,13 +82,14 @@ class Utilisateur(db.Model, UserMixin):
     def __repr__(self):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
-    def check_password(self, pw_candidate) -> bool:
-        pw_candidate = bytes(pw_candidate, 'UTF8')
-        return checkpw(pw_candidate, bytes(self.mdp_utilisateur, 'UTF8'))   # BUG : Je ne peux pas stocker de bytes dans un StringField
+    def check_password(self, pw_candidate: str) -> bool:
+        bytes_pw_candidate = pw_candidate.encode('utf-8')
+        bytes_password = self.mdp_utilisateur.encode('utf-8')
+        return checkpw(bytes_pw_candidate, bytes_password)
 
-    def set_password(self, new_password):
-        new_password = bytes(new_password, 'UTF8')
-        self.mdp_utilisateur = hashpw(new_password, gensalt())   # BUG : Je ne peux pas stocker de bytes dans un StringField
+    def set_password(self, new_password: str):
+        bytes_password = new_password.encode('utf-8')
+        self.mdp_utilisateur = hashpw(bytes_password, gensalt()).decode('utf-8')
 
     def get_id(self):
         return self.id_utilisateur
