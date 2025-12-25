@@ -11,26 +11,26 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login_page():
-    # Si l'utilisateur est déjà connecté, on saute la page
+    # If the user is already logged in, we skip the page
     if current_user.is_authenticated:
         return redirect('/')
 
     form = LoginForm()
 
-    # Si le formulaire n'a pas été envoyé correctement
+    # If the form wasn't sent correctly
     if not form.validate_on_submit():
         return render_template('login.html', form=form)
 
-    # On vérifie les données fournies
+    # Validity check
     user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
     if user is None or not user.check_password(form.password.data):
         flash("Invalid username or password")
         return redirect(url_for('auth.login_page'))
 
     login_user(user, remember=form.remember_me.data)
-    # Gestion de la redirection
+    # Redirection management
     next_page = request.args.get('next')
-    # Vérification que l'url ne sort pas du site
+    # URL sanitizer
     if not next_page or urlsplit(next_page).netloc != '':
         next_page = '/'
     flash(f'Utilisateur {user.prenom_utilisateur} {user.nom_utilisateur} connecté')
@@ -45,13 +45,13 @@ def logout():
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register_page():
-    # Si l'utilisateur est déjà connecté, on saute la page
+    # If the user is already logged in, we skip the page
     if current_user.is_authenticated:
         return redirect('/')
 
     form = RegisterForm()
 
-    # Si le formulaire n'a pas été envoyé correctement
+    # If the form wasn't sent correctly
     if not form.validate_on_submit():
         return render_template('register.html', form=form)
 
