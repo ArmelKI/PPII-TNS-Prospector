@@ -2,10 +2,12 @@ from flask import Blueprint, render_template
 from app.models import Client, Projet, Intervenant, Jalon, InteractionClient, StatutJalon, StatutProjet
 from datetime import date, timedelta
 from sqlalchemy import or_
+from flask_login import login_required
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
 @dashboard_bp.route("/")
+@login_required
 def dashboard():
     """
     Renders the main dashboard page with key metrics, urgent milestones,

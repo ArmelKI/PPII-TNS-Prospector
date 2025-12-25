@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify, render_template
 from app.models import db, Jalon, Projet, StatutJalon
+from flask_login import login_required
 
 jalons_bp = Blueprint("jalons", __name__, url_prefix="/jalons")
 
 @jalons_bp.route("/kanban/<int:id_projet>")
+@login_required
 def voir_kanban(id_projet):
     """
     Display the Kanban board for a specific project.
@@ -16,10 +18,11 @@ def voir_kanban(id_projet):
     """
     projet = Projet.query.get_or_404(id_projet)
     jalons = Jalon.query.filter_by(id_projet=id_projet).order_by(Jalon.date_fin_jalon).all()
-    
+
     return render_template("projet_kanban.html", projet=projet, jalons=jalons)
 
 @jalons_bp.route("/api/update_statut", methods=["POST"])
+@login_required
 def update_statut():
     """
     Update the status of a milestone (jalon) via an API call.
@@ -33,7 +36,7 @@ def update_statut():
     """
     data = request.get_json()
     id_jalon = data.get("id_jalon")
-    nouveau_statut_str = data.get("nouveau_statut") 
+    nouveau_statut_str = data.get("nouveau_statut")
 
     jalon = Jalon.query.get_or_404(id_jalon)
     for s in StatutJalon:
@@ -41,5 +44,5 @@ def update_statut():
             jalon.statut_jalon = s
             db.session.commit()
             return jsonify({"success": True})
-            
+
     return jsonify({"success": False, "error": "Unknown status"}), 400
