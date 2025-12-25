@@ -40,11 +40,20 @@ intervenant_projet = db.Table(
     db.Column("date_fin_intervention", db.Date)
 )
 
-intervenant_competence = db.Table(
-    "intervenant_competence",
-    db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
-    db.Column("id_competence", db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
-)
+class MaitriseCompetence(db.Model):
+    __tablename__ = "intervenant_competence"
+    
+    id_intervenant = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE"), primary_key=True)
+    id_competence = db.Column(db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE"), primary_key=True)
+    niveau_maitrise = db.Column(db.Integer, default=0)
+    
+    # Relations vers les deux objets
+    intervenant = db.relationship("Intervenant", back_populates="maitrise_details")
+    competence = db.relationship("Competence", back_populates="intervenant_details")
+
+    __table_args__ = (
+        db.CheckConstraint("niveau_maitrise >= 0 AND niveau_maitrise <= 10", name="check_niveau_maitrise"),
+    )
 
 intervenant_tache = db.Table(
     "intervenant_tache",
@@ -111,7 +120,7 @@ class Intervenant(db.Model):
     cv = db.Column(db.String(255))
 
     utilisateur = db.relationship("Utilisateur", back_populates="intervenant")
-    competences = db.relationship("Competence", secondary=intervenant_competence, back_populates="intervenants")
+    maitrise_details = db.relationship("MaitriseCompetence", back_populates="intervenant", cascade="all, delete-orphan")    
     projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
     taches = db.relationship("Tache", secondary=intervenant_tache, back_populates="intervenants")
 
@@ -128,8 +137,7 @@ class Competence(db.Model):
     id_competence = db.Column(db.Integer, primary_key=True)
     nom_competence = db.Column(db.String(150), nullable=False)
 
-    intervenants = db.relationship("Intervenant", secondary=intervenant_competence, back_populates="competences")
-
+    intervenant_details = db.relationship("MaitriseCompetence", back_populates="competence", cascade="all, delete-orphan")
 class EtatRelation(db.Model):
     """
     Represents the state of the relationship with a client at a given time.

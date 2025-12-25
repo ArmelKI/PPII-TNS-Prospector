@@ -1,28 +1,16 @@
-/* 
-    Main dashboard grid layout.
-    Uses a 2/3 - 1/3 split for desktop, stacks to one column on mobile.
-*/
 .dashboard-grid {
         display: grid;
-        grid-template-columns: 2fr 1fr; /* Main content left, sidebar right */
+        grid-template-columns: 2fr 1fr;
         gap: 24px;
         margin-top: 30px;
 }
 
-/* 
-    Responsive adjustment: 
-    On screens <= 900px, stack everything in a single column for better mobile usability.
-*/
 @media (max-width: 900px) {
         .dashboard-grid {
                 grid-template-columns: 1fr;
         }
 }
 
-/*
-    Panel/card styling for dashboard sections.
-    Gives a clean, elevated look with padding and subtle shadow.
-*/
 .panel {
         background: #ffffff;
         padding: 24px;
@@ -32,10 +20,6 @@
         border: 1px solid #eef0f2;
 }
 
-/*
-    Panel header styling.
-    Adds a bottom border and spacing for section titles.
-*/
 .panel h3 {
         margin-top: 0;
         margin-bottom: 20px;
@@ -46,23 +30,15 @@
         display: inline-block;
 }
 
-/*
-    Table cell for dates.
-    Highlights urgent dates in red for quick visual scanning.
-*/
 .date-cell {
         font-weight: 600;
         color: #555;
 }
 
 .date-cell.urgent-warning {
-        color: #e74c3c; /* Red for high urgency */
+        color: #e74c3c;
 }
 
-/*
-    Extra small button style.
-    Used for compact actions (like "View" or "Edit" in tables).
-*/
 .btn-xs {
         background-color: #eef2f6;
         color: #0056b3;
@@ -77,10 +53,6 @@
         background-color: #dbe4ef;
 }
 
-/*
-    Empty state styling.
-    Used when there's no data to show, to keep the UI friendly and clear.
-*/
 .empty-state {
         padding: 20px;
         text-align: center;
@@ -89,10 +61,6 @@
         color: #888;
 }
 
-/*
-    Chart area layout.
-    Uses flex to arrange chart and stats side by side, wraps on small screens.
-*/
 .chart-wrapper {
         display: flex;
         gap: 30px;
@@ -100,10 +68,6 @@
         flex-wrap: wrap;
 }
 
-/*
-    Container for chart canvas.
-    Sets min/max width for responsive scaling.
-*/
 .canvas-container {
         flex: 1;
         min-width: 260px;
@@ -111,25 +75,15 @@
         margin: 0 auto;
 }
 
-/*
-    Stats list (progress bars) next to the chart.
-    Ensures minimum width for readability.
-*/
 .stats-list {
         flex: 1;
         min-width: 220px;
 }
 
-/*
-    Individual stat item (progress bar + label).
-*/
 .stat-item {
         margin-bottom: 12px;
 }
 
-/*
-    Header for each stat: label and value aligned.
-*/
 .stat-header {
         display: flex;
         justify-content: space-between;
@@ -138,10 +92,6 @@
         color: #555;
 }
 
-/*
-    Progress bar background track.
-    Subtle color and rounded edges for a modern look.
-*/
 .progress-track {
         background: #edf2f7;
         height: 8px;
@@ -149,38 +99,23 @@
         overflow: hidden;
 }
 
-/*
-    Progress bar fill.
-    Default color is gray, but can be overridden for status.
-*/
 .progress-fill {
         height: 100%;
         border-radius: 4px;
-        background-color: #bdc3c7; /* Default color */
+        background-color: #bdc3c7;
 }
 
-/*
-    Status-specific progress bar colors.
-    Blue: in progress, Green: done, Red: blocked.
-*/
 .progress-fill.en-cours { background-color: #3498db; }
 .progress-fill.terminé { background-color: #2ecc71; }
 .progress-fill.bloqué { background-color: #e74c3c; }
 
-/*
-    List of recent interactions (sidebar).
-    Removes default list styling for a cleaner look.
-*/
+
 .interaction-list {
         list-style: none;
         padding: 0;
         margin: 0;
 }
 
-/*
-    Individual interaction item.
-    Adds spacing and a divider between items.
-*/
 .interaction-item {
         padding-bottom: 12px;
         margin-bottom: 12px;
@@ -191,46 +126,32 @@
         border-bottom: none;
 }
 
-/*
-    Client name styling in interactions.
-    Uses brand color and bold for emphasis.
-*/
+
 .client-name {
         font-weight: bold;
         color: #0056b3;
         font-size: 0.95rem;
 }
 
-/*
-    Details of the interaction (message, action, etc).
-*/
+
 .interaction-detail {
         font-size: 0.9rem;
         margin: 4px 0;
         color: #333;
 }
 
-/*
-    Date of the interaction, shown in lighter color.
-*/
+
 .interaction-date {
         color: #999;
         font-size: 0.8rem;
 }
 
-/*
-    "See more" button container.
-    Centers the button below the list.
-*/
 .see-more-container {
         margin-top: 20px;
         text-align: center;
 }
 
-/*
-    Block-level button for actions like "See all".
-    Full width, prominent color, rounded corners.
-*/
+
 .btn-block {
         display: block;
         width: 100%;

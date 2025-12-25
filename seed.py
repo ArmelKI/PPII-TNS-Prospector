@@ -4,14 +4,18 @@ from app import create_app
 from app.models import (
     db, Client, Utilisateur, Intervenant, Competence, Projet, Convention,
     Jalon, Role, StatutProjet, StatutJalon, Tache, StatutTache,
-    EtatRelation, InteractionClient
+    EtatRelation, InteractionClient, MaitriseCompetence
 )
 
 app = create_app()
 
 with app.app_context():
     print("🗑  Wiping and resetting the database...")
+    db.session.remove()
+    db.engine.dispose()
 
+    # On utilise CASCADE pour forcer la suppression malgré les clés étrangères
+    db.metadata.reflect(bind=db.engine)
     db.drop_all()
     db.create_all()
 
@@ -54,6 +58,7 @@ with app.app_context():
 
     intervenants_objs = []
 
+    # UNE SEULE BOUCLE ICI
     for i in range(len(prenoms)):
         u = Utilisateur()
         u.prenom_utilisateur = prenoms[i]
@@ -63,28 +68,34 @@ with app.app_context():
         u.id_role = r_inter.id_role
 
         db.session.add(u)
-        db.session.flush()  # Get user ID for linking
+        db.session.flush()  # Crée l'ID utilisateur pour l'étape suivante
 
-        # Randomly decide if this team member is available
         est_dispo = (random.random() > 0.4)
-
         inter = Intervenant(
-            id_intervenant=u.id_utilisateur, # type: ignore
-            disponible=est_dispo, # type: ignore
-            nb_heures_dispo=random.choice([5, 10, 15, 20, 25]) if est_dispo else 0, # type: ignore
-            cv="uploads/documents/dummy.pdf", # type: ignore
-            photo_identite="", # type: ignore
-            carte_etudiante="", # type: ignore
-            carte_vitale="" # type: ignore
+            id_intervenant=u.id_utilisateur,
+            disponible=est_dispo,
+            nb_heures_dispo=random.choice([5, 10, 15, 20, 25]) if est_dispo else 0,
+            cv="uploads/documents/dummy.pdf",
+            photo_identite="",
+            carte_etudiante="",
+            carte_vitale=""
         )
 
-        # Assign 1-4 random skills to each team member
-        inter.competences.extend(random.sample(db_comps, k=random.randint(1, 4)))
-
         db.session.add(inter)
+        db.session.flush()  # Crée l'intervenant pour permettre la liaison compétences
         intervenants_objs.append(inter)
 
-    db.session.commit()
+        # Assigner 1-4 compétences au hasard
+        selected_comps = random.sample(db_comps, k=random.randint(1, 4))
+        for comp in selected_comps:
+            maitrise = MaitriseCompetence(
+                id_intervenant=inter.id_intervenant,
+                id_competence=comp.id_competence,
+                niveau_maitrise=random.randint(1, 10)
+            )
+            db.session.add(maitrise)
+
+    db.session.commit() # On valide tout le groupe d'utilisateurs
 
     # --- 4. Clients & Interactions ---
     print("🏢 Creating clients and their interaction history...")

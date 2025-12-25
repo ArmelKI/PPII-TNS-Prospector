@@ -5,11 +5,10 @@ from io import StringIO
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, current_app
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
-from app.models import Intervenant, Utilisateur, Competence, db
+from app.models import Intervenant, Utilisateur, Competence, db, MaitriseCompetence
 
 intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants")
 
-# --- Helper Function for Uploads ---
 def save_uploaded_file(file_obj, subfolder="documents"):
     """
     Saves a file to app/static/uploads/<subfolder>/ and returns the relative path.
@@ -18,27 +17,19 @@ def save_uploaded_file(file_obj, subfolder="documents"):
     if not file_obj or file_obj.filename == '':
         return None
     
-    # 1. Secure the filename
     original_name = secure_filename(file_obj.filename)
     
-    # 2. Generate unique name to prevent overwrite
     random_hex = secrets.token_hex(4)
     name, ext = os.path.splitext(original_name)
     new_filename = f"{name}_{random_hex}{ext}"
     
-    # 3. Define path (app/static/uploads/...)
     upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', subfolder)
     os.makedirs(upload_dir, exist_ok=True)
     
-    # 4. Save
     save_path = os.path.join(upload_dir, new_filename)
     file_obj.save(save_path)
     
-    # 5. Return relative path for DB
     return f"uploads/{subfolder}/{new_filename}"
-
-
-# --- Routes ---
 
 @intervenants_bp.route("/", methods=["GET"])
 def liste_intervenants():
@@ -47,16 +38,16 @@ def liste_intervenants():
     page = request.args.get('page', 1, type=int)
     per_page = 8
 
-    q = Intervenant.query.options(
-        joinedload(Intervenant.utilisateur), # type: ignore
-        joinedload(Intervenant.competences)  # type: ignore
+    q = Intervenant.query.join(Utilisateur).options(
+        joinedload(Intervenant.utilisateur),
+        joinedload(Intervenant.maitrise_details)
     )
 
     if search:
-        q = q.join(Utilisateur).outerjoin(Intervenant.competences).filter( # type: ignore
+        q = q.join(Utilisateur).outerjoin(Intervenant.maitrise_details).filter(
             (Utilisateur.nom_utilisateur.ilike(f"%{search}%")) |
             (Utilisateur.prenom_utilisateur.ilike(f"%{search}%")) |
-            (Competence.nom_competence.ilike(f"%{search}%")) # type: ignore
+            (Competence.nom_competence.ilike(f"%{search}%"))
         )
 
     if dispo:
@@ -71,7 +62,6 @@ def liste_intervenants():
 @intervenants_bp.route('/add', methods=['GET', 'POST'])
 def ajouter_intervenant():
     if request.method == "POST":
-        # 1. Validation des champs obligatoires (Documents)
         # On vérifie que les fichiers sont bien présents dans la requête
         cv_file = request.files.get('cv_file')
         photo_file = request.files.get('photo_file')
@@ -85,7 +75,6 @@ def ajouter_intervenant():
             flash("Erreur : La photo d'identité est obligatoire.", "warning")
             return redirect(request.url)
 
-        # 2. Récupération des données texte
         id_util = request.form.get("id_utilisateur")
         prenom = request.form.get("prenom_utilisateur", "").strip()
         nom = request.form.get("nom_utilisateur", "").strip()
@@ -94,7 +83,6 @@ def ajouter_intervenant():
         heures = request.form.get("heures", type=float, default=0.0)
         competences_raw = request.form.get("competences", "")
 
-        # 3. Gestion Utilisateur
         if id_util:
             utilisateur = Utilisateur.query.get(int(id_util))
         else:
@@ -104,40 +92,42 @@ def ajouter_intervenant():
 
             temp_password = secrets.token_urlsafe(12)
             utilisateur = Utilisateur(
-                prenom_utilisateur=prenom, # type: ignore
-                nom_utilisateur=nom,       # type: ignore
-                mail_utilisateur=email,    # type: ignore
-                mdp_utilisateur=temp_password, # type: ignore
-                id_role=1  # type: ignore
+                prenom_utilisateur=prenom,
+                nom_utilisateur=nom,
+                mail_utilisateur=email,
+                mdp_utilisateur=temp_password,
+                id_role=1
             )
             db.session.add(utilisateur)
             db.session.flush()
-
-        # 4. Sauvegarde des fichiers
         path_cv = save_uploaded_file(cv_file, 'documents')
         path_photo = save_uploaded_file(photo_file, 'avatars')
         path_carte_etu = save_uploaded_file(request.files.get('carte_etu_file'), 'documents')
         path_carte_vitale = save_uploaded_file(request.files.get('carte_vitale_file'), 'documents')
 
-        # 5. Création Intervenant
         intervenant = Intervenant(
-            id_intervenant=utilisateur.id_utilisateur, # type: ignore
-            disponible=dispo, # type: ignore
-            nb_heures_dispo=heures, # type: ignore
-            cv=path_cv, # type: ignore
-            photo_identite=path_photo, # type: ignore
-            carte_etudiante=path_carte_etu, # type: ignore
-            carte_vitale=path_carte_vitale # type: ignore
+            id_intervenant=utilisateur.id_utilisateur, 
+            disponible=dispo,
+            nb_heures_dispo=heures,
+            cv=path_cv,
+            photo_identite=path_photo,
+            carte_etudiante=path_carte_etu,
+            carte_vitale=path_carte_vitale
         )
 
-        # 6. Compétences
         comps = [c.strip() for c in competences_raw.replace(",", ";").split(";") if c.strip()]
         for cname in comps:
-            comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
+            comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first()
             if not comp:
-                comp = Competence(nom_competence=cname) # type: ignore
+                comp = Competence(nom_competence=cname)
                 db.session.add(comp)
-            intervenant.competences.append(comp)
+                db.session.flush()
+            
+            lien = MaitriseCompetence(
+            intervenant=intervenant,
+            competence=comp,
+            niveau_maitrise=0)
+            db.session.add(lien)
 
         db.session.add(intervenant)
         db.session.commit()
@@ -159,33 +149,34 @@ def modifier_intervenant(id):
         
         # Mise à jour fichiers (seulement si un nouveau est envoyé)
         new_cv = save_uploaded_file(request.files.get('cv_file'), 'documents')
-        if new_cv: intervenant.cv = new_cv # type: ignore
+        if new_cv: intervenant.cv = new_cv 
             
         new_photo = save_uploaded_file(request.files.get('photo_file'), 'avatars')
-        if new_photo: intervenant.photo_identite = new_photo # type: ignore
+        if new_photo: intervenant.photo_identite = new_photo
 
         new_etu = save_uploaded_file(request.files.get('carte_etu_file'), 'documents')
-        if new_etu: intervenant.carte_etudiante = new_etu # type: ignore
+        if new_etu: intervenant.carte_etudiante = new_etu 
 
         new_vitale = save_uploaded_file(request.files.get('carte_vitale_file'), 'documents')
-        if new_vitale: intervenant.carte_vitale = new_vitale # type: ignore
+        if new_vitale: intervenant.carte_vitale = new_vitale
 
-        # Compétences (Reset & Add)
         competences_raw = request.form.get("competences", "")
         comps = [c.strip() for c in competences_raw.replace(",", ";").split(";") if c.strip()]
-        intervenant.competences = []
+        MaitriseCompetence.query.filter_by(id_intervenant=intervenant.id_intervenant).delete()
         for cname in comps:
             comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
             if not comp:
-                comp = Competence(nom_competence=cname) # type: ignore
+                comp = Competence(nom_competence=cname) 
                 db.session.add(comp)
-            intervenant.competences.append(comp)
+                db.session.flush()
+            lien = MaitriseCompetence(intervenant=intervenant, competence=comp, niveau_maitrise=0)
+            db.session.add(lien)
 
         db.session.commit()
         flash("Profil mis à jour.", "info")
         return redirect(url_for("intervenants.liste_intervenants"))
 
-    competences_str = "; ".join([c.nom_competence for c in intervenant.competences])
+    competences_str = "; ".join([c.nom_competence for c in intervenant.maitrise_details])
     return render_template("modifier_intervenant.html", intervenant=intervenant, competences_str=competences_str)
 
 

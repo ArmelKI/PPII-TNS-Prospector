@@ -29,6 +29,9 @@ def prospects_api(radius):
     CENTER_LAT = 48.66895
     CENTER_LNG = 6.15547
 
+    existing_clients = Client.query.with_entities(Client.latitude, Client.longitude).all()
+    client_coords = {(float(c.latitude), float(c.longitude)) for c in existing_clients}
+
     query = f"""
     [out:json];
     (
@@ -38,29 +41,31 @@ def prospects_api(radius):
     );
     out;
     """
-
-    response = requests.post(
-        "https://overpass-api.de/api/interpreter",
-        data=query
-    )
-
-    data = response.json()
+    try:
+        response = requests.post(
+            "https://overpass-api.de/api/interpreter",
+            data=query, 
+            timeout=10
+        )
+        if response.status_code != 200:
+            return jsonify([])
+        data = response.json()
+    except Exception as e:
+        print(f"Erreur API: {e}")
+        return jsonify([])
 
     prospects = []
-    for el in data["elements"]:
-        tags = el.get("tags", {})
-
-        prospects.append({
-            "name": tags.get("name", "Entreprise inconnue"),
-            "type": (
-                tags.get("shop")
-                or tags.get("office")
-                or tags.get("craft")
-                or "inconnu"
-            ),
-            "lat": el["lat"],
-            "lng": el["lon"]
-        })
+    for el in data.get("elements", []):
+        lat, lng = el.get("lat"), el.get("lon")
+        
+        if (lat, lng) not in client_coords:
+            tags = el.get("tags", {})
+            prospects.append({
+                "name": tags.get("name", "Entreprise inconnue"),
+                "type": tags.get("shop") or tags.get("office") or tags.get("craft") or "inconnu",
+                "lat": lat,
+                "lng": lng
+            })
     
     return jsonify(prospects)
 

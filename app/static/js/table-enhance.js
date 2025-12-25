@@ -1,5 +1,4 @@
 //Recherche rapide côté client
-//  simple table search
 function tableSearch(inputId, tableSelector) {
   const inp = document.getElementById(inputId);
   if (!inp) return;

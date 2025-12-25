@@ -46,6 +46,7 @@ CREATE TABLE competences (
 CREATE TABLE intervenant_competence (
     id_intervenant INT,
     id_competence INT,
+    niveau_maitrise INT CONSTRAINT range_check CHECK (niveau_maitrise BETWEEN 0 AND 10)
     PRIMARY KEY (id_intervenant, id_competence),
     FOREIGN KEY (id_intervenant) REFERENCES intervenants(id_intervenant),
     FOREIGN KEY (id_competence) REFERENCES competences(id_competence)

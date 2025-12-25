@@ -14,9 +14,7 @@ def voir_kanban(id_projet):
     Returns:
         Rendered HTML template for the project's Kanban board.
     """
-    # Fetch the project by its ID, or return 404 if not found
     projet = Projet.query.get_or_404(id_projet)
-    # Get all milestones (jalons) for this project, ordered by their end date
     jalons = Jalon.query.filter_by(id_projet=id_projet).order_by(Jalon.date_fin_jalon).all()
     
     return render_template("projet_kanban.html", projet=projet, jalons=jalons)
@@ -37,16 +35,11 @@ def update_statut():
     id_jalon = data.get("id_jalon")
     nouveau_statut_str = data.get("nouveau_statut") 
 
-    # Try to fetch the milestone by its ID, or return 404 if not found
     jalon = Jalon.query.get_or_404(id_jalon)
-
-    # Loop through all possible statuses to find a match
     for s in StatutJalon:
         if s.value == nouveau_statut_str:
-            # Update the milestone's status and save to the database
             jalon.statut_jalon = s
             db.session.commit()
             return jsonify({"success": True})
             
-    # If the provided status is not valid, return an error
     return jsonify({"success": False, "error": "Unknown status"}), 400
