@@ -2,8 +2,8 @@ import random
 from datetime import date, timedelta
 from app import create_app
 from app.models import (
-    db, Client, Utilisateur, Intervenant, Competence, Projet, Convention, 
-    Jalon, Role, StatutProjet, StatutJalon, Tache, StatutTache, 
+    db, Client, Utilisateur, Intervenant, Competence, Projet, Convention,
+    Jalon, Role, StatutProjet, StatutJalon, Tache, StatutTache,
     EtatRelation, InteractionClient
 )
 
@@ -30,7 +30,7 @@ with app.app_context():
 
     # --- 2. Skills / Competencies ---
     comps_list = [
-        "Python", "React", "Vue.js", "Docker", "Figma", "Marketing", 
+        "Python", "React", "Vue.js", "Docker", "Figma", "Marketing",
         "SEO", "Droit", "Compta", "Java", "Angular"
     ]
     db_comps = []
@@ -59,7 +59,7 @@ with app.app_context():
         u.prenom_utilisateur = prenoms[i]
         u.nom_utilisateur = noms[i]
         u.mail_utilisateur = f"{prenoms[i].lower()}.{noms[i].lower()}@tns.fr"
-        u.mdp_utilisateur = "pass"
+        u.mdp_utilisateur = "$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq"
         u.id_role = r_inter.id_role
 
         db.session.add(u)
@@ -90,14 +90,14 @@ with app.app_context():
     print("🏢 Creating clients and their interaction history...")
 
     clients_data = [
-        ("TotalEnergies", "Energie"), ("Sanofi", "Santé"), ("LVMH", "Luxe"), 
+        ("TotalEnergies", "Energie"), ("Sanofi", "Santé"), ("LVMH", "Luxe"),
         ("Airbus", "Aéronautique"), ("BNP Paribas", "Banque"), ("Orange", "Télécom"),
         ("Google France", "Tech"), ("Carrefour", "Retail"), ("SNCF", "Transport"), ("Decathlon", "Sport")
     ]
 
     types_interaction = [
-        "Follow-up phone call", "Business lunch", "Sales presentation", 
-        "Quote sent", "Price negotiation", "Kickoff meeting", 
+        "Follow-up phone call", "Business lunch", "Sales presentation",
+        "Quote sent", "Price negotiation", "Kickoff meeting",
         "Reminder email", "Contract signed", "Monthly progress review"
     ]
 
@@ -109,7 +109,7 @@ with app.app_context():
             mail_client=f"contact@{nom_cli.lower().replace(' ', '')}.com",
             telephone_client=f"01{random.randint(10,99)}{random.randint(10,99)}{random.randint(10,99)}{random.randint(10,99)}",
             date_dernier_contact=date.today() - timedelta(days=random.randint(0, 10)),
-            latitude=48.8566 + (random.random() - 0.5) * 0.1, 
+            latitude=48.8566 + (random.random() - 0.5) * 0.1,
             longitude=2.3522 + (random.random() - 0.5) * 0.1
         )
         db.session.add(c)
@@ -137,7 +137,7 @@ with app.app_context():
 
         # Randomly pick a project status, favoring "in progress"
         statut_choisi = random.choice([
-            StatutProjet.EN_COURS, StatutProjet.EN_COURS, 
+            StatutProjet.EN_COURS, StatutProjet.EN_COURS,
             StatutProjet.TERMINE, StatutProjet.BLOQUE
         ])
 
@@ -158,7 +158,7 @@ with app.app_context():
 
         # --- Kanban Board: Project Milestones ---
         etapes = [
-            "Scoping", "UX/UI Mockup", "Backend Development", 
+            "Scoping", "UX/UI Mockup", "Backend Development",
             "Frontend Development", "Testing", "Production Release"
         ]
         for etape in etapes:
