@@ -272,7 +272,7 @@ a:hover { text-decoration: underline; }
 .error-page {
   text-align: center;
   padding: 60px 20px;
-}   
+}
 .error-page h1 {
   font-size: 96px;
   margin-bottom: 20px;
@@ -285,7 +285,7 @@ a:hover { text-decoration: underline; }
 .error-page .btn {
   font-size: 18px;
   padding: 12px 20px;
-}   
+}
 
 /* ===============================
    PAGE PROFIL INTERVENANT
@@ -303,7 +303,7 @@ a:hover { text-decoration: underline; }
 
 /* ===============================
    FORMULAIRES
-   =============================== */ 
+   =============================== */
 .form-group {
   margin-bottom: 16px;
 }
@@ -331,7 +331,7 @@ a:hover { text-decoration: underline; }
 .form-group textarea {
   resize: vertical;
   min-height: 100px;
-}   
+}
 
 /* Micro-animations */
 .card {
@@ -399,6 +399,17 @@ a:hover { text-decoration: underline; }
 .btn-xs {
     padding: 2px 8px;
     font-size: 0.8rem;
+}
+
+.flash-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  max-width: fit-content;
+  padding: .75rem 1.25rem;
+  border: solid 2px #f5c6cb;
+  border-radius: 6px;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
 /* --- KANBAN SPECIFIC --- */
