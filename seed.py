@@ -164,6 +164,11 @@ with app.app_context():
         for member in team:
             p.intervenants.append(member)
 
+        # Attribution de 2 à 4 compétences requises au hasard
+        besoins_techniques = random.sample(db_comps, k=random.randint(2, 4))
+        for competence in besoins_techniques:
+            p.competences_requises.append(competence)
+
         db.session.add(p)
         db.session.flush()  # Get project ID for linking
 

@@ -124,6 +124,8 @@ def match_projet(id):
     
     sys_p, usr_p = create_ai_prompt(projet, intervenants)
     suggestions = call_ai_matching(sys_p, usr_p)
+    print(f"prompt system:{sys_p}")
+    print(f"prompt user:{usr_p }")
     
     if suggestions:
         print("\n--- RÉSULTATS DU MATCHING ---")

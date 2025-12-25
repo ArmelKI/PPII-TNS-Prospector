@@ -58,7 +58,7 @@ def create_ai_prompt(mission,intervenants_dispos ):
     
     mission_data = {
         "titre": mission.nom_projet, # Class Projets
-        "competence_requise" : "java", # on peut avoir plusieurs compétences requises 
+        "competence_requise" : [competence.nom_competence for competence in mission.competences_requises], # on peut avoir plusieurs compétences requises 
         "charge_estimée" : 15, # heures par défaut
         "deadline_semaines" : 10 #
     }
@@ -98,48 +98,13 @@ def create_ai_prompt(mission,intervenants_dispos ):
     prompt_user = f"""
     Voici la Mission : {json.dumps(mission_data)}
 
-    Voici le Pool d'Intervenants Disponibles : {json.dumps(pool_intervenants)}
+    Voici le Pool d'Intervenants Disponibles : {json.dumps(pool)}
 
     Trouve les 3 meilleures combinaisons. Réponds seulement par le JSON.
     """
 
     return prompt_system,prompt_user
 
-
-    
-
-        
-     
-        
-
-    
-
-# --- 1. DONNÉES À ENVOYER (JSON) ---
-# Dans ton app Flask, ces données viendront de tes objets SQLAlchemy convertis en dict
-mission_data = {
-    "titre": "Plateforme SaaS Complète",
-    "competences_requises": ["Python", "React", "Docker"],
-    "charge_estimee": 150,
-    "deadline_semaines": 10
-}
-
-pool_intervenants = [
-    {"id": 1, "nom": "Alice", "skills": {"Python": 9, "Django": 8}, "dispo_h": 5},
-    {"id": 2, "nom": "Bob", "skills": {"React": 8, "JS": 8}, "dispo_h": 15},
-    {"id": 3, "nom": "Charlie", "skills": {"Python": 7, "SQL": 8}, "dispo_h": 25},
-    {"id": 4, "nom": "David", "skills": {"Docker": 8, "AWS": 7, "Python": 5}, "dispo_h": 10}
-]
-
-# --- 2. CONSTRUCTION DU PROMPT ---
-# On injecte les règles métier directement dans le prompt
-
-prompt_user = f"""
-Voici la Mission : {json.dumps(mission_data)}
-
-Voici le Pool d'Intervenants Disponibles : {json.dumps(pool_intervenants)}
-
-Trouve les 3 meilleures combinaisons. Réponds seulement par le JSON.
-"""
 
 
 
