@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from app.models import db
+from app.models import db, Utilisateur
 import pytest
 from app.__init__ import create_app
 
@@ -33,3 +33,35 @@ def client(app):
 @pytest.fixture
 def projet(app):
     return app.test_client()
+
+from app.models import Utilisateur, Role, db  # Assure-toi d'importer Role
+
+@pytest.fixture
+def logged_in_client(client, app):
+    with app.app_context():
+        # 1. S'assurer que le rôle avec l'ID 1 existe
+        role = Role.query.get(1)
+        if not role:
+            role = Role(id_role=1, nom_role="Admin") # Adapte selon tes colonnes
+            db.session.add(role)
+            db.session.commit()
+
+        # 2. Création de l'utilisateur de test
+        user = Utilisateur.query.filter_by(mail_utilisateur="test@test.com").first()
+        if not user:
+            user = Utilisateur(
+                nom_utilisateur="Test",
+                prenom_utilisateur="User",
+                mail_utilisateur="test@test.com",
+                mdp_utilisateur="password", 
+                id_role=1
+            )
+            db.session.add(user)
+            db.session.commit()
+            
+        # 3. Connexion (simulation du login)
+        with client.session_transaction() as sess:
+            sess['_user_id'] = str(user.id_utilisateur) # Flask-Login utilise souvent des strings
+            sess['_fresh'] = True
+            
+        yield client
