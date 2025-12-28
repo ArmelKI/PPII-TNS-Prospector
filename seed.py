@@ -151,11 +151,21 @@ with app.app_context():
             StatutProjet.EN_COURS, StatutProjet.EN_COURS, 
             StatutProjet.TERMINE, StatutProjet.BLOQUE
         ])
-
+        # Randomly choose the start and end of a project 
+        d_debut = date.today() - timedelta(days=random.randint(10,120))
+        
+        if statut_choisi == StatutProjet.TERMINE: 
+            jours_ecoules = (date.today() - d_debut).days
+            d_fin = d_debut + timedelta(days=random.randint(1,jours_ecoules))
+        else :
+            d_fin =date.today() + timedelta(weeks=random.randint(4,24))
+        
         p = Projet(
             nom_projet=f"Mission {secteur} - {nom_cli}", # type: ignore
             statut_projet=statut_choisi, # type: ignore
-            date_debut_projet=date.today() - timedelta(days=random.randint(10, 120)), # type: ignore
+            charge_projet=random.randint(20,300), # charge total  du projet entre 20 et 300 heures
+            date_debut_projet=d_debut,
+            date_fin_projet=d_fin, # type: ignore
             id_convention=conv.id_convention # type: ignore
         )
 

@@ -132,3 +132,25 @@ def match_projet(id):
         print(json.dumps(suggestions, indent=2, ensure_ascii=False))
     return  render_template('swipe.html', suggestions=suggestions['suggestions'],mission=projet)
 
+@projets_bp.route("/<int:id>/valider-equipe",methods=['POST'])
+def valider_equipe(id):
+    projet = Projet.query.get_or_404(id)
+
+    ids_choisis = request.form.getlist('id_equipe')
+    
+    #ids_choisis = [int(x) for x in ids_choisis]
+    print(ids_choisis)
+    try: 
+        for id_inter in ids_choisis: 
+            intervenant = Intervenant.query.get(id_inter)
+            if  intervenant: 
+               projet.intervenants.append(intervenant)
+        db.session.commit() # validation dans la db 
+
+        flash("Equipe successfully added", "success")
+    except Exception as e: 
+        db.session.rollback()
+        flash(f'Erreur lors de la sauvegarde:{str(e)}',"danger")
+        
+    return redirect(url_for('projets.details_projet' , id=id))
+    

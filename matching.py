@@ -53,23 +53,29 @@ def create_ai_prompt(mission,intervenants_dispos ):
     intervenants_dispos = Intervenant.query.filter(Intervenants.disponible == True).all()
 
     """
-    
-
+    deadline_weeks = 4 # default value
+    if mission.date_debut_projet and mission.date_fin_projet:
+        delta = mission.date_fin_projet - mission.date_debut_projet
+        deadline_weeks = max(1, int(delta.days / 7)) # max(1, ) pour éviter le "0 semaines si le projet est très court"
     
     mission_data = {
         "titre": mission.nom_projet, # Class Projets
-        "competence_requise" : [competence.nom_competence for competence in mission.competences_requises], # on peut avoir plusieurs compétences requises 
-        "charge_estimée" : 15, # heures par défaut
-        "deadline_semaines" : 10 #
+        "competence_requise" : [competence.nom_competence for competence in mission.competences_requises], # on peut avoir plusieurs compétences requises
+        "equipe_actuel": [str(i.utilisateur.prenom_utilisateur) for i in mission.intervenants], 
+        "charge_estimee" : mission.charge_projet or 50, # heures par défaut
+        "deadline_semaines" : deadline_weeks 
     }
     pool = [] # Liste de dictionnaire contenant les infos des intervenant dispos
     for intervenant in intervenants_dispos:
-        # On construit le dict des compétences de l'intervenant
-        #  skills = {c.nom_competence: intervnant_competence.id_intervenant for c in i.competences} # Inaccessible tant que la db n'est pas modifié
+        
+        skills_dict = {
+            m.competence.nom_competence : m.niveau_maitrise
+            for m in intervenant.maitrise_details
+        }
         pool.append({
             "id": intervenant.id_intervenant,
-            "nom": str(intervenant),
-            "skills": "skills",
+            "nom": str(intervenant.utilisateur.prenom_utilisateur) +" "+ str(intervenant.utilisateur.nom_utilisateur),
+            "skills": skills_dict,
             "dispo_h": intervenant.nb_heures_dispo or 0
         })
 
@@ -84,12 +90,14 @@ def create_ai_prompt(mission,intervenants_dispos ):
     - Il n'y a pas de niveau minimum requis : prends simplement le meilleur profil disponible.
 
     2. **MINIMISATION DE L'ÉQUIPE** : Si un seul intervenant est expert dans toutes les compétences, choisis-le (Solo). Sinon, combine les experts (Duo/Trio) pour couvrir tous les besoins au meilleur niveau.
+    - On cherche au maximum une equipe de 4 à 5 personne. Si il y'a déjà des profils sur cette mission tu dois donc les prendre en compte
 
     3. **FAISABILITÉ** : Vérifie que la somme des disponibilités (heures/semaine) de l'équipe est cohérente avec la charge de travail.
 
     FORMAT DE RÉPONSE :
     Réponds UNIQUEMENT par un JSON valide (sans texte avant/après) contenant une liste 'suggestions'.
     Chaque suggestion doit avoir :
+    - 'id_equipe' : liste des ID entiers correspondant
     - 'equipe': liste des noms
     - 'score': note de 0 à 100 (basée sur la moyenne des compétences des intervenants choisis pour la mission)
     - 'raison': explique pourquoi ces experts ont été choisis (ex: "Alice est la meilleure en Python (9/10)").

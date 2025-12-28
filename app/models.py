@@ -221,6 +221,8 @@ class Projet(db.Model):
         SAEnum(StatutProjet, name="statut_projet_enum"),
         nullable=False,
         default=StatutProjet.PAS_COMMENCE)
+    #Charge de travail estimé
+    charge_projet = db.Column(db.Integer, default=0) # peut décroitre vers 0 avec l'avancement du projet
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
