@@ -362,3 +362,95 @@ a:hover { text-decoration: underline; }
 .kanban-header-todo { border-bottom: 3px solid #4a8bed; }
 .kanban-header-doing { border-bottom: 3px solid #ffb142; }
 .kanban-header-done { border-bottom: 3px solid #28a745; }
+
+/* --- LOGIN PAGE SPECIFIC --- */
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* Prend presque toute la hauteur de l'écran */
+    background-color: transparent; /* Ou la couleur de fond de ton body */
+}
+
+.login-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* Ombre douce et moderne */
+    width: 100%;
+    max-width: 400px; /* Largeur idéale pour un login */
+    text-align: center;
+    border: 1px solid #eef0f2;
+}
+
+.login-header {
+    margin-bottom: 30px;
+}
+
+.login-header h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.login-header p {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Styles des champs (Inputs) */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    box-sizing: border-box; /* Important pour ne pas casser la largeur */
+}
+
+.form-input:focus {
+    border-color: #0056b3;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+}
+
+/* Checkbox */
+.form-check {
+    text-align: left;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Bouton pleine largeur */
+.btn-block {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    justify-content: center;
+}
+
+.error-msg {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block;
+}
