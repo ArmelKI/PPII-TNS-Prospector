@@ -1,31 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Connexion - TNS{% endblock %}
 
 {% block content %}
+<div class="login-wrapper fade-in">
+    
+    <div class="login-card">
+        <div class="login-header">
+            <h1>Bienvenue 👋</h1>
+            <p>Connectez-vous pour accéder au TNS Manager</p>
+        </div>
 
-<!-- TODO : Style login page -->
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
 
-<h1>Connexion</h1>
-<form action="" method="post" novalidate>
-    <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.usermail.label }}<br>
-        {{ form.usermail(size=32) }}<br>
-        {% for error in form.usermail.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}<br>
-        {% for error in form.password.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-    <p>{{ form.submit() }}</p>
-</form>
+            <div class="form-group">
+                {{ form.usermail.label(class_="form-label") }}
+                {{ form.usermail(class_="form-input", placeholder="exemple@tns.fr") }}
+                
+                {% for error in form.usermail.errors %}
+                    <span class="error-msg">⚠️ {{ error }}</span>
+                {% endfor %}
+            </div>
 
+            <div class="form-group">
+                {{ form.password.label(class_="form-label") }}
+                {{ form.password(class_="form-input", placeholder="••••••••") }}
+                
+                {% for error in form.password.errors %}
+                    <span class="error-msg">⚠️ {{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-check">
+                {{ form.remember_me() }}
+                <label for="remember_me">Se souvenir de moi</label>
+            </div>
+
+            <div>
+                {{ form.submit(class_="btn btn-block") }}
+            </div>
+        </form>
+    </div>
+
+</div>
 {% endblock %}
