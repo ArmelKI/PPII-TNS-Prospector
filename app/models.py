@@ -1,6 +1,11 @@
 import enum
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum as SAEnum, CheckConstraint
+from flask_login import UserMixin
+from app.config import login_manager
+from bcrypt import hashpw, gensalt, checkpw
+
+
 
 db = SQLAlchemy()
 
@@ -73,7 +78,7 @@ class Role(db.Model):
 
     utilisateurs = db.relationship("Utilisateur", back_populates="role")
 
-class Utilisateur(db.Model):
+class Utilisateur(db.Model, UserMixin):
     """
     Represents a user in the system.
     """
@@ -91,6 +96,18 @@ class Utilisateur(db.Model):
 
     def __repr__(self):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
+
+    def check_password(self, pw_candidate: str) -> bool:
+        bytes_pw_candidate = pw_candidate.encode('utf-8')
+        bytes_password = self.mdp_utilisateur.encode('utf-8')
+        return checkpw(bytes_pw_candidate, bytes_password)
+
+    def set_password(self, new_password: str):
+        bytes_password = new_password.encode('utf-8')
+        self.mdp_utilisateur = hashpw(bytes_password, gensalt()).decode('utf-8')
+
+    def get_id(self):
+        return self.id_utilisateur
 
 class Intervenant(db.Model):
     """
@@ -270,3 +287,7 @@ class Tache(db.Model):
 
     def __repr__(self):
         return f"<Tache {self.nom_tache}>"
+
+@login_manager.user_loader
+def load_user(user_id) -> Utilisateur:
+    return Utilisateur.query.get(user_id)

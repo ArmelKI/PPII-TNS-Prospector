@@ -7,7 +7,7 @@ from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 from app.models import Intervenant, Utilisateur, Competence, db, MaitriseCompetence
 from matching import call_ai_matching, create_ai_prompt
-
+from flask_login import login_required
 
 intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants")
 
@@ -18,22 +18,23 @@ def save_uploaded_file(file_obj, subfolder="documents"):
     """
     if not file_obj or file_obj.filename == '':
         return None
-    
+
     original_name = secure_filename(file_obj.filename)
-    
+
     random_hex = secrets.token_hex(4)
     name, ext = os.path.splitext(original_name)
     new_filename = f"{name}_{random_hex}{ext}"
-    
+
     upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', subfolder)
     os.makedirs(upload_dir, exist_ok=True)
-    
+
     save_path = os.path.join(upload_dir, new_filename)
     file_obj.save(save_path)
-    
+
     return f"uploads/{subfolder}/{new_filename}"
 
 @intervenants_bp.route("/", methods=["GET"])
+@login_required
 def liste_intervenants():
     search = request.args.get('search', '').strip()
     dispo = request.args.get('disponibilite', '')
@@ -62,17 +63,18 @@ def liste_intervenants():
 
 
 @intervenants_bp.route('/add', methods=['GET', 'POST'])
+@login_required
 def ajouter_intervenant():
     if request.method == "POST":
         # On vérifie que les fichiers sont bien présents dans la requête
         cv_file = request.files.get('cv_file')
         photo_file = request.files.get('photo_file')
-        
+
         # Si l'un des fichiers majeurs manque, on bloque.
         if not cv_file or cv_file.filename == '':
             flash("Erreur : Le CV est obligatoire pour créer un profil.", "warning")
             return redirect(request.url) # Recharge la page avec l'erreur
-            
+
         if not photo_file or photo_file.filename == '':
             flash("Erreur : La photo d'identité est obligatoire.", "warning")
             return redirect(request.url)
@@ -108,7 +110,7 @@ def ajouter_intervenant():
         path_carte_vitale = save_uploaded_file(request.files.get('carte_vitale_file'), 'documents')
 
         intervenant = Intervenant(
-            id_intervenant=utilisateur.id_utilisateur, 
+            id_intervenant=utilisateur.id_utilisateur,
             disponible=dispo,
             nb_heures_dispo=heures,
             cv=path_cv,
@@ -124,7 +126,7 @@ def ajouter_intervenant():
                 comp = Competence(nom_competence=cname)
                 db.session.add(comp)
                 db.session.flush()
-            
+
             lien = MaitriseCompetence(
             intervenant=intervenant,
             competence=comp,
@@ -133,7 +135,7 @@ def ajouter_intervenant():
 
         db.session.add(intervenant)
         db.session.commit()
-        
+
         flash("Intervenant créé avec succès !", "success")
         return redirect(url_for("intervenants.liste_intervenants"))
     
@@ -148,22 +150,23 @@ def ajouter_intervenant():
 
 
 @intervenants_bp.route("/edit/<int:id>", methods=["GET", "POST"])
+@login_required
 def modifier_intervenant(id):
     intervenant = Intervenant.query.options(joinedload(Intervenant.utilisateur)).get_or_404(id) # type: ignore
-    
+
     if request.method == "POST":
         intervenant.disponible = request.form.get("disponible") == "on"
         intervenant.nb_heures_dispo = request.form.get("heures", type=float, default=0.0)
-        
+
         # Mise à jour fichiers (seulement si un nouveau est envoyé)
         new_cv = save_uploaded_file(request.files.get('cv_file'), 'documents')
-        if new_cv: intervenant.cv = new_cv 
-            
+        if new_cv: intervenant.cv = new_cv
+
         new_photo = save_uploaded_file(request.files.get('photo_file'), 'avatars')
         if new_photo: intervenant.photo_identite = new_photo
 
         new_etu = save_uploaded_file(request.files.get('carte_etu_file'), 'documents')
-        if new_etu: intervenant.carte_etudiante = new_etu 
+        if new_etu: intervenant.carte_etudiante = new_etu
 
         new_vitale = save_uploaded_file(request.files.get('carte_vitale_file'), 'documents')
         if new_vitale: intervenant.carte_vitale = new_vitale
@@ -174,7 +177,7 @@ def modifier_intervenant(id):
         for cname in comps:
             comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
             if not comp:
-                comp = Competence(nom_competence=cname) 
+                comp = Competence(nom_competence=cname)
                 db.session.add(comp)
                 db.session.flush()
             lien = MaitriseCompetence(intervenant=intervenant, competence=comp, niveau_maitrise=0)
@@ -189,6 +192,7 @@ def modifier_intervenant(id):
 
 
 @intervenants_bp.route("/delete/<int:id>", methods=["POST"])
+@login_required
 def supprimer_intervenant(id):
     intervenant = Intervenant.query.get_or_404(id)
     db.session.delete(intervenant)
@@ -198,6 +202,7 @@ def supprimer_intervenant(id):
 
 
 @intervenants_bp.route("/export", methods=["GET"])
+@login_required
 def exporter_intervenants():
     intervenants = Intervenant.query.options(joinedload(Intervenant.utilisateur)).all() # type: ignore
     si = StringIO()
@@ -210,6 +215,3 @@ def exporter_intervenants():
             ";".join([c.nom_competence for c in i.competences]), i.disponible, i.nb_heures_dispo, i.cv
         ])
     return Response(si.getvalue(), mimetype="text/csv", headers={"Content-Disposition": "attachment;filename=intervenants.csv"})
-
-
-    

@@ -1,15 +1,20 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.models import Client, EtatRelation, db
 from datetime import date
+from flask_login import login_required
+
+
 
 clients_bp = Blueprint("clients", __name__, url_prefix="/clients")
 
 @clients_bp.route("/")
+@login_required
 def liste_clients():
     tous_les_clients = Client.query.order_by(Client.raison_sociale).all() # type: ignore
     return render_template("clients.html", clients=tous_les_clients)
 
 @clients_bp.route("/add", methods=["GET", "POST"])
+@login_required
 def ajouter_client():
     if request.method == "POST":
         nom = request.form.get("raison_sociale")
@@ -43,6 +48,7 @@ def ajouter_client():
     return render_template("ajouter_client.html")
 
 @clients_bp.route("/<int:id>")
+@login_required
 def details_client(id):
     client = Client.query.get_or_404(id)
     # ICI : On récupère la liste des états pour le menu déroulant (Select)

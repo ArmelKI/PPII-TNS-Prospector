@@ -19,6 +19,7 @@
     </a>
 
     <ul class="nav-list">
+      {% if current_user.is_authenticated %}
       <li><a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
       <li><a href="{{ url_for('intervenants.liste_intervenants') }}">Intervenants</a></li>
       <li><a href="{{ url_for('clients.liste_clients') }}">Clients</a></li>
@@ -26,9 +27,19 @@
       <li><a href="{{ url_for('interactions.liste_interactions') }}">Interactions</a></li>
       <li><a href="{{ url_for('intervenants.exporter_intervenants') }}">Export CSV</a></li>
       <li><a href="{{ url_for('map.map_page') }}">Carte des prospects</a></li>
+      <li><a href="{{ url_for('auth.logout') }}">Se déconnecter</a></li>
+      {% endif %}
     </ul>
   </nav>
 </header>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+  <div class="flash-message">{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 
 <div class="container">
   {% block content %}{% endblock %}

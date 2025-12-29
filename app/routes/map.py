@@ -1,14 +1,17 @@
 from flask import Blueprint, jsonify, render_template, request
 from app.models import Client, db
 import requests
+from flask_login import login_required
 
 map_bp = Blueprint("map", __name__, url_prefix="/map")
 
 @map_bp.route("/")
+@login_required
 def map_page():
     return render_template("map.html")
 
 @map_bp.route("/api")
+@login_required
 def clients_api():
     clients = Client.query.all()
 
@@ -24,6 +27,7 @@ def clients_api():
     ])
 
 @map_bp.route("/<int:radius>")
+@login_required
 def prospects_api(radius):
 
     CENTER_LAT = 48.66895
@@ -44,7 +48,7 @@ def prospects_api(radius):
     try:
         response = requests.post(
             "https://overpass-api.de/api/interpreter",
-            data=query, 
+            data=query,
             timeout=10
         )
         if response.status_code != 200:
@@ -57,7 +61,7 @@ def prospects_api(radius):
     prospects = []
     for el in data.get("elements", []):
         lat, lng = el.get("lat"), el.get("lon")
-        
+
         if (lat, lng) not in client_coords:
             tags = el.get("tags", {})
             prospects.append({
@@ -66,10 +70,11 @@ def prospects_api(radius):
                 "lat": lat,
                 "lng": lng
             })
-    
+
     return jsonify(prospects)
 
 @map_bp.route("/add_prospect", methods=["POST"])
+@login_required
 def add_prospect():
     data = request.get_json()
     if not data:
@@ -82,7 +87,7 @@ def add_prospect():
 
     if not all([lat, lng, name, type_]):
         return jsonify({"success": False, "message": "Données manquantes"}), 400
-    
+
     existing = Client.query.filter_by(
         raison_sociale=name,
         latitude=lat,
@@ -108,6 +113,7 @@ def add_prospect():
     return jsonify({"success": True, "id": prospect.id_client})
 
 @map_bp.route("/delete_client/<int:client_id>", methods=["DELETE"])
+@login_required
 def delete_client(client_id):
     client = Client.query.get(client_id)
     if not client:
@@ -117,6 +123,3 @@ def delete_client(client_id):
     db.session.commit()
 
     return jsonify({"success": True})
-
-
-

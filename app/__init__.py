@@ -4,6 +4,7 @@ from app.models import db
 from dotenv import load_dotenv
 from urllib.parse import quote
 from datetime import datetime
+from app.config import login_manager
 
 # Import Blueprints
 from app.routes.dashboard import dashboard_bp
@@ -14,9 +15,11 @@ from app.routes.interactions import interactions_bp
 from app.routes.jalons import jalons_bp  # <--- Added
 from app.routes.api import api_bp
 from app.routes.map import map_bp
+from app.routes.auth import auth_bp
 # from app.routes.auth import auth_bp # Uncomment when auth.py is ready
 
 load_dotenv()
+
 
 def create_app():
     """
@@ -48,6 +51,8 @@ def create_app():
 
     # 2. Initialize Extensions
     db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login_page'
 
     # 3. Global Template Helpers
     @app.errorhandler(404)
@@ -69,6 +74,6 @@ def create_app():
     app.register_blueprint(jalons_bp) # Kanban logic
     app.register_blueprint(api_bp)
     app.register_blueprint(map_bp)
-    # app.register_blueprint(auth_bp) # Register later
+    app.register_blueprint(auth_bp)
 
     return app

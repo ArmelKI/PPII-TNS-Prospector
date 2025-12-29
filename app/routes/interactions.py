@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.models import InteractionClient, Client, EtatRelation, db
 from datetime import date
+from flask_login import login_required
 
 interactions_bp = Blueprint("interactions", __name__, url_prefix="/interactions")
 
 @interactions_bp.route("/")
+@login_required
 def liste_interactions():
     """
     Display a list of all client interactions, sorted by most recent first.
@@ -16,6 +18,7 @@ def liste_interactions():
     return render_template("interactions.html", interactions=interactions)
 
 @interactions_bp.route("/add", methods=["POST"])
+@login_required
 def ajouter_interaction():
     """
     Handle form submission to add a new interaction for a client.
@@ -31,9 +34,9 @@ def ajouter_interaction():
     detail = request.form.get("detail")
     inter = InteractionClient(
         id_client=id_client,
-        detail_interaction=detail, 
+        detail_interaction=detail,
         date_interaction=date.today(),
-        id_etat_relation=request.form.get("id_etat_relation") 
+        id_etat_relation=request.form.get("id_etat_relation")
     )
     db.session.add(inter)
     db.session.commit()
