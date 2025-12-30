@@ -138,12 +138,12 @@ def match_projet(id):
 @projets_bp.route("/<int:id>/valider-equipe",methods=['POST'])
 def valider_equipe(id):
     projet = Projet.query.get_or_404(id)
-
-    ids_choisis = request.form.getlist('id_equipe')
+    if request.method == "POST":
+        ids_choisis = request.form.getlist("id_equipe")
     
-    #ids_choisis = [int(x) for x in ids_choisis]
-    print(ids_choisis)
+    ids_choisis = [int(x) for x in ids_choisis]
     try: 
+        projet.intervenants = []
         for id_inter in ids_choisis: 
             intervenant = Intervenant.query.get(id_inter)
             if  intervenant: 

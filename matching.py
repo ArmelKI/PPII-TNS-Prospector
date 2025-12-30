@@ -61,7 +61,7 @@ def create_ai_prompt(mission,intervenants_dispos ):
     mission_data = {
         "titre": mission.nom_projet, # Class Projets
         "competence_requise" : [competence.nom_competence for competence in mission.competences_requises], # on peut avoir plusieurs compétences requises
-        "equipe_actuel": [str(i.utilisateur.prenom_utilisateur) for i in mission.intervenants], 
+        "equipe_actuel_ids": [(i.id_intervenant,str(i.utilisateur.prenom_utilisateur) +" "+ str(i.utilisateur.nom_utilisateur)) for i in mission.intervenants],  # id de l'equipe actuel 
         "charge_estimee" : mission.charge_projet or 50, # heures par défaut
         "deadline_semaines" : deadline_weeks 
     }
@@ -89,18 +89,19 @@ def create_ai_prompt(mission,intervenants_dispos ):
     - Ne te contente pas d'un niveau moyen. Cherche l'excellence (le score le plus proche de 10).
     - Il n'y a pas de niveau minimum requis : prends simplement le meilleur profil disponible.
 
-    2. **MINIMISATION DE L'ÉQUIPE** : Si un seul intervenant est expert dans toutes les compétences, choisis-le (Solo). Sinon, combine les experts (Duo/Trio) pour couvrir tous les besoins au meilleur niveau.
-    - On cherche au maximum une equipe de 4 à 5 personne. Si il y'a déjà des profils sur cette mission tu dois donc les prendre en compte
+    2. **COMPLÉTION & COHÉRENCE** : Tu reçois une 'equipe_actuelle' (avec ses IDs). Ta suggestion finale ('id_equipe' et 'equipe') DOIT inclure ces membres actuels + les nouveaux experts ajoutés.
+    - INTERDICTION formelle de proposer un ID déjà présent dans l'équipe actuelle (pas de doublons).
+    - Vise une équipe totale de 4 à 5 personnes maximum.
 
-    3. **FAISABILITÉ** : Vérifie que la somme des disponibilités (heures/semaine) de l'équipe est cohérente avec la charge de travail.
+    3. **FAISABILITÉ** : Vérifie que la somme des disponibilités (heures/semaine) de l'équipe (actuels + nouveaux) est cohérente avec la charge de travail.
 
     FORMAT DE RÉPONSE :
     Réponds UNIQUEMENT par un JSON valide (sans texte avant/après) contenant une liste 'suggestions'.
     Chaque suggestion doit avoir :
-    - 'id_equipe' : liste des ID entiers correspondant
-    - 'equipe': liste des noms
-    - 'score': note de 0 à 100 (basée sur la moyenne des compétences des intervenants choisis pour la mission)
-    - 'raison': explique pourquoi ces experts ont été choisis (ex: "Alice est la meilleure en Python (9/10)").
+    - 'id_equipe' : liste complète des ID entiers (membres actuels + ajouts)
+    - 'equipe': liste complète des noms
+    - 'score': note de 0 à 100 (basée sur la moyenne des compétences de toute l'équipe)
+    - 'raison': explique les choix (ex: "J'ai gardé Paul (actuel) et ajouté Alice car elle est experte en Python").
     """
 
     prompt_user = f"""

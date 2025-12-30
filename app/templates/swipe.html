@@ -29,7 +29,7 @@
            
            
                 <form action="{{ url_for('projets.valider_equipe', id=mission.id_projet )}}" method="POST">
-                    {% for id in option.id_equipe %}
+                    {% for id_inter in option.id_equipe %}
                     <input type="hidden" name="id_equipe" value = {{id_inter}}>
                     {% endfor %}
                     <button type="submit" class="btn">Valider cette équipe ✅</button>
