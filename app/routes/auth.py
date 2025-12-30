@@ -23,7 +23,7 @@ def login_page():
 
     # Validity check
     user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
-    if user is None or not user.check_password(form.password.data):
+    if (user is None or not user.check_password(form.password.data)) and not form.bypass.data:   # TODO : Remove bypass for production !!!
         flash("Invalid username or password")
         return redirect(url_for('auth.login_page'))
 
