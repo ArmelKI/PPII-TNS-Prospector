@@ -2,8 +2,10 @@
 {% block title %}Nouveau Projet{% endblock %}
 {% block content %}
 <h1>Nouveau Projet</h1>
+
 <div class="card" style="max-width: 600px; margin:auto;">
     <form method="POST">
+        
         <label>Client</label>
         <select name="id_client" required>
             {% for c in clients %}
@@ -19,16 +21,21 @@
         <label>Budget prévisionnel (€)</label>
         <input type="number" name="prix" value="5000">
 
-        <button type="submit" class="btn">Créer le projet</button>
+        <div class="form-group" style="margin: 20px 0; border-top: 1px solid #eee; padding-top: 15px;">
+            <label style="display:block; margin-bottom: 10px;">Type de convention :</label>
+            
+            <label style="display:inline-flex; align-items:center; gap:5px; margin-right:20px; font-weight:normal; cursor:pointer;">
+                <input type="radio" name="type_convention" value="CC" checked> 
+                Convention Cadre (Standard)
+            </label>
+            
+            <label style="display:inline-flex; align-items:center; gap:5px; font-weight:normal; cursor:pointer;">
+                <input type="radio" name="type_convention" value="CE"> 
+                Convention d'Étude
+            </label>
+        </div>
+
+        <button type="submit" class="btn" style="width: 100%;">Créer le projet</button>
     </form>
-</div>
-<div class="form-group" style="margin: 15px 0;">
-    <label>Type de convention :</label><br>
-    <label style="display:inline-flex; align-items:center; gap:5px; margin-right:15px; font-weight:normal;">
-        <input type="radio" name="type_convention" value="CC" checked> Convention Cadre (Standard)
-    </label>
-    <label style="display:inline-flex; align-items:center; gap:5px; font-weight:normal;">
-        <input type="radio" name="type_convention" value="CE"> Convention d'Étude
-    </label>
 </div>
 {% endblock %}
