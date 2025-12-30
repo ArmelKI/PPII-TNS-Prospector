@@ -1,26 +1,20 @@
 {% extends "base.html" %}
-{% block title %}New Contributor{% endblock %}
+{% block title %}Nouvel Intervenant{% endblock %}
 
 {% block content %}
 <div class="container fade-in">
-  <h1>New Contributor</h1>
+  <h1>Nouvel Intervenant</h1>
   
   <div class="panel">
-    <!-- 
-      This form lets you add a new contributor (intervenant).
-      You can either link to an existing user or create a new one.
-      The form is split into two columns: Identity/Skills and Status/Documents.
-    -->
     <form method="POST" enctype="multipart/form-data" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
       
       <div>
-        <h3 class="panel-title">👤 Identity & Login</h3>
+        <h3 class="panel-title">👤 Identité & Connexion</h3>
         
         <div class="form-group">
-          <!-- Optional: Link to an existing user account -->
-          <label>Link to an existing user (Optional)</label>
+          <label>Lier à un utilisateur existant (Optionnel)</label>
           <select name="id_utilisateur">
-            <option value="">-- Create a new user --</option>
+            <option value="">-- Créer un nouvel utilisateur --</option>
             {% for u in utilisateurs %}
               <option value="{{ u.id_utilisateur }}">{{ u.nom_utilisateur }} {{ u.prenom_utilisateur }}</option>
             {% endfor %}
@@ -28,74 +22,62 @@
         </div>
 
         <div class="form-group">
-          <!-- First name for the new user -->
-          <label>First Name *</label>
-          <input type="text" name="prenom_utilisateur" placeholder="e.g. Thomas">
+          <label>Prénom *</label>
+          <input type="text" name="prenom_utilisateur" placeholder="ex : Thomas">
         </div>
         <div class="form-group">
-          <!-- Last name for the new user -->
-          <label>Last Name *</label>
-          <input type="text" name="nom_utilisateur" placeholder="e.g. Anderson">
+          <label>Nom *</label>
+          <input type="text" name="nom_utilisateur" placeholder="ex : Anderson">
         </div>
         <div class="form-group">
-          <!-- Email address for the new user -->
           <label>Email *</label>
           <input type="email" name="email_utilisateur" placeholder="thomas.anderson@tns.fr">
         </div>
         
-        <h3 class="panel-title" style="margin-top: 20px;">🎓 Skills</h3>
+        <h3 class="panel-title" style="margin-top: 20px;">🎓 Compétences</h3>
         <div class="form-group">
-          <!-- Tags for skills, separated by semicolons -->
-          <label>Tags (separated by semicolons)</label>
-          <input type="text" name="competences" placeholder="Python; Project Management; Figma">
+          <label>Tags (séparés par des points-virgules)</label>
+          <input type="text" name="competences" placeholder="Python; Gestion de projet; Figma">
         </div>
       </div>
 
       <div>
-        <h3 class="panel-title">📄 Status & Documents</h3>
+        <h3 class="panel-title">📄 Statut & Documents</h3>
         
         <div class="form-group" style="display: flex; align-items: center; gap: 10px; background: #f9f9f9; padding: 10px; border-radius: 5px;">
-          <!-- Checkbox to indicate if the contributor is currently available -->
           <input type="checkbox" name="disponible" id="dispo" checked style="width: auto;">
-          <label for="dispo" style="margin:0; cursor:pointer;">Currently Available</label>
+          <label for="dispo" style="margin:0; cursor:pointer;">Actuellement disponible</label>
         </div>
 
         <div class="form-group">
-          <!-- Number of hours available per week -->
-          <label>Available hours / week</label>
+          <label>Heures disponibles / semaine</label>
           <input type="number" name="heures" value="10">
         </div>
 
         <div class="form-group">
-          <!-- Required: Upload CV as PDF -->
           <label>CV (PDF) <span style="color:red">*</span></label>
           <input type="file" name="cv_file" accept=".pdf" required>
         </div>
 
         <div class="form-group">
-          <!-- Required: Upload a profile photo -->
-          <label>ID Photo <span style="color:red">*</span></label>
+          <label>Photo d'identité <span style="color:red">*</span></label>
           <input type="file" name="photo_file" accept="image/*" required>
         </div>
 
         <div class="form-group">
-          <!-- Optional: Upload student card -->
-          <label>Student Card</label>
+          <label>Carte étudiante</label>
           <input type="file" name="carte_etu_file">
         </div>
         
         <div class="form-group">
-          <!-- Optional: Upload health insurance card -->
-          <label>Health Insurance Card</label>
+          <label>Carte Vitale</label>
           <input type="file" name="carte_vitale_file">
         </div>
       </div>
 
       <div style="grid-column: 1 / -1; margin-top: 20px; text-align: right;">
-        <!-- Cancel button returns to the contributors list -->
-        <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">Cancel</a>
-        <!-- Submit button saves the new contributor -->
-        <button type="submit" class="btn">Save Contributor</button>
+        <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">Annuler</a>
+        <button type="submit" class="btn">Enregistrer l'intervenant</button>
       </div>
     </form>
   </div>
