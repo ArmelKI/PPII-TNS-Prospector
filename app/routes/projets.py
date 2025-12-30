@@ -55,7 +55,7 @@ def ajouter_projet():
         db.session.add(proj)
         db.session.commit()
 
-        flash("Project successfully created.", "success")
+        flash("Projet ajouté avec succès.", "success")
         return redirect(url_for('jalons.voir_kanban', id_projet=proj.id_projet))
 
     clients = Client.query.order_by(Client.raison_sociale).all() # type: ignore
@@ -105,7 +105,7 @@ def modifier_projet(id):
                 projet.intervenants.append(intervenant)
 
         db.session.commit()
-        flash("Project updated successfully.", "success")
+        flash("Projet mis à jour avec succés.", "success")
         return redirect(url_for("projets.details_projet", id=projet.id_projet))
 
     tous_intervenants = Intervenant.query.all()
@@ -130,7 +130,7 @@ def supprimer_projet(id):
     try:
         db.session.delete(projet)
         db.session.commit()
-        flash("Project deleted.", "info")
+        flash("Projet supprimé.", "info")
         
         if client_id:
             return redirect(url_for("clients.details_client", id=client_id))
@@ -171,7 +171,7 @@ def valider_equipe(id):
                projet.intervenants.append(intervenant)
         db.session.commit() # validation dans la db 
 
-        flash("Equipe successfully added", "success")
+        flash("Equipe correctement ajouté", "success")
     except Exception as e: 
         db.session.rollback()
         flash(f'Erreur lors de la sauvegarde:{str(e)}',"danger")
