@@ -144,6 +144,18 @@ a:hover { text-decoration: underline; }
   color: var(--tns-blue);
 }
 
+.matching-card {
+    width: 100%;            /* Force la carte à s'étirer au maximum */
+    box-sizing: border-box; 
+    
+    
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;

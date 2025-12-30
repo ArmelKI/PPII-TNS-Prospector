@@ -3,7 +3,7 @@
 {% block content %}
 
 
-<!--  Affiche le mathcing rendu par l'ia pour cette mission ( les 3 plus performant)-->
+<!--  Affiche le mathcing rendu par l'ia pour cette mission (les 3 plus performant)-->
 <!-- On fait l'interface swipe plus tard -->
 <div class="container mt-4">
     <h2>Matching IA pour : {{mission.nom_projet}}</h2>
@@ -12,7 +12,7 @@
         {% for option in suggestions %}
         <div class="col-md-4">
             
-            <div class ="card">
+            <div class ="matching-card">
                 <strong>Option {{ loop.index }}</strong>
                 <span class="badge bg-light text-dark">{{ option.score }}% Match</span>
             
