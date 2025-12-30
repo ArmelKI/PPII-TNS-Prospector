@@ -3,9 +3,23 @@
 
 {% block content %}
 <div class="container fade-in">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h1>{{ client.raison_sociale }}</h1>
-        <span class="badge" style="font-size:1rem;">{{ client.secteur }}</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <h1>{{ client.raison_sociale }}</h1>
+            <span class="badge" style="font-size:1rem;">{{ client.secteur }}</span>
+        </div>
+        
+        <div style="display:flex; gap: 10px;">
+            <a href="{{ url_for('clients.modifier_client', id=client.id_client) }}" class="btn-secondary">
+                ✏️ Modifier le client
+            </a>
+            
+            <form action="{{ url_for('clients.supprimer_client', id=client.id_client) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce client ? Cela supprimera tout l’historique associé.');">
+                <button type="submit" class="btn" style="background-color: #e74c3c; border:none;">
+                    🗑 Supprimer le client
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="dashboard-grid">
@@ -18,48 +32,60 @@
 
             <div class="panel">
                 <h3>Projets associés</h3>
-                <ul>
+                <ul class="interaction-list">
                     {% for conv in client.conventions %}
                         {% for p in conv.projets %}
-                        <li>
-                            <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}">
-                                <strong>{{ p.nom_projet }}</strong>
-                            </a> 
-                            - <small>{{ p.statut_projet.value }}</small>
+                        <li class="interaction-item" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}" style="font-weight:bold; font-size:1.1em;">
+                                    {{ p.nom_projet }}
+                                </a> 
+                                <span class="badge" style="font-size:0.7em; margin-left:10px;">{{ p.statut_projet.value }}</span>
+                            </div>
+                            
+                            <form action="{{ url_for('projets.supprimer_projet', id=p.id_projet) }}" method="POST" onsubmit="return confirm('Supprimer le projet {{ p.nom_projet }} ?');" style="margin:0;">
+                                <button type="submit" class="btn-secondary btn-xs" style="color: #e74c3c; border-color:#e74c3c;" title="Supprimer le projet">
+                                    🗑
+                                </button>
+                            </form>
                         </li>
                         {% endfor %}
                     {% else %}
                         <li>Aucun projet pour ce client.</li>
                     {% endfor %}
                 </ul>
-                <a href="{{ url_for('projets.ajouter_projet') }}?client={{ client.id_client }}" class="btn">+ Créer un projet</a>
+                <div style="margin-top:15px;">
+                    <a href="{{ url_for('projets.ajouter_projet') }}?client={{ client.id_client }}" class="btn">+ Créer un projet</a>
+                </div>
             </div>
         </div>
 
         <div class="side-column">
-    <div class="panel">
-        <h3>Nouvelle Interaction</h3>
-        <form action="{{ url_for('interactions.ajouter_interaction') }}" method="POST">
-            <input type="hidden" name="id_client" value="{{ client.id_client }}">
-            
-            <div class="form-group">
-                <label>Type d'échange</label>
-                <textarea name="detail" rows="3" placeholder="Appel téléphonique, Déjeuner..." required></textarea>
-            </div>
+            <div class="panel">
+                <h3>Nouvelle interaction</h3>
+                <form action="{{ url_for('interactions.ajouter_interaction') }}" method="POST">
+                    <input type="hidden" name="id_client" value="{{ client.id_client }}">
+                    
+                    <div class="form-group">
+                        <label>Type d'échange</label>
+                        <textarea name="detail" rows="3" placeholder="Appel téléphonique, Déjeuner..." required></textarea>
+                    </div>
 
-            <div class="form-group">
-                <label>Nouvel état de la relation</label>
-                <select name="id_etat_relation" style="width:100%; padding:8px; margin-top:5px;">
-                    {% for etat in etats %}
-                        <option value="{{ etat.id_etat_relation }}">
-                            {{ etat.libelle_relation }}
-                         </option>
-                    {% endfor %}
-                </select>
-            </div>
+                    <div class="form-group">
+                        <label>Nouvel état de la relation</label>
+                        <select name="id_etat_relation" style="width:100%; padding:8px; margin-top:5px;">
+                            {% for etat in etats %}
+                                <option value="{{ etat.id_etat_relation }}">
+                                    {{ etat.libelle_relation }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-            <button type="submit" class="btn" style="width:100%; margin-top:10px;">Enregistrer</button>
-        </form>
+                    <button type="submit" class="btn" style="width:100%; margin-top:10px;">Enregistrer</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
