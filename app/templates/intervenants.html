@@ -59,8 +59,8 @@
       
       <td>
         <!-- List all skills as badges -->
-        {% for c in i.competences %}
-        <span class="badge" style="background:#e3f2fd; color:#0d47a1; margin-right:4px;">{{ c.nom_competence }}</span>
+        {% for m  in i.maitrise_details %}
+        <span class="badge" style="background:#e3f2fd; color:#0d47a1; margin-right:4px;">{{ m.competence.nom_competence}} : {{m.niveau_maitrise}}/10</span>
         {% endfor %}
       </td>
       

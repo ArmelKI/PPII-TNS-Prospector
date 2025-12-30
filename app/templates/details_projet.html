@@ -23,9 +23,11 @@
                         <li class="interaction-item">
                             <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong>
                             <br>
-                            <small class="text-muted">
-                                {% for c in i.competences %}{{ c.nom_competence }} {% endfor %}
+                            {% for m in i.maitrise_details %}
+                            <small class="badge">
+                                {{ m.competence.nom_competence}} : {{m.niveau_maitrise}}/10
                             </small>
+                            {% endfor %}
                         </li>
                     {% endfor %}
                     </ul>
@@ -42,7 +44,7 @@
                     📊 Kanban
                 </a>
                 
-                <a href="{{ url_for('projets.modifier_projet', id=projet.id_projet) }}" class="btn-secondary" style="display:block; width:100%; text-align:center;">
+                <a href="{{ url_for('projets.modifier_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center;">
                     ✏️ Modifier le projet
                 </a>
             </div>

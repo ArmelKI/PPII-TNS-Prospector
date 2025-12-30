@@ -91,7 +91,7 @@ with app.app_context():
             maitrise = MaitriseCompetence(
                 id_intervenant=inter.id_intervenant,
                 id_competence=comp.id_competence,
-                niveau_maitrise=random.randint(1, 10)
+                niveau_maitrise=random.randint(3, 10)
             )
             db.session.add(maitrise)
 

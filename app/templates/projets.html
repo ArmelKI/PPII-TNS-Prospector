@@ -42,7 +42,7 @@
                 📊 Kanban
             </a>
 
-            <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn-secondary" style="text-align:center;">
+            <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn" style="text-align:center;">
                 Détails
             </a>
             {% if p.statut_projet.value != "Terminé" %} <!-- Pour récupérer la valuer de l'objet Enum -->
