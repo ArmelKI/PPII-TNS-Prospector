@@ -7,10 +7,14 @@
         <div>
             <h1>{{ projet.nom_projet }}</h1>
             <p class="text-muted">Client : {{ projet.convention.client.raison_sociale }}</p>
+            
+            <p>Competences requises: {% for c in projet.competences_requises %} <span class="badge"> {{ c.nom_competence }}</span> {% endfor %} </p>
+            
         </div>
         <div>
             <span class="badge" style="font-size: 1.2rem;">{{ projet.statut_projet.value }}</span>
         </div>
+        
     </div>
 
     <div class="dashboard-grid">
