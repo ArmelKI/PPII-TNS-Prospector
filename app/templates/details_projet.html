@@ -48,9 +48,11 @@
                     📊 Kanban
                 </a>
                 
-                <a href="{{ url_for('projets.modifier_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center;">
+                <a href="{{ url_for('projets.modifier_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center; margin-bottom:10px;">
                     ✏️ Modifier le projet
                 </a>
+                
+                <a href="{{ url_for('projets.match_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center;">Match</a>
             </div>
         </div>
     </div>

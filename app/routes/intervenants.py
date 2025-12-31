@@ -171,23 +171,49 @@ def modifier_intervenant(id):
         new_vitale = save_uploaded_file(request.files.get('carte_vitale_file'), 'documents')
         if new_vitale: intervenant.carte_vitale = new_vitale
 
+        
         competences_raw = request.form.get("competences", "")
-        comps = [c.strip() for c in competences_raw.replace(",", ";").split(";") if c.strip()]
+        
+        
         MaitriseCompetence.query.filter_by(id_intervenant=intervenant.id_intervenant).delete()
-        for cname in comps:
-            comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
-            if not comp:
-                comp = Competence(nom_competence=cname)
-                db.session.add(comp)
-                db.session.flush()
-            lien = MaitriseCompetence(intervenant=intervenant, competence=comp, niveau_maitrise=0)
-            db.session.add(lien)
+        
+        
+        items = [c.strip() for c in competences_raw.split(";") if c.strip()]
+        
+        for item in items:
+            # Nettoyage : on retire les parenthèses pour avoir "Nom, Note"
+            clean_item = item.replace("(", "").replace(")", "")
+            parts = clean_item.split(",")
+            cname = parts[0].strip()
+            
+            # On essaie de récupérer la note (seconde partie), sinon 0 par défaut
+            note = 0
+            if len(parts) > 1:
+                try:
+                    note = int(parts[1].strip()) # ou float() si vous acceptez les décimales
+                except ValueError:
+                    note = 0
+
+            if cname: 
+                comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
+                if not comp:
+                    comp = Competence(nom_competence=cname)
+                    db.session.add(comp)
+                    db.session.flush()
+                
+                lien = MaitriseCompetence(intervenant=intervenant, competence=comp, niveau_maitrise=note)
+                db.session.add(lien)
 
         db.session.commit()
         flash("Profil mis à jour.", "info")
         return redirect(url_for("intervenants.liste_intervenants"))
 
-    competences_str = "; ".join([c.nom_competence for c in intervenant.maitrise_details])
+    
+    maitrises_existantes = MaitriseCompetence.query.filter_by(id_intervenant=intervenant.id_intervenant).all()
+
+    # On reconstruit la string au format "(Nom, Note); (Nom, Note)"
+    competences_str = "; ".join([f"({m.competence.nom_competence}, {m.niveau_maitrise})" for m in maitrises_existantes])
+
     return render_template("modifier_intervenant.html", intervenant=intervenant, competences_str=competences_str)
 
 
