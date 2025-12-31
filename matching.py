@@ -82,26 +82,31 @@ def create_ai_prompt(mission,intervenants_dispos ):
 
     prompt_system = """
     Tu es un algorithme expert d'affectation de ressources pour Telecom Nancy Services.
-    Ton but est de composer l'équipe la plus performante possible (Elite Matching).
+    Ton but est de composer l'équipe la plus performante possible (Elite Matching) et de répartir la charge de travail intelligemment.
 
     TES OBJECTIFS PAR ORDRE DE PRIORITÉ :
     1. **COUVERTURE & EXPERTISE (Priorité Absolue)** : Pour chaque compétence demandée par la mission, tu DOIS sélectionner l'intervenant disponible ayant le **niveau le plus élevé possible**.
     - Ne te contente pas d'un niveau moyen. Cherche l'excellence (le score le plus proche de 10).
     - Il n'y a pas de niveau minimum requis : prends simplement le meilleur profil disponible.
 
-    2. **COMPLÉTION & COHÉRENCE** : Tu reçois une 'equipe_actuelle' (avec ses IDs). Ta suggestion finale ('id_equipe' et 'equipe') DOIT inclure ces membres actuels + les nouveaux experts ajoutés.
+    2. **COMPLÉTION & COHÉRENCE** : Tu reçois une 'equipe_actuelle' (avec ses IDs). Ta suggestion finale DOIT inclure ces membres actuels + les nouveaux experts ajoutés.
     - INTERDICTION formelle de proposer un ID déjà présent dans l'équipe actuelle (pas de doublons).
     - Vise une équipe totale de 4 à 5 personnes maximum.
 
-    3. **FAISABILITÉ** : Vérifie que la somme des disponibilités (heures/semaine) de l'équipe (actuels + nouveaux) est cohérente avec la charge de travail.
+    3. **DISTRIBUTION DE LA CHARGE (Nouveau & Critique)** : Tu dois attribuer un nombre d'heures spécifique à chaque membre de l'équipe pour couvrir la durée totale de la mission.
+    - Règle 1 : La somme des heures attribuées à tous les membres doit être égale à la 'duree_mission' demandée.
+    - Règle 2 : Pour chaque intervenant, 'heures_attribuees' ne doit JAMAIS dépasser ses 'heures_dispo'.
+    - Règle 3 : Si un intervenant est très expert, essaie de maximiser ses heures dans la limite de sa disponibilité.
 
     FORMAT DE RÉPONSE :
     Réponds UNIQUEMENT par un JSON valide (sans texte avant/après) contenant une liste 'suggestions'.
     Chaque suggestion doit avoir :
-    - 'id_equipe' : liste complète des ID entiers (membres actuels + ajouts)
-    - 'equipe': liste complète des noms
-    - 'score': note de 0 à 100 (basée sur la moyenne des compétences de toute l'équipe)
-    - 'raison': explique les choix (ex: "J'ai gardé Paul (actuel) et ajouté Alice car elle est experte en Python").
+    - 'score': note de 0 à 100 (basée sur la moyenne des compétences).
+    - 'raison': explique les choix et la répartition des heures.
+    - 'details_equipe': Une liste d'objets où chaque objet représente un membre (actuel ou nouveau) et contient :
+        - 'id': ID de l'intervenant (entier)
+        - 'nom': Nom de l'intervenant
+        - 'heures_attribuees': Le nombre d'heures (float ou int) que tu prélèves sur ses disponibilités pour cette mission.
     """
 
     prompt_user = f"""

@@ -159,21 +159,38 @@ def match_projet(id):
 @projets_bp.route("/<int:id>/valider-equipe",methods=['POST'])
 def valider_equipe(id):
     projet = Projet.query.get_or_404(id)
-    if request.method == "POST":
-        ids_choisis = request.form.getlist("id_equipe")
     
-    ids_choisis = [int(x) for x in ids_choisis]
-    try: 
+    equipe_json = request.form.get("equipe_data_json")
+    
+    try :
+        if not equipe_json: 
+            raise ValueError("Aucune donnée d'équipe reçus.")
+        membres_a_ajouter = json.loads(equipe_json)
         projet.intervenants = []
-        for id_inter in ids_choisis: 
-            intervenant = Intervenant.query.get(id_inter)
-            if  intervenant: 
-               projet.intervenants.append(intervenant)
-        db.session.commit() # validation dans la db 
-
-        flash("Equipe correctement ajouté", "success")
-    except Exception as e: 
-        db.session.rollback()
-        flash(f'Erreur lors de la sauvegarde:{str(e)}',"danger")
         
-    return redirect(url_for('projets.details_projet' , id=id))
+        for membre in membres_a_ajouter :
+            id_inter = int(membre['id'])
+            heures_a_prendre = int(membre['heures_attribuees'])
+            
+            intervenant = Intervenant.query.get(id_inter)
+
+            if intervenant : 
+                projet.intervenants.append(intervenant)
+
+                if intervenant.nb_heures_dispo >=  heures_a_prendre :
+                    intervenant.nb_heures_dispo -= heures_a_prendre 
+                else:
+                    intervenant.nb_heures_dispo = 0 
+                if  intervenant.nb_heures_dispo <= 0.5: # les heures dispos ne sont que des int
+                    intervenant.disponible = False 
+        db.session.commit()
+        flash("L'équipe à été validée et les disponibilités des intervenants mises à jours.", "success")
+    except  json.JSONDecodeError : 
+        db.session.rollback()
+        flash("Erreur de format des données (JSON invalide).", "danger")
+
+    except  Exception as e: 
+        db.session.rollback()
+        flash(f"Erreur lors de la sauvegarde : {str(e)}", "danger")
+
+    return redirect(url_for('projets.details_projet',id=id))              

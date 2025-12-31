@@ -19,8 +19,8 @@
             
                 <h5>Équipe proposée :</h5>
                 <ul class="list-group list-group-flush mb-3">
-                    {% for nom in option.equipe %}
-                        <li class="list-group-item">👤 {{ nom }}</li>
+                    {% for membre in option.details_equipe %}
+                        <li class="list-group-item">👤 {{ membre.nom }} ({{membre.heures_attribuees}}h attribuées)</li>
                     {% endfor %}
                 </ul>
                 <p class="card-text text-muted small">
@@ -29,9 +29,9 @@
            
            
                 <form action="{{ url_for('projets.valider_equipe', id=mission.id_projet )}}" method="POST">
-                    {% for id_inter in option.id_equipe %}
-                    <input type="hidden" name="id_equipe" value = {{id_inter}}>
-                    {% endfor %}
+                    
+                    <input type="hidden" name="equipe_data_json" value = '{{option.details_equipe | tojson }}'>
+                    
                     <button type="submit" class="btn">Valider cette équipe ✅</button>
                 </form>
             </div>
