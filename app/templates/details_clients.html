@@ -8,12 +8,12 @@
             <h1>{{ client.raison_sociale }}</h1>
             <span class="badge" style="font-size:1rem;">{{ client.secteur }}</span>
         </div>
-        
+
         <div style="display:flex; gap: 10px;">
             <a href="{{ url_for('clients.modifier_client', id=client.id_client) }}" class="btn-secondary">
                 ✏️ Modifier le client
             </a>
-            
+
             <form action="{{ url_for('clients.supprimer_client', id=client.id_client) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce client ? Cela supprimera tout l’historique associé.');">
                 <button type="submit" class="btn" style="background-color: #e74c3c; border:none;">
                     🗑 Supprimer le client
@@ -35,20 +35,20 @@
                 <ul class="interaction-list">
                     {% for conv in client.conventions %}
                         {% for p in conv.projets %}
-                        <li class="interaction-item" style="display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}" style="font-weight:bold; font-size:1.1em;">
-                                    {{ p.nom_projet }}
-                                </a> 
-                                <span class="badge" style="font-size:0.7em; margin-left:10px;">{{ p.statut_projet.value }}</span>
-                            </div>
-                            
-                            <form action="{{ url_for('projets.supprimer_projet', id=p.id_projet) }}" method="POST" onsubmit="return confirm('Supprimer le projet {{ p.nom_projet }} ?');" style="margin:0;">
-                                <button type="submit" class="btn-secondary btn-xs" style="color: #e74c3c; border-color:#e74c3c;" title="Supprimer le projet">
-                                    🗑
-                                </button>
-                            </form>
-                        </li>
+                            <li class="interaction-item" style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}" style="font-weight:bold; font-size:1.1em;">
+                                        {{ p.nom_projet }}
+                                    </a>
+                                    <span class="badge" style="font-size:0.7em; margin-left:10px;">{{ p.statut_projet.value }}</span>
+                                </div>
+
+                                <form action="{{ url_for('projets.supprimer_projet', id=p.id_projet) }}" method="POST" onsubmit="return confirm('Supprimer le projet {{ p.nom_projet }} ?');" style="margin:0;">
+                                    <button type="submit" class="btn-secondary btn-xs" style="color: #e74c3c; border-color:#e74c3c;" title="Supprimer le projet">
+                                        🗑
+                                    </button>
+                                </form>
+                            </li>
                         {% endfor %}
                     {% else %}
                         <li>Aucun projet pour ce client.</li>
@@ -65,7 +65,7 @@
                 <h3>Nouvelle interaction</h3>
                 <form action="{{ url_for('interactions.ajouter_interaction') }}" method="POST">
                     <input type="hidden" name="id_client" value="{{ client.id_client }}">
-                    
+
                     <div class="form-group">
                         <label>Type d'échange</label>
                         <textarea name="detail" rows="3" placeholder="Appel téléphonique, Déjeuner..." required></textarea>
