@@ -8,10 +8,10 @@
 
     <div class="panel">
         <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-            
+
             <div>
                 <h3 class="panel-title">📝 Information</h3>
-                
+
                 <div class="form-group">
                     <label>Project Name</label>
                     <input type="text" name="nom_projet" value="{{ projet.nom_projet }}" required>
@@ -52,7 +52,7 @@
                     <div style="display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
                         <input type="checkbox" name="intervenants" value="{{ i.id_intervenant }}" id="int_{{ i.id_intervenant }}"
                             {% if i in projet.intervenants %}checked{% endif %}>
-                        
+
                         <label for="int_{{ i.id_intervenant }}" style="margin:0; cursor:pointer;">
                             <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong><br>
                             <small class="text-muted">

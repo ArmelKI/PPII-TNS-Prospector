@@ -91,7 +91,7 @@ with app.app_context():
             maitrise = MaitriseCompetence(
                 id_intervenant=inter.id_intervenant,
                 id_competence=comp.id_competence,
-                niveau_maitrise=random.randint(1, 10)
+                niveau_maitrise=random.randint(3, 10)
             )
             db.session.add(maitrise)
 
@@ -151,11 +151,21 @@ with app.app_context():
             StatutProjet.EN_COURS, StatutProjet.EN_COURS,
             StatutProjet.TERMINE, StatutProjet.BLOQUE
         ])
-
+        # Randomly choose the start and end of a project 
+        d_debut = date.today() - timedelta(days=random.randint(10,120))
+        
+        if statut_choisi == StatutProjet.TERMINE: 
+            jours_ecoules = (date.today() - d_debut).days
+            d_fin = d_debut + timedelta(days=random.randint(1,jours_ecoules))
+        else :
+            d_fin =date.today() + timedelta(weeks=random.randint(4,24))
+        
         p = Projet(
             nom_projet=f"Mission {secteur} - {nom_cli}", # type: ignore
             statut_projet=statut_choisi, # type: ignore
-            date_debut_projet=date.today() - timedelta(days=random.randint(10, 120)), # type: ignore
+            charge_projet=random.randint(20,300), # charge total  du projet entre 20 et 300 heures
+            date_debut_projet=d_debut,
+            date_fin_projet=d_fin, # type: ignore
             id_convention=conv.id_convention # type: ignore
         )
 
@@ -163,6 +173,11 @@ with app.app_context():
         team = random.sample(intervenants_objs, k=random.randint(2, 3))
         for member in team:
             p.intervenants.append(member)
+
+        # Attribution de 2 à 4 compétences requises au hasard
+        besoins_techniques = random.sample(db_comps, k=random.randint(2, 4))
+        for competence in besoins_techniques:
+            p.competences_requises.append(competence)
 
         db.session.add(p)
         db.session.flush()  # Get project ID for linking

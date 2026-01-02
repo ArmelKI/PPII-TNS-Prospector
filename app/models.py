@@ -60,6 +60,12 @@ intervenant_tache = db.Table(
     db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
     db.Column("id_tache", db.Integer, db.ForeignKey("taches.id_tache", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
 )
+# Nouvelle table pour lier Projets et Compétences requises
+projet_competence = db.Table(
+    "projet_competence",
+    db.Column("id_projet", db.Integer, db.ForeignKey("projets.id_projet", ondelete="CASCADE"), primary_key=True),
+    db.Column("id_competence", db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE"), primary_key=True)
+)
 
 class Role(db.Model):
     """
@@ -149,6 +155,8 @@ class Competence(db.Model):
     nom_competence = db.Column(db.String(150), nullable=False)
 
     intervenant_details = db.relationship("MaitriseCompetence", back_populates="competence", cascade="all, delete-orphan")
+    # Ajout relation inverse pour back_populates
+    projets_requerant = db.relationship("Projet", secondary=projet_competence, back_populates="competences_requises")
 class EtatRelation(db.Model):
     """
     Represents the state of the relationship with a client at a given time.
@@ -244,6 +252,8 @@ class Projet(db.Model):
         SAEnum(StatutProjet, name="statut_projet_enum"),
         nullable=False,
         default=StatutProjet.PAS_COMMENCE)
+    #Charge de travail estimé
+    charge_projet = db.Column(db.Integer, default=0) # peut décroitre vers 0 avec l'avancement du projet
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
@@ -251,7 +261,8 @@ class Projet(db.Model):
     convention = db.relationship("Convention", back_populates="projets")
     jalons = db.relationship("Jalon", back_populates="projet")
     intervenants = db.relationship("Intervenant", secondary=intervenant_projet, back_populates="projets")
-
+    # Ajout relation vers compétences requises
+    competences_requises = db.relationship("Competence", secondary=projet_competence, back_populates="projets_requerant")
     def __repr__(self):
         return f"Projet {self.nom_projet}"
 

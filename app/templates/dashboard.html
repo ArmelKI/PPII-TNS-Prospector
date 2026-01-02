@@ -30,14 +30,14 @@
 </div>
 
 <div class="dashboard-grid fade-in">
-  
+
   <div class="main-column">
-    
+
     <div class="panel">
       <div class="panel-header">
           <h3>🔥 Échéances à venir (60 jours)</h3>
       </div>
-      
+
       {% if jalons_urgents %}
       <table class="data-table">
         <thead>
@@ -75,11 +75,11 @@
     <div class="panel">
         <h3>📊 Vue d'ensemble des statuts des projets</h3>
         <div class="chart-wrapper">
-            
+
             <div class="canvas-container">
                 <!-- Chart.js canvas for project status breakdown -->
-                <canvas id="projetsChart" 
-                        data-labels='{{ projets_labels | tojson }}' 
+                <canvas id="projetsChart"
+                        data-labels='{{ projets_labels | tojson }}'
                         data-counts='{{ projets_counts | tojson }}'>
                 </canvas>
             </div>
@@ -94,7 +94,7 @@
                     <div class="progress-track">
                         {% set total = nb_projets if nb_projets > 0 else 1 %}
                         <!-- Progress bar shows the proportion of each status -->
-                        <div class="progress-fill {{ label|replace(' ', '-')|lower }}" 
+                        <div class="progress-fill {{ label|replace(' ', '-')|lower }}"
                              data-width="{{ (count / total) * 100 }}">
                         </div>
                     </div>

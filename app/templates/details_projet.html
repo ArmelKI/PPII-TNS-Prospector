@@ -7,10 +7,14 @@
         <div>
             <h1>{{ projet.nom_projet }}</h1>
             <p class="text-muted">Client : {{ projet.convention.client.raison_sociale }}</p>
+            
+            <p>Competences requises: {% for c in projet.competences_requises %} <span class="badge"> {{ c.nom_competence }}</span> {% endfor %} </p>
+            
         </div>
         <div>
             <span class="badge" style="font-size: 1.2rem;">{{ projet.statut_projet.value }}</span>
         </div>
+        
     </div>
 
     <div class="dashboard-grid">
@@ -23,9 +27,11 @@
                         <li class="interaction-item">
                             <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong>
                             <br>
-                            <small class="text-muted">
-                                {% for c in i.competences %}{{ c.nom_competence }} {% endfor %}
+                            {% for m in i.maitrise_details %}
+                            <small class="badge">
+                                {{ m.competence.nom_competence}} : {{m.niveau_maitrise}}/10
                             </small>
+                            {% endfor %}
                         </li>
                     {% endfor %}
                     </ul>
@@ -42,9 +48,11 @@
                     📊 Kanban
                 </a>
                 
-                <a href="{{ url_for('projets.modifier_projet', id=projet.id_projet) }}" class="btn-secondary" style="display:block; width:100%; text-align:center;">
+                <a href="{{ url_for('projets.modifier_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center; margin-bottom:10px;">
                     ✏️ Modifier le projet
                 </a>
+                
+                <a href="{{ url_for('projets.match_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center;">Match</a>
             </div>
         </div>
     </div>

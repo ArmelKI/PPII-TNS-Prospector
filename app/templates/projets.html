@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block title %}Projets{% endblock %}
-
 {% block content %}
 <div class="container fade-in">
     <!-- Header section: page title and button to create a new project -->
@@ -23,15 +22,18 @@
                 {{ p.convention.client.raison_sociale if p.convention else 'Client ?' }}
             </small>
         </div>
-        
+
         <!-- Project name -->
         <h3 style="margin-top:0; margin-bottom: 10px;">{{ p.nom_projet }}</h3>
-        
+
         <!-- Project start date, or a fallback if not defined -->
         <p class="text-muted" style="font-size: 0.9em; flex-grow: 1;">
             Début : {{ p.date_debut_projet.strftime('%d/%m/%Y') if p.date_debut_projet else 'Non défini' }}
         </p>
-        
+        <p class="text-muted" style="font-size: 0.9em; flex-grow: 1;">
+            Fin : {{ p.date_fin_projet.strftime('%d/%m/%Y') if p.date_fin_projet else 'Non défini' }}
+        </p>
+
         <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
 
         <!-- Action buttons: go to Kanban board or project details -->
@@ -39,10 +41,15 @@
             <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}" class="btn" style="text-align:center;">
                 📊 Kanban
             </a>
-            
-            <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn-secondary" style="text-align:center;">
+
+            <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn" style="text-align:center;">
                 Détails
             </a>
+            {% if p.statut_projet.value != "Terminé" %} <!-- Pour récupérer la valuer de l'objet Enum -->
+            <a href="{{ url_for('projets.match_projet', id=p.id_projet) }}" class="btn">Match</a>
+            {% else %} 
+            <a href=# class='btn'>Déjà terminé 🔒</a>
+            {% endif %}
         </div>
       </div>
       {% else %}
