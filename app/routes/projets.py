@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.models import Projet, Client, Convention, StatutProjet, Intervenant, db
 from datetime import date, datetime
-from matching import  create_ai_prompt, call_ai_matching
+from app.matching import call_ai_matching, create_ai_prompt
 import json
 from flask_login import login_required
 

@@ -1,46 +1,14 @@
 
-# Première ébauche du programme mais il faut améliorer la pondération
 
 ########## INTERFACE CALL API IA ####################
 
-# Selon leur programme de con il faudrait faire des call a une ia pour trouver la solution de mattching *sigh* 
-
-
-
-"""
-import requests
-import json
-response = requests.post(
-  url="https://openrouter.ai/api/v1/chat/completions",
-  headers={
-    "Authorization": "Bearer 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",
-  },
-  data=json.dumps({
-    "model": "mistralai/devstral-2512:free",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Qu'est ce que Telecom Nancy?"
-      }
-    ],
-    # "temperature": 0.7, # Ajuster la créativité de la réponse
-    # "max_tokens": 512,  # Limite le nombre de tokens dans la réponse
-  })
-)
-print(response.json())
-"""
-# Cependant si on devait faire appel a l'ia pour résoudre ce problème de matching à chaque fois qu'on ajoutait un nouvelle intervenant ou un nouveau projet le temps d'actualisation serait interminable. 
-# Mieux vaut se baser sur un  algorithme pur et dur avec pondération plus complexe.
 
 from dotenv import load_dotenv
 import os
 import requests
 import json
 
-
 load_dotenv()
-
-
 
 def create_ai_prompt(mission,intervenants_dispos ):
     """
@@ -141,7 +109,7 @@ def call_ai_matching(prompt_system,prompt_user):
             {"role": "user", "content": prompt_user}
         ],
         "temperature": 0.2, # Faible -> déteministe
-        # "response_format": { "type": "json_object" } # Utile si le modèle le supporte
+        
     }
     
     headers = {
@@ -173,7 +141,7 @@ def call_ai_matching(prompt_system,prompt_user):
 
     except requests.exceptions.HTTPError as err:
         print(f"❌ Erreur HTTP : {err}")
-        print(f"Détail réponse : {response.text}") # Très important pour le debug
+        print(f"Détail réponse : {response.text}") 
     except json.JSONDecodeError:
         print(f"❌ Erreur : L'IA n'a pas renvoyé un JSON valide.")
         print(f"Contenu reçu : {content}")
@@ -188,11 +156,3 @@ if __name__ == "__main__":
         print("\n--- RÉSULTATS DU MATCHING ---")
         print(json.dumps(resultats, indent=2, ensure_ascii=False))
 
-
-
-
-"""
-Il faudra modifier la DB en conséquence pour qu'il y'ait un dicitionaire clé/compétence requise  valeur/score de la compétence
-De meme il faut pour chaque compétence de l'intervenant qu'il y'ait un score associer (sinon par défaut on le met a 0/10)
-
-"""

@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 from app.models import Intervenant, Utilisateur, Competence, db, MaitriseCompetence
-from matching import call_ai_matching, create_ai_prompt
+from app.matching import  call_ai_matching, create_ai_prompt
 from flask_login import login_required
 
 intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants")
@@ -139,12 +139,7 @@ def ajouter_intervenant():
         flash("Intervenant créé avec succès !", "success")
         return redirect(url_for("intervenants.liste_intervenants"))
     
-    """
-    ACTUALISATION MATCHING
-    for projet in Projet: 
-        call_ai_matching(prompt_user, prompt system)
-    
-    """
+   
     utilisateurs = Utilisateur.query.order_by(Utilisateur.nom_utilisateur).all()
     return render_template("ajouter_intervenant.html", utilisateurs=utilisateurs)
 
