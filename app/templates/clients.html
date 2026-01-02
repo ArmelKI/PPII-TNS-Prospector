@@ -28,7 +28,7 @@
     </td>
     <td>{{ c.date_dernier_contact.strftime('%d/%m/%Y') if c.date_dernier_contact else '-' }}</td>
     <td>
-      <a href="{{ url_for('clients.details_client', id=c.id_client) }}" class="btn-secondary">Voir dossier</a>
+      <a href="{{ url_for('clients.details_client', id=c.id_client) }}" class="btn btn-secondary">Voir dossier</a>
     </td>
   </tr>
   {% else %}

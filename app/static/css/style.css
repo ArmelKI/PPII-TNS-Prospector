@@ -212,6 +212,10 @@ a:hover { text-decoration: underline; }
   color: white;
 }
 
+.vertical-btn > .btn-secondary {
+  margin-top: 5px;
+}
+
 .btn-secondary:hover { background: var(--tns-blue); }
 
 .chart-container {

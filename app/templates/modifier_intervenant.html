@@ -4,10 +4,10 @@
 {% block content %}
 <div class="container fade-in">
     <h1>Modifier Intervenant</h1>
-    
+
     <div class="panel">
         <form method="POST" enctype="multipart/form-data" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-            
+
             <div>
                 <h3 class="panel-title">👤 Identité</h3>
                 <div style="background: #f4f5f7; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
@@ -58,7 +58,7 @@
                     <label>Remplacer Carte Étudiante</label>
                     <input type="file" name="carte_etu_file">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Remplacer Carte Vitale</label>
                     <input type="file" name="carte_vitale_file">
@@ -66,7 +66,7 @@
             </div>
 
             <div style="grid-column: 1 / -1; margin-top: 20px; text-align: right;">
-                <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">Annuler</a>
+                <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn btn-secondary">Annuler</a>
                 <button type="submit" class="btn">Enregistrer les modifications</button>
             </div>
         </form>

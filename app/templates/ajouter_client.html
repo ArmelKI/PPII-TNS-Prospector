@@ -9,7 +9,7 @@
             <label>Raison Sociale (Nom de l'entreprise)</label>
             <input type="text" name="raison_sociale" required placeholder="Ex: Google France">
         </div>
-        
+
         <div class="form-group">
             <label>Secteur d'activité</label>
             <input type="text" name="secteur" placeholder="Ex: Informatique, BTP, Santé...">
@@ -25,9 +25,9 @@
             <input type="text" name="telephone_client" placeholder="01 02 03 04 05">
         </div>
 
-        <div style="margin-top:20px;">
+        <div style="margin-top:20px;" class="vertical-btn"">
             <button type="submit" class="btn">Enregistrer le client</button>
-            <a href="{{ url_for('clients.liste_clients') }}" class="btn-secondary">Annuler</a>
+            <a href="{{ url_for('clients.liste_clients') }}" class="btn btn-secondary">Annuler</a>
         </div>
     </form>
 </div>

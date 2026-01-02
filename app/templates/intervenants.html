@@ -14,14 +14,14 @@
     <form method="get" style="display: flex; gap: 10px; flex: 1;">
       <!-- Search by name or skill -->
       <input type="text" name="search" placeholder="Entrer un nom ou une compétence..." value="{{ search_query }}" style="flex: 1; padding: 8px;">
-      
+
       <!-- Filter by availability status -->
       <select name="disponibilite" onchange="this.form.submit()" style="padding: 8px;">
         <option value="">-- Disponibilité --</option>
         <option value="Disponible" {% if filter_dispo == 'Disponible' %}selected{% endif %}>✅ Disponible</option>
         <option value="Indisponible" {% if filter_dispo == 'Indisponible' %}selected{% endif %}>❌ Indisponible</option>
       </select>
-      
+
       <button type="submit" class="btn-secondary">🔍</button>
     </form>
   </div>
@@ -48,7 +48,7 @@
           <!-- Fallback avatar if no photo -->
           <div style="width:36px; height:36px; background:#e0e0e0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px;">👤</div>
         {% endif %}
-        
+
         <div>
           <!-- Display full name and email -->
           <div style="font-weight:bold;">{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</div>
@@ -56,14 +56,14 @@
         </div>
       </div>
       </td>
-      
+
       <td>
         <!-- List all skills as badges -->
         {% for m  in i.maitrise_details %}
         <span class="badge" style="background:#e3f2fd; color:#0d47a1; margin-right:4px;">{{ m.competence.nom_competence}} : {{m.niveau_maitrise}}/10</span>
         {% endfor %}
       </td>
-      
+
       <td>
       {% if i.disponible %}
         <!-- Show available status with hours -->
@@ -73,14 +73,14 @@
         <span class="badge" style="background:#f8d7da; color:#721c24;">❌ Indisponible</span>
       {% endif %}
       </td>
-      
+
       <td style="text-align: right;">
       <div style="display:inline-flex; gap: 5px;">
         <!-- Edit button for this intervenant -->
         <a href="{{ url_for('intervenants.modifier_intervenant', id=i.id_intervenant) }}" class="btn-secondary btn-xs" title="Modifier" style="padding: 5px 10px;">
           ✏️
         </a>
-        
+
         <!-- Delete button with confirmation dialog -->
         <form action="{{ url_for('intervenants.supprimer_intervenant', id=i.id_intervenant) }}" method="POST" onsubmit="return confirm('Supprimer définitivement cet intervenant ?');" style="margin:0;">
           <button type="submit" class="btn-secondary btn-xs" style="background:#fff; border:1px solid #dc3545; color:#dc3545; padding: 5px 10px;" title="Supprimer">
@@ -98,14 +98,14 @@
     {% endfor %}
     </tbody>
   </table>
-  
+
   <!-- Pagination controls -->
   <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
     {% if intervenants.has_prev %}
-      <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.prev_num) }}" class="btn-secondary">← Précédent</a>
+      <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.prev_num) }}" class="btn btn-secondary">← Précédent</a>
     {% endif %}
     {% if intervenants.has_next %}
-      <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.next_num) }}" class="btn-secondary">Suivant →</a>
+      <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.next_num) }}" class="btn btn-secondary">Suivant →</a>
     {% endif %}
   </div>
 </div>

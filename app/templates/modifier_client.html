@@ -8,7 +8,7 @@
 
     <div class="card" style="max-width: 600px; margin: 30px auto;">
         <form method="POST">
-            
+
             <div class="form-group">
                 <label>Raison Sociale (Nom)</label>
                 <input type="text" name="raison_sociale" value="{{ client.raison_sociale }}" required>
@@ -30,8 +30,8 @@
             </div>
 
             <div style="margin-top: 25px; display: flex; gap: 10px;">
+                <a href="{{ url_for('clients.details_client', id=client.id_client) }}" class="btn btn-secondary" style="flex: 1; text-align: center;">Annuler</a>
                 <button type="submit" class="btn" style="flex: 1;">Enregistrer</button>
-                <a href="{{ url_for('clients.details_client', id=client.id_client) }}" class="btn-secondary" style="flex: 1; text-align: center;">Annuler</a>
             </div>
 
         </form>
