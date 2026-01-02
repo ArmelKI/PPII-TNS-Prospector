@@ -73,36 +73,17 @@
     </div>
 
     <div class="panel">
-        <h3>📊 Vue d'ensemble des statuts des projets</h3>
-        <div class="chart-wrapper">
-
-            <div class="canvas-container">
-                <!-- Chart.js canvas for project status breakdown -->
-                <canvas id="projetsChart"
-                        data-labels='{{ projets_labels | tojson }}'
-                        data-counts='{{ projets_counts | tojson }}'>
-                </canvas>
+      <h3>📊 Vue d'ensemble des statuts des projets</h3>
+      <div class="stats-list">
+        {% for label, count in stats_dict.items() %}
+          <div class="stat-item">
+            <div class="stat-header">
+              <span>{{ label }}</span>
+              <strong>{{ count }}</strong>
             </div>
-
-            <div class="stats-list">
-                {% for label, count in stats_dict.items() %}
-                <div class="stat-item">
-                    <div class="stat-header">
-                        <span>{{ label }}</span>
-                        <strong>{{ count }}</strong>
-                    </div>
-                    <div class="progress-track">
-                        {% set total = nb_projets if nb_projets > 0 else 1 %}
-                        <!-- Progress bar shows the proportion of each status -->
-                        <div class="progress-fill {{ label|replace(' ', '-')|lower }}"
-                             data-width="{{ (count / total) * 100 }}">
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-        </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 
