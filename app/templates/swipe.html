@@ -3,14 +3,14 @@
 {% block content %}
 
 
-<!--  Affiche le mathcing rendu par l'ia pour cette mission (les 3 plus performant)-->
-<!-- On fait l'interface swipe plus tard -->
+<!--  Affiche le matching rendu par l'ia pour cette mission (les 3 plus performant)-->
+
 <div class="container mt-4">
     <h2>Matching IA pour : {{mission.nom_projet}}</h2>
     <h2>Temps de travail estimé: {{mission.charge_projet}}</h2>
     <div class="row mt-4">
         {% for option in suggestions %}
-        <div class="col-md-4">
+        <div style ="margin-bottom:10px;">
             
             <div class ="matching-card">
                 <strong>Option {{ loop.index }}</strong>
@@ -18,12 +18,18 @@
             
             
                 <h5>Équipe proposée :</h5>
-                <ul class="list-group list-group-flush mb-3">
+                <ul>
                     {% for membre in option.details_equipe %}
-                        <li class="list-group-item">👤 {{ membre.nom }} ({{membre.heures_attribuees}}h attribuées)</li>
+                        <li class="list-group-item">👤 {{ membre.nom }}
+                            {% if membre.heures_attribuees != 0 %} 
+                                <span  style="color:rgb(21, 206, 21);">(+{{membre.heures_attribuees}}h/semaine) </span>
+                            {% else %}
+                                <span style="color:red;">(sur le projet et indisponible)</span>
+                            {% endif %}
+                        </li>
                     {% endfor %}
                 </ul>
-                <p class="card-text text-muted small">
+                <p>
                     <strong>Raison:</strong><em>"{{ option.raison }}"</em>
                 </p>
            

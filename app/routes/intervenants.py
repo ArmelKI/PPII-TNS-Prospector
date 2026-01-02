@@ -193,6 +193,10 @@ def modifier_intervenant(id):
                     note = int(parts[1].strip()) # ou float() si vous acceptez les décimales
                 except ValueError:
                     note = 0
+            if note > 10 or note < 0 : # Sécurité d'entree
+                flash("Veuiller rentrer une note sur 10 pour chaque compétence, mis à 0 par défaut","danger") 
+                note = 0
+                
 
             if cname: 
                 comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
