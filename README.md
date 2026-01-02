@@ -1,20 +1,26 @@
-# PPII - Gestion des Intervenants 🐐
+# Prospector : application web d'aide à la prospection d'entreprises
 
-Projet de gestion des intervenants et clients développé dans le cadre du PPII (S5).
+Cette applicaiton web a pour objectif de faciliter la prospection de nouveaux clients pour Telecom Nancy Services.  
+Prospector permet de gérer les clients de la junior, ses projets ainsi que les intervenants qui travaillent sur ces derniers.
 
-## Lancement Rapide avec Docker (Recommandé)
+L'application est conforme au RGPD : tout suppression des informations d'un client ou d'un utilisateur entraine la suppression complète de ses informations dans l'intégralité de l'application.
 
-Cette méthode est la plus simple car elle configure automatiquement l'application et la base de données PostgreSQL.
+
+## Guide d'installation
 
 ### 1. Prérequis
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et **lancé**.
+- Le port 5432 de votre machine est libre.
 
 ### 2. Configuration et Lancement
 Ouvrez un terminal à la racine du projet :
 
 ```bash
-# 1. Créer le fichier d'environnement pour l'application
-cp .env.example ./app/.env
+cp ./app/.env.example ./app/.env
 
-# 2. Construire et lancer les conteneurs
 docker-compose --env-file ./app/.env up --build
+# Cela peut prendre un peu de temps
+```
+
+### 3. L'application est maintenant lancée
+Rendez-vous à l'adresse suivante : http://127.0.0.1:8000/auth/login?next=%2F
