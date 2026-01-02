@@ -4,6 +4,7 @@ from sqlalchemy import Enum as SAEnum, CheckConstraint
 from flask_login import UserMixin
 from app.config import login_manager
 from bcrypt import hashpw, gensalt, checkpw
+from flask import flash
 
 
 
@@ -42,11 +43,11 @@ intervenant_projet = db.Table(
 
 class MaitriseCompetence(db.Model):
     __tablename__ = "intervenant_competence"
-    
+
     id_intervenant = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE"), primary_key=True)
     id_competence = db.Column(db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE"), primary_key=True)
     niveau_maitrise = db.Column(db.Integer, default=0)
-    
+
     # Relations vers les deux objets
     intervenant = db.relationship("Intervenant", back_populates="maitrise_details")
     competence = db.relationship("Competence", back_populates="intervenant_details")
@@ -103,12 +104,13 @@ class Utilisateur(db.Model, UserMixin):
         stored_hash = self.mdp_utilisateur
         if isinstance(stored_hash, str):
             stored_hash = stored_hash.encode('utf-8')
-        
+
         candidate_bytes = pw_candidate.encode('utf-8')
-        
+
         try:
             return checkpw(candidate_bytes, stored_hash)
         except ValueError:
+            flash("Erreur lors de la vérification du mot de passe. \nVeuillez contacter le responsable informatique !")
             return False
 
     def set_password(self, new_password: str):
@@ -137,7 +139,7 @@ class Intervenant(db.Model):
     cv = db.Column(db.String(255))
 
     utilisateur = db.relationship("Utilisateur", back_populates="intervenant")
-    maitrise_details = db.relationship("MaitriseCompetence", back_populates="intervenant", cascade="all, delete-orphan")    
+    maitrise_details = db.relationship("MaitriseCompetence", back_populates="intervenant", cascade="all, delete-orphan")
     projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
     taches = db.relationship("Tache", secondary=intervenant_tache, back_populates="intervenants")
 
