@@ -12,7 +12,7 @@ function drawRadius(lat, lng, radius) {
         radius: radius,
         color: 'red',
         fillColor: 'red',
-        fillOpacity: 0.2
+            fillOpacity: 0.2
     }).addTo(map);
 
     map.fitBounds(searchCircle.getBounds());
@@ -52,6 +52,19 @@ function init() {
     L.marker([TN.lat, TN.lng], { icon })
         .addTo(map)
         .bindPopup('TNS');
+
+    const legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = function (map) {
+        const div = L.DomUtil.get('map-legend');
+        
+        L.DomEvent.disableClickPropagation(div);
+        L.DomEvent.disableScrollPropagation(div);
+        
+        return div;
+    };
+
+    legend.addTo(map);
 
     loadClients();
     loadProspects();

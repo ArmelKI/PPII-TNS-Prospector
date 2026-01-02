@@ -5,23 +5,20 @@
  }
 
 #map-legend {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: white;
-    padding: 8px 12px;
-    border: 1px solid gray;
-    border-radius: 5px;
-    font-size: 14px;
-    font-family: sans-serif;
-    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9); 
+    padding: 10px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    margin: 10px; 
 }
 
 .legend-item {
-    margin-bottom: 6px;
     display: flex;
     align-items: center;
-    font-size: 14px;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: bold;
 }
 
 .legend-color {
