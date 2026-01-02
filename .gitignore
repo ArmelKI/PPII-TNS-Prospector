@@ -9,3 +9,6 @@
 
 # Private environment variables
 .env
+
+# Uploaded files
+app/static/uploads
