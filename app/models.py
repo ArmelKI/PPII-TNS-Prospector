@@ -257,6 +257,9 @@ class Projet(db.Model):
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
+    convention = db.Column(db.String(255))
+    bon_commande = db.Column(db.String(255))
+    recap_mission = db.Column(db.String(255))
 
     convention = db.relationship("Convention", back_populates="projets")
     jalons = db.relationship("Jalon", back_populates="projet")
