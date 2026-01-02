@@ -19,15 +19,18 @@
 <div id="map-legend">
     <div class="legend-item">
         <img src="../static/images/client.svg" class="legend-icon" alt="Client">
-        <span>Client</span> 
+        <span>Client</span>
     </div>
     <div class="legend-item">
         <img src="../static/images/prospect.png" class="legend-icon" alt="Prospect">
-        <span>Prospect OSM</span> 
+        <span>Prospect OSM</span>
     </div>
 </div>
 
-<div id="mapid"></div>
+<div id="map-container">
+    <div id="mapid"></div>
+    <aside>Si les prospects ne sont pas affichés, essayez de recharger la page ou de changer le rayon.</aside>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
