@@ -92,13 +92,24 @@ class Utilisateur(db.Model, UserMixin):
         return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
 
     def check_password(self, pw_candidate: str) -> bool:
-        bytes_pw_candidate = pw_candidate.encode('utf-8')
-        bytes_password = self.mdp_utilisateur.encode('utf-8')
-        return checkpw(bytes_pw_candidate, bytes_password)
+        if not self.mdp_utilisateur:
+            return False
+        stored_hash = self.mdp_utilisateur
+        if isinstance(stored_hash, str):
+            stored_hash = stored_hash.encode('utf-8')
+        
+        candidate_bytes = pw_candidate.encode('utf-8')
+        
+        try:
+            return checkpw(candidate_bytes, stored_hash)
+        except ValueError:
+            return False
 
     def set_password(self, new_password: str):
-        bytes_password = new_password.encode('utf-8')
-        self.mdp_utilisateur = hashpw(bytes_password, gensalt()).decode('utf-8')
+        # SQLAlchemy se chargera de la conversion en String pour Postgres
+        pw_bytes = new_password.encode('utf-8')
+        hashed = hashpw(pw_bytes, gensalt())
+        self.mdp_utilisateur = hashed.decode('utf-8')
 
     def get_id(self):
         return self.id_utilisateur
