@@ -221,6 +221,9 @@ class Convention(db.Model):
     regles = db.Column(db.Text)
     cahier_charges = db.Column(db.Text)
     prix = db.Column(db.Numeric(10, 2))
+    convention = db.Column(db.String(255))
+    bon_commande = db.Column(db.String(255))
+    recap_mission = db.Column(db.String(255))
 
     client = db.relationship("Client", back_populates="conventions")
     projets = db.relationship("Projet", back_populates="convention")
