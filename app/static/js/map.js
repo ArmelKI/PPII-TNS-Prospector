@@ -12,7 +12,7 @@ function drawRadius(lat, lng, radius) {
         radius: radius,
         color: 'red',
         fillColor: 'red',
-            fillOpacity: 0.2
+        fillOpacity: 0.2
     }).addTo(map);
 
     map.fitBounds(searchCircle.getBounds());

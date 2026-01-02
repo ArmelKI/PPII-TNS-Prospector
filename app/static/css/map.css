@@ -1,52 +1,35 @@
 #mapid { 
-    height: 600px;
-    width: 1200px;
-    border:5px solid #0056b3 
- }
+    height: 70vh;     
+    width: 100%;       
+    border: 5px solid #0056b3;
+    box-sizing: border-box; 
+}
 
 #map-legend {
-    background: rgba(255, 255, 255, 0.9); 
-    padding: 10px;
-    border: 2px solid rgba(0,0,0,0.2);
+    background: white !important; 
+    padding: 12px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-    margin: 10px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    font-family: Arial, sans-serif;
+    min-width: 160px;
+    z-index: 1000; 
 }
 
 .legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
+    display: flex !important; 
+    align-items: center !important;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
     color: #333;
-    font-weight: bold;
 }
 
-.legend-color {
-    width: 20px;
-    height: 20px;
-    display: inline-block;
-    margin-right: 6px;
-}
-
-
-.legend-color.client {
-    background-image: url('../static/images/client.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.legend-color.prospect {
-    background-image: url('../static/images/prospect.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.legend-color.radius {
-    background-image: url('../static/images/rayon_icon.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.6;
+.legend-icon {
+    width: 30px !important;
+    height: 30px !important;
+    margin-right: 12px;
+    display: inline-block !important;
+    background: none !important;     
+    object-fit: contain;
 }
