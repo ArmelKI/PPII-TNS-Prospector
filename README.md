@@ -5,6 +5,7 @@ Prospector permet de gérer les clients de la junior, ses projets ainsi que les 
 
 L'application est conforme au RGPD : tout suppression des informations d'un client ou d'un utilisateur entraine la suppression complète de ses informations dans l'intégralité de l'application.
 
+Vous trouverez un guide utilisateur à cette adresse [Nom du lien](./docs/Guid_utilisateur.md)
 
 ## Guide d'installation
 
