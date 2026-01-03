@@ -126,10 +126,14 @@ Pour simplifier le schéma, la cardinalité entre `conventions` et `projets` (qu
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id_projet` | Integer | PK | Identifiant unique | | Oui |
 | `nom_projet` | String(200) | Not Null | Titre du projet | | Oui |
-| `statut_projet` | Enum | Not Null, Def: PAS_COMMENCE | État actuel | [StatutProjet] | Oui |
+| `statut_projet` | Enum | Not Null, Def: PAS_COMMENCE | État actuel du projet | [StatutProjet] | Oui |
+| `charge_projet` | Integer | Not Null, Def: 0 | Nombre total d'heures de travail requises pour mener à bien le projet | 0 à infini | Oui |
 | `date_debut_projet` | Date | | Début effectif | | Non |
 | `date_fin_projet` | Date | | Fin effective | | Non |
 | `id_convention` | Integer | FK (conventions) | Convention parente | | Oui |
+| `convention` | String(255) | | Chemin du fichier de convention | | Non |
+| `bon_commande` | String(255) | | Chemin du fichier du bon de commande | | Non |
+| `recap_mission` | String(255) | | Chemin du fichier du récapitulatif de mission | | Non |
 
 ### `jalons`
 **Description** : Étapes (milestones) d'un projet.
@@ -153,7 +157,7 @@ Pour simplifier le schéma, la cardinalité entre `conventions` et `projets` (qu
 | `nom_tache` | String(200) | Not Null | Intitulé | | Oui |
 | `description_tache` | Text | | Détails | | Non |
 | `statut_tache` | Enum | Not Null, Def: PAS_COMMENCE | État d'avancement | [StatutTache] | Oui |
-| `date_dernier_delai` | Date | | Deadline | | Non |
+| `date_dernier_delai_tache` | Date | | Deadline | | Non |
 | `id_intervenant_tache`| Integer | FK (intervenants, SET NULL) | Responsable assigné | | Non |
 
 ---
@@ -171,9 +175,17 @@ Pour simplifier le schéma, la cardinalité entre `conventions` et `projets` (qu
 | `date_fin_intervention` | Date | | Fin de l'affectation |
 
 ### `intervenant_tache`
-**Description** : Équipe affectée à une tâche précise.
+**Description** : Intervenant affecté à une tâche précise.
 
 | Nom Physique | Type | Contraintes | Description |
 | :--- | :--- | :--- | :--- |
 | `id_intervenant` | Integer | PK, FK (intervenants) | Intervenant concerné |
 | `id_tache` | Integer | PK, FK (taches) | Tâche concernée |
+
+### `projet_competence`
+**Description** : Compétences requises pour chaque projet.
+
+| Nom Physique | Type | Contraintes | Description |
+| :--- | :--- | :--- | :--- |
+| `id_projet` | Integer | PK, FK (projets) | Projet concerné |
+| `id_competence` | Integer | PK, FK (competences) | Compétence requise pour ce projet |
