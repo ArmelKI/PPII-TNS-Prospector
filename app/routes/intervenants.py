@@ -119,19 +119,35 @@ def ajouter_intervenant():
             carte_vitale=path_carte_vitale
         )
 
-        comps = [c.strip() for c in competences_raw.replace(",", ";").split(";") if c.strip()]
-        for cname in comps:
-            comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first()
-            if not comp:
-                comp = Competence(nom_competence=cname)
-                db.session.add(comp)
-                db.session.flush()
+        items = [c.strip() for c in competences_raw.split(";") if c.strip()]
 
-            lien = MaitriseCompetence(
-            intervenant=intervenant,
-            competence=comp,
-            niveau_maitrise=0)
-            db.session.add(lien)
+        for item in items:
+            # Cleaning: remove parentheses to get "Name, Score"
+            clean_item = item.replace("(", "").replace(")", "")
+            parts = clean_item.split(",")
+            cname = parts[0].strip()
+
+            # Try to get the score (second part), otherwise 0 by default
+            note = 0
+            if len(parts) > 1:
+                try:
+                    note = int(parts[1].strip()) # or float() if you accept decimals
+                except ValueError:
+                    note = 0
+            if note > 10 or note < 0 : # Input safety
+                flash("Veuiller rentrer une note sur 10 pour chaque compétence, mis à 0 par défaut","danger")
+                note = 0
+
+
+            if cname:
+                comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
+                if not comp:
+                    comp = Competence(nom_competence=cname)
+                    db.session.add(comp)
+                    db.session.flush()
+
+                lien = MaitriseCompetence(intervenant=intervenant, competence=comp, niveau_maitrise=note)
+                db.session.add(lien)
 
         db.session.add(intervenant)
         db.session.commit()
