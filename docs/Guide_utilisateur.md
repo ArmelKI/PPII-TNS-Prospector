@@ -59,6 +59,80 @@ Enfin, modifier les informations relatives à un client est possible en cliquant
 
 ![Bouton modifier un client](images_user_guide/modifier_client.png)
 
+## Gestion des projets
+
+Cette page permet d'accéder à tous vos projets. Vous pouvez voir des informations comme leur statut ou encore leur date de début.
+
+![Liste des projets](images_user_guide/projets.png)
+
+Plongons un peu plus en détail dans ces projets !
+
+### Créer un projet
+
+Créez un projet en cliquant en haut à droite sur "+ Créer un projet".
+
+Un formulaire s'ouvrira pour y entrer les premières informations sur ce projet.
+
+![Formulaire nouveau projet](images_user_guide/creer_projet.png)
+
+Remplissez bien tous les champs, et cliquez sur "Créer le projet".
+
+### Détails sur projet
+
+Après avoir créé le projet, vous atterirez sur la page de détails du projet.
+
+![Détails projet](images_user_guide/details_projet.png)
+
+Vous pourrez y avoir qui a commandité ce projet, les compétences requises, les intervenants assignés ou encore le statut du projet.
+
+Parmi les actions possibles, trois options s'offrent à vous : 
+
+- Afficher le Kanban
+- Modifer les détails du projet
+- Effectuer un matching pour voir quels intervenants seraient le plus appropriés pour cette mission
+
+### Kanban d'un projet
+
+En cliquant sur "Kanban", vous atterirez sur un gestionnaire de jalons de projets, ce qui vous permettra d'avoir la visibilité sur l'avancement du projet et des tâches restantes à accomplir.
+
+3 colonnes sont affichées :
+- À venir : les jalons de cette catégorie n'ont pas encore commencé
+- Actuel : ce jalon est en cours de travaux par l'équipe
+- Terminé : ce jalon est complété
+
+Vous avez la possibilité de créer des jalons à l'aide de la barre au-dessus des colonnes de statuts susmentionnées.
+
+![Kanban](images_user_guide/kanban.png)
+
+### Modifier les détails d'un projet
+
+Cette page permet de modifier un projet. Vous pouvez, entre autres, y modifier les intervenants assignés à ce projet.
+
+Cliquez sur le bouton bleu en bas à droite de la page pour sauvegarder vos changements.
+
+![Modifier un projet](images_user_guide/modifier_projet.png)
+
+
+### Le matching
+
+Il est parfois compliqué de savoir qui sont les personnes les plus aptes à mener à bien un projet.
+
+Demander à chaque personne s'il se sent capable de faire tel ou tel projet ?
+Trop long.
+
+Laissez l'IA le faire à votre place.
+
+En cliquant sur le bouton "Match", l'IA vous fera une suggestion personnalisée d'équipes potentielles pour une mission donnée, selon les compétences requises et les compétences maitrisées par vos intervenants.
+
+À vous de choisir ou non une équipe.
+
+![Matching projet](images_user_guide/matching.png)
+
+
+
+
+
+
 
 
 
