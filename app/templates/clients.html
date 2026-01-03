@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Clients{% endblock %}
 
-
 {% block content %}
 <h1 class="fade-in">Clients</h1>
 
-<a href="{{ url_for('clients.ajouter_client') }}" class="btn" style="margin-bottom:20px;">+ Ajouter un client</a>
+<a href="{{ url_for('clients.ajouter_client') }}" class="btn mb-20">+ Ajouter un client</a>
 
 <table class="data-table fade-in">
   <thead>
@@ -20,7 +19,7 @@
   <tbody>
   {% for c in clients %}
   <tr>
-    <td style="font-weight:bold;">{{ c.raison_sociale }}</td>
+    <td class="font-bold">{{ c.raison_sociale }}</td>
     <td><span class="badge">{{ c.secteur }}</span></td>
     <td>
         {{ c.mail_client }}<br>
@@ -28,12 +27,14 @@
     </td>
     <td>{{ c.date_dernier_contact.strftime('%d/%m/%Y') if c.date_dernier_contact else '-' }}</td>
     <td>
-      <a href="{{ url_for('clients.details_client', id=c.id_client) }}" class="btn btn-secondary">Voir dossier</a>
+      <a href="{{ url_for('clients.details_client', id=c.id_client) }}" class="btn-secondary">Voir dossier</a>
     </td>
   </tr>
   {% else %}
     <tr>
-        <td colspan="5" style="text-align:center;">Aucun client trouvé.</td>
+        <td colspan="5" class="text-center" style="color: #777; padding: 20px;">
+            Aucun client trouvé.
+        </td>
     </tr>
   {% endfor %}
   </tbody>
