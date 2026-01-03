@@ -128,6 +128,13 @@ En cliquant sur le bouton "Match", l'IA vous fera une suggestion personnalisée 
 
 ![Matching projet](images_user_guide/matching.png)
 
+## Historiques des échanges
+
+Tous les échanges que vous avez eu avec un client seront répértoriés ici.
+
+![Historique des échanges](images_user_guide/echanges.png)
+
+L'état de la relation avec ce client (au moment de l'interaction) est affiché, ainsi que le détail de l'interaction.
 
 
 
