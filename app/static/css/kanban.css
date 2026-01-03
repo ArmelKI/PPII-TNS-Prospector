@@ -70,3 +70,48 @@
 .kanban-column.drag-over {
   background-color: #e3eefc;
 }
+
+/* Nouveau : Le panneau de contrôle (Ajouter un jalon) */
+.kanban-controls {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.kanban-add-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.kanban-input-text {
+    flex: 1; /* Takes all place */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.kanban-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 5px;
+}
+
+.btn-delete-cross {
+    background: none;
+    border: none;
+    color: #dc3545; 
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.btn-delete-cross:hover {
+    opacity: 1;
+}
