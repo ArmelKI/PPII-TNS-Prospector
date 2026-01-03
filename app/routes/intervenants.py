@@ -95,14 +95,13 @@ def ajouter_intervenant():
                 flash("Veuillez renseigner Nom, Prénom et Email.", "warning")
                 return redirect(url_for("intervenants.ajouter_intervenant"))
 
-            temp_password = secrets.token_urlsafe(12)
             utilisateur = Utilisateur(
                 prenom_utilisateur=prenom,
                 nom_utilisateur=nom,
                 mail_utilisateur=email,
-                mdp_utilisateur=temp_password,
                 id_role=1
             )
+            utilisateur.set_password('pass')
             db.session.add(utilisateur)
             db.session.flush()
         path_cv = save_uploaded_file(cv_file, 'documents')
@@ -120,27 +119,43 @@ def ajouter_intervenant():
             carte_vitale=path_carte_vitale
         )
 
-        comps = [c.strip() for c in competences_raw.replace(",", ";").split(";") if c.strip()]
-        for cname in comps:
-            comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first()
-            if not comp:
-                comp = Competence(nom_competence=cname)
-                db.session.add(comp)
-                db.session.flush()
+        items = [c.strip() for c in competences_raw.split(";") if c.strip()]
 
-            lien = MaitriseCompetence(
-            intervenant=intervenant,
-            competence=comp,
-            niveau_maitrise=0)
-            db.session.add(lien)
+        for item in items:
+            # Cleaning: remove parentheses to get "Name, Score"
+            clean_item = item.replace("(", "").replace(")", "")
+            parts = clean_item.split(",")
+            cname = parts[0].strip()
+
+            # Try to get the score (second part), otherwise 0 by default
+            note = 0
+            if len(parts) > 1:
+                try:
+                    note = int(parts[1].strip()) # or float() if you accept decimals
+                except ValueError:
+                    note = 0
+            if note > 10 or note < 0 : # Input safety
+                flash("Veuiller rentrer une note sur 10 pour chaque compétence, mis à 0 par défaut","danger")
+                note = 0
+
+
+            if cname:
+                comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
+                if not comp:
+                    comp = Competence(nom_competence=cname)
+                    db.session.add(comp)
+                    db.session.flush()
+
+                lien = MaitriseCompetence(intervenant=intervenant, competence=comp, niveau_maitrise=note)
+                db.session.add(lien)
 
         db.session.add(intervenant)
         db.session.commit()
 
         flash("Intervenant créé avec succès !", "success")
         return redirect(url_for("intervenants.liste_intervenants"))
-    
-   
+
+
     utilisateurs = Utilisateur.query.order_by(Utilisateur.nom_utilisateur).all()
     return render_template("ajouter_intervenant.html", utilisateurs=utilisateurs)
 
@@ -167,21 +182,21 @@ def modifier_intervenant(id):
         new_vitale = save_uploaded_file(request.files.get('carte_vitale_file'), 'documents')
         if new_vitale: intervenant.carte_vitale = new_vitale
 
-        
+
         competences_raw = request.form.get("competences", "")
-        
-        
+
+
         MaitriseCompetence.query.filter_by(id_intervenant=intervenant.id_intervenant).delete()
-        
-        
+
+
         items = [c.strip() for c in competences_raw.split(";") if c.strip()]
-        
+
         for item in items:
             # Cleaning: remove parentheses to get "Name, Score"
             clean_item = item.replace("(", "").replace(")", "")
             parts = clean_item.split(",")
             cname = parts[0].strip()
-            
+
             # Try to get the score (second part), otherwise 0 by default
             note = 0
             if len(parts) > 1:
@@ -190,17 +205,17 @@ def modifier_intervenant(id):
                 except ValueError:
                     note = 0
             if note > 10 or note < 0 : # Input safety
-                flash("Veuiller rentrer une note sur 10 pour chaque compétence, mis à 0 par défaut","danger") 
+                flash("Veuiller rentrer une note sur 10 pour chaque compétence, mis à 0 par défaut","danger")
                 note = 0
-                
 
-            if cname: 
+
+            if cname:
                 comp = Competence.query.filter(Competence.nom_competence.ilike(cname)).first() # type: ignore
                 if not comp:
                     comp = Competence(nom_competence=cname)
                     db.session.add(comp)
                     db.session.flush()
-                
+
                 lien = MaitriseCompetence(intervenant=intervenant, competence=comp, niveau_maitrise=note)
                 db.session.add(lien)
 
@@ -208,7 +223,7 @@ def modifier_intervenant(id):
         flash("Profil mis à jour.", "info")
         return redirect(url_for("intervenants.liste_intervenants"))
 
-    
+
     maitrises_existantes = MaitriseCompetence.query.filter_by(id_intervenant=intervenant.id_intervenant).all()
 
     # Rebuild the string in the format "(Name, Score); (Name, Score)"

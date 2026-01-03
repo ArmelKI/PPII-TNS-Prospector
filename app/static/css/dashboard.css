@@ -167,3 +167,7 @@
         background-color: #004494;
         text-decoration: none;
 }
+
+.card {
+  width: 260px;
+}
