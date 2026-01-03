@@ -26,7 +26,7 @@ La page est aussi constituée de quelques chiffres sur les intervenants, les pro
 
 ![KPI](images_user_guide/chiffres.png)
 
-## Intervenants
+## Gestion des intervenants
 
 Ici, vous avez la possibilité de manager vos intervenants.
 
@@ -35,6 +35,30 @@ Ici, vous avez la possibilité de manager vos intervenants.
 
 Vous pouvez gérer des informations telles que leur nom, prénom, compétences, leur degré de maitrise de ces compétences, s'ils sont disponibles ou non, et si oui, combien de temps par semaine.
 
-![Liste des intervenant de la junior](images_user_guide/modifier_intervenant.png)
+![Page de modification d'un intervenant](images_user_guide/modifier_intervenant.png)
 
 Vous pouvez ajouter des documents : leur CV, photo d'identité, carte étudiante, carte vitale.
+
+## Gestion des clients
+
+Sur cette page, vous pourrez voir la liste des clients de la junior-entreprise, accompagnés chacun de la date de dernier contact avec eux.
+
+![Liste des clients](images_user_guide/clients.png)
+
+Chaque client possède des coordonnées ajustables : adresse mail et numéro de téléphone.
+
+Vous avez également un aperçu des projets commandités par ce client.
+
+![Projets associés à un client](images_user_guide/projets_Saint_seb.png)
+
+Il est possible d'historiser une interaction avec ce même client sur sa page : 
+
+![Nouvelle interaction client](images_user_guide/interaction_client.png)
+
+Enfin, modifier les informations relatives à un client est possible en cliquant sur le bouton "Modifier".
+
+![Bouton modifier un client](images_user_guide/modifier_client.png)
+
+
+
+
