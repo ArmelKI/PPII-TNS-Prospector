@@ -12,3 +12,16 @@ Note : pour le test de l'application, vous pouvez utiliser "lucas.martin@tns.fr"
 
 ![Page d'accueil](images_user_guide/login_admin.png)
 
+## Tableau de bord
+
+C'est la page principale de l'application. Vous pourrez y voir d'un coup d'oeil les prochaines échéances sur vos différents projets, leur état actuel.
+
+![Prochaines échéances](images_user_guide/echeances.png)
+
+Vous pouvez également avoir un aperçu des interactions récentes avec vos clients.
+
+![Derniers contacts](images_user_guide/derniers_contacts.png)
+
+La page est aussi constituée de quelques chiffres sur les intervenants, les projets actifs et les clients.
+
+![KPI](images_user_guide/chiffres.png)
