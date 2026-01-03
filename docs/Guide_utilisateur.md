@@ -136,6 +136,27 @@ Tous les échanges que vous avez eu avec un client seront répértoriés ici.
 
 L'état de la relation avec ce client (au moment de l'interaction) est affiché, ainsi que le détail de l'interaction.
 
+## Carte des prospects
+
+Pourquoi chercher des entreprises manuellement quand on peut demander à un cercle rouge de le faire ?
+
+C'est avec cette question qu'est née la carte des prospects. 
+
+Elle vous permet, en décidant du rayon autour de Telecom Nancy, de trouver des prospects.
+
+![Carte des prospects](images_user_guide/carte.png)
+
+Vos prospects (ceux qui ne sont pas encore vos clients) sont représentés par des points bleus, tandis que vos clients effectifs sont représentés un icône de position bleu clair (cf. la légende).
+
+Mais comment puis-je ajouter un prospect à ma liste de client ?
+
+C'est très simple : cliquez sur le point bleu puis sur "Ajouter à ma liste".
+
+Et si je veux supprimer ce client de ma liste ?
+
+C'est encore une fois très simple : cliquez sur l'icône bleu clair puis sur "Supprimer".
+
+
 
 
 
