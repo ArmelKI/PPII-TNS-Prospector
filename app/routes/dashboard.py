@@ -16,8 +16,6 @@ def dashboard():
     Returns:
         Rendered HTML template for the dashboard.
     """
-    flash(f'Utilisateur user.prenom_utilisateur user.nom_utilisateur connecté', "warning")
-
     nb_clients = Client.query.count()
 
     nb_projets = Projet.query.filter(
