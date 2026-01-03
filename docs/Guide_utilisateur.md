@@ -2,7 +2,9 @@
 
 Bienvenue cher membre de TNS dans Prospector !
 
-Cette application de permettra de gérer les projets de la junior, de prospecter de nouvelles entreprises et de garder un lien avec les clients.
+Cette application vous permettra de gérer les projets de la junior, de prospecter de nouvelles entreprises et de garder un lien avec les clients.
+
+Différents onglets s'offriront à vous en haut de la page tout au long de votre expérience.
 
 ## Page d'accueil
 
@@ -37,7 +39,7 @@ Vous pouvez gérer des informations telles que leur nom, prénom, compétences, 
 
 ![Page de modification d'un intervenant](images_user_guide/modifier_intervenant.png)
 
-Vous pouvez ajouter des documents : leur CV, photo d'identité, carte étudiante, carte vitale.
+Vous pouvez leur ajouter des documents : CV, photo d'identité, carte étudiante, carte vitale.
 
 ## Gestion des clients
 
@@ -49,7 +51,7 @@ Chaque client possède des coordonnées ajustables : adresse mail et numéro de 
 
 Vous avez également un aperçu des projets commandités par ce client.
 
-![Projets associés à un client](images_user_guide/projets_Saint_seb.png)
+![Projets associés à un client](images_user_guide/projets_Saint_Seb.png)
 
 Il est possible d'historiser une interaction avec ce même client sur sa page : 
 
@@ -93,12 +95,12 @@ Parmi les actions possibles, trois options s'offrent à vous :
 
 ### Kanban d'un projet
 
-En cliquant sur "Kanban", vous atterirez sur un gestionnaire de jalons de projets, ce qui vous permettra d'avoir la visibilité sur l'avancement du projet et des tâches restantes à accomplir.
+En cliquant sur "Kanban", vous atterirez sur un gestionnaire de jalons de projets, ce qui vous permettra d'avoir de la visibilité sur l'avancement du projet et des tâches restantes.
 
 3 colonnes sont affichées :
-- À venir : les jalons de cette catégorie n'ont pas encore commencé
-- Actuel : ce jalon est en cours de travaux par l'équipe
-- Terminé : ce jalon est complété
+- À venir : les jalons de cette catégorie n'ont pas encore commencé ;
+- Actuel : ce jalon est en cours de travaux par l'équipe ;
+- Terminé : ce jalon est complété.
 
 Vous avez la possibilité de créer des jalons à l'aide de la barre au-dessus des colonnes de statuts susmentionnées.
 
@@ -128,7 +130,7 @@ En cliquant sur le bouton "Match", l'IA vous fera une suggestion personnalisée 
 
 ![Matching projet](images_user_guide/matching.png)
 
-## Historiques des échanges
+## Historique des échanges
 
 Tous les échanges que vous avez eu avec un client seront répértoriés ici.
 
@@ -146,7 +148,7 @@ Elle vous permet, en décidant du rayon autour de Telecom Nancy, de trouver des 
 
 ![Carte des prospects](images_user_guide/carte.png)
 
-Vos prospects (ceux qui ne sont pas encore vos clients) sont représentés par des points bleus, tandis que vos clients effectifs sont représentés un icône de position bleu clair (cf. la légende).
+Vos prospects (ceux qui ne sont pas encore vos clients) sont représentés par des points bleus, tandis que vos clients effectifs sont représentés par un icône de position bleu clair (cf. la légende).
 
 Mais comment puis-je ajouter un prospect à ma liste de client ?
 
