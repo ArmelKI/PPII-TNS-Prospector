@@ -15,20 +15,20 @@
             <span class="badge badge-sm" style="background:#eee; color:#333;">{{ p.statut_projet.value }}</span>
             <small class="text-muted">{{ p.convention.client.raison_sociale if p.convention else 'Client ?' }}</small>
         </div>
-        
+
         <h3 class="mb-10" style="margin-top:0;">{{ p.nom_projet }}</h3>
         <p class="text-muted text-sm">
             Début : {{ p.date_debut_projet.strftime('%d/%m/%Y') if p.date_debut_projet else 'Non défini' }}
         </p>
-        
+
         <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
 
         <div class="flex-gap-10">
             <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}" class="btn w-100 text-center">
                 📊 Kanban
             </a>
-            
-            <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn-secondary w-100 text-center">
+
+            <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn btn-secondary w-100 text-center">
                 Détails
             </a>
         </div>

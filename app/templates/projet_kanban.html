@@ -6,7 +6,7 @@
 <div class="container fade-in">
   <div class="flex-between-center mb-20">
     <h1>Kanban : {{ projet.nom_projet }}</h1>
-    <a href="{{ url_for('projets.details_projet', id=projet.id_projet) }}" class="btn-secondary">Retour Projet</a>
+    <a href="{{ url_for('projets.details_projet', id=projet.id_projet) }}" class="btn btn-secondary">Retour Projet</a>
   </div>
 
   <div class="kanban-controls">
@@ -16,9 +16,9 @@
           <button type="submit" class="btn">+ Ajouter</button>
       </form>
   </div>
-  
+
   <div class="kanban-board">
-    
+
     <div class="kanban-column" data-statut="À venir">
       <h3>À venir</h3>
       <div class="kanban-list">
