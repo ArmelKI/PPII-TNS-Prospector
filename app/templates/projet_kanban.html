@@ -2,8 +2,20 @@
 {% block title %}Kanban{% endblock %}
 
 {% block content %}
+
 <div class="container fade-in">
-  <h1>{{ projet.nom_projet }}</h1>
+  <div class="flex-between-center mb-20">
+    <h1>Kanban : {{ projet.nom_projet }}</h1>
+    <a href="{{ url_for('projets.details_projet', id=projet.id_projet) }}" class="btn-secondary">Retour Projet</a>
+  </div>
+
+  <div class="kanban-controls">
+      <form action="{{ url_for('jalons.ajouter_jalon', id_projet=projet.id_projet) }}" method="POST" class="kanban-add-form">
+          <input type="text" name="nom_jalon" placeholder="Nouveau Jalon (ex: Phase 2)" required class="kanban-input-text">
+          <input type="date" name="date_fin_jalon" class="form-input" style="width:auto;">
+          <button type="submit" class="btn">+ Ajouter</button>
+      </form>
+  </div>
   
   <div class="kanban-board">
     
@@ -12,8 +24,13 @@
       <div class="kanban-list">
         {% for j in jalons if j.statut_jalon.value == "À venir" %}
            <div class="kanban-card" draggable="true" data-id="{{ j.id_jalon }}">
-             <h4>{{ j.nom_jalon }}</h4>
-             <p>{{ j.date_fin_jalon }}</p>
+             <div class="kanban-card-header">
+                <h4>{{ j.nom_jalon }}</h4>
+                <form action="{{ url_for('jalons.supprimer_jalon', id_jalon=j.id_jalon) }}" method="POST" onsubmit="return confirm('Supprimer ce jalon ?');">
+                    <button type="submit" class="btn-delete-cross">×</button>
+                </form>
+             </div>
+             <p><small>Fin : {{ j.date_fin_jalon }}</small></p>
            </div>
         {% endfor %}
       </div>
@@ -24,8 +41,13 @@
       <div class="kanban-list">
         {% for j in jalons if j.statut_jalon.value == "Actuel" %}
            <div class="kanban-card" draggable="true" data-id="{{ j.id_jalon }}">
-             <h4>{{ j.nom_jalon }}</h4>
-             <p>{{ j.date_fin_jalon }}</p>
+             <div class="kanban-card-header">
+                <h4>{{ j.nom_jalon }}</h4>
+                <form action="{{ url_for('jalons.supprimer_jalon', id_jalon=j.id_jalon) }}" method="POST" onsubmit="return confirm('Supprimer ce jalon ?');">
+                    <button type="submit" class="btn-delete-cross">×</button>
+                </form>
+             </div>
+             <p><small>Fin : {{ j.date_fin_jalon }}</small></p>
            </div>
         {% endfor %}
       </div>
@@ -36,8 +58,13 @@
       <div class="kanban-list">
         {% for j in jalons if j.statut_jalon.value == "Passé" %}
            <div class="kanban-card" draggable="true" data-id="{{ j.id_jalon }}">
-             <h4>{{ j.nom_jalon }}</h4>
-             <p>{{ j.date_fin_jalon }}</p>
+             <div class="kanban-card-header">
+                <h4>{{ j.nom_jalon }}</h4>
+                <form action="{{ url_for('jalons.supprimer_jalon', id_jalon=j.id_jalon) }}" method="POST" onsubmit="return confirm('Supprimer ce jalon ?');">
+                    <button type="submit" class="btn-delete-cross">×</button>
+                </form>
+             </div>
+             <p><small>Fin : {{ j.date_fin_jalon }}</small></p>
            </div>
         {% endfor %}
       </div>
