@@ -156,11 +156,8 @@ Et si je veux supprimer ce client de ma liste ?
 
 C'est encore une fois très simple : cliquez sur l'icône bleu clair puis sur "Supprimer".
 
+## Se déconnecter
 
-
-
-
-
-
+Pour vous déconnecter, cliquez en haut à droite de la page sur "Se déconnecter".
 
 
