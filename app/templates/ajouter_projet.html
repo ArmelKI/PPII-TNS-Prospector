@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Nouveau Projet{% endblock %}
 {% block content %}
-<h1>Nouveau Projet</h1>
+<h1 class="text-center mb-20">Nouveau Projet</h1>
 
-<div class="card" style="max-width: 600px; margin:auto;">
+<div class="card form-card-centered">
     <form method="POST">
         
-        <label>Client</label>
-        <select name="id_client" required>
+        <label class="form-label-block">Client</label>
+        <select name="id_client" required class="form-control">
             {% for c in clients %}
             <option value="{{ c.id_client }}" {% if c.id_client == selected_client %}selected{% endif %}>
                 {{ c.raison_sociale }}
@@ -15,38 +15,39 @@
             {% endfor %}
         </select>
 
-        <label>Nom du projet</label>
-        <input type="text" name="nom_projet" placeholder="Ex: Refonte Site Web" required>
+        <label class="form-label-block">Nom du projet</label>
+        <input type="text" name="nom_projet" placeholder="Ex: Refonte Site Web" required class="form-control">
 
-        <label>Budget prévisionnel (€)</label>
-        <input type="number" name="prix" value="5000">
+        <label class="form-label-block">Budget prévisionnel (€)</label>
+        <input type="number" name="prix" value="5000" class="form-control">
 
-        <div class="form-group" style="margin: 20px 0; border-top: 1px solid #eee; padding-top: 15px;">
-            <label style="display:block; margin-bottom: 10px;">Type de convention :</label>
+        <div class="form-group mt-15">
+            <label class="form-label-block">Compétences requises (Pour le matching IA)</label>
+            <div class="scrollable-list-box">
+                {% for c in competences %}
+                <div class="checkbox-item">
+                    <input type="checkbox" name="competences_requises" value="{{ c.id_competence }}" id="comp_{{ c.id_competence }}">
+                    <label for="comp_{{ c.id_competence }}">{{ c.nom_competence }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-divider-section">
+            <label class="form-label-block mb-10">Type de convention :</label>
             
-            <label style="display:inline-flex; align-items:center; gap:5px; margin-right:20px; font-weight:normal; cursor:pointer;">
+            <label class="radio-label">
                 <input type="radio" name="type_convention" value="CC" checked> 
                 Convention Cadre (Standard)
             </label>
             
-            <label style="display:inline-flex; align-items:center; gap:5px; font-weight:normal; cursor:pointer;">
+            <label class="radio-label">
                 <input type="radio" name="type_convention" value="CE"> 
                 Convention d'Étude
             </label>
         </div>
 
-        <button type="submit" class="btn" style="width: 100%;">Créer le projet</button>
+        <button type="submit" class="btn w-100">Créer le projet</button>
     </form>
 </div>
-
-<div class="form-group" style="margin: 15px 0;">
-    <label>Type de convention :</label><br>
-    <label style="display:inline-flex; align-items:center; gap:5px; margin-right:15px; font-weight:normal;">
-        <input type="radio" name="type_convention" value="CC" checked> Convention Cadre (Standard)
-    </label>
-    <label style="display:inline-flex; align-items:center; gap:5px; font-weight:normal;">
-        <input type="radio" name="type_convention" value="CE"> Convention d'Étude
-    </label>
-</div>
 {% endblock %}
-

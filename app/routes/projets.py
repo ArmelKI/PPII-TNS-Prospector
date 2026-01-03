@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app.models import Projet, Client, Convention, StatutProjet, Intervenant, db
+from app.models import Projet, Client, Convention, StatutProjet, Intervenant, db, Competence
 from datetime import date, datetime
 from app.matching import call_ai_matching, create_ai_prompt
 import json
 from flask_login import login_required
-
 
 projets_bp = Blueprint("projets", __name__, url_prefix="/projets")
 
@@ -13,7 +12,6 @@ projets_bp = Blueprint("projets", __name__, url_prefix="/projets")
 def liste_projets():
     """
     Displays the main list of projects.
-    Fetches all projects from the database to be displayed in cards.
     """
     tous_les_projets = Projet.query.all()
     return render_template("projets.html", projets=tous_les_projets)
@@ -22,7 +20,7 @@ def liste_projets():
 @login_required
 def ajouter_projet():
     """
-    Handles the creation of a new project and its associated convention.
+    Handles creation of a new project, convention, and assignment of required skills.
     """
     if request.method == "POST":
         id_client = request.form.get("id_client")
@@ -31,42 +29,62 @@ def ajouter_projet():
         type_convention = request.form.get("type_convention")
 
         if not id_client or not nom_projet or not type_convention:
-            flash("Veuillez remplir tous les champs obligatoires.", "danger")
-            clients = Client.query.order_by(Client.raison_sociale).all() # type: ignore
-            return render_template("ajouter_projet.html",
-                                 clients=clients,
-                                 selected_client=id_client), 200
+            flash("Please fill in all mandatory fields.", "danger")
+            clients = Client.query.order_by(Client.raison_sociale).all()
+            all_competences = Competence.query.all()
+            return render_template("ajouter_projet.html", 
+                                 clients=clients, 
+                                 competences=all_competences,
+                                 selected_client=id_client)
 
+        # 1. Create Convention
         conv = Convention(
-            id_client=id_client,   # type: ignore
-            type_convention=type_convention, # type: ignore
-            date_debut_convention=date.today(), # type: ignore
-            prix=prix # type: ignore
+            id_client=id_client, 
+            type_convention=type_convention,
+            date_debut_convention=date.today(),
+            prix=prix
         )
         db.session.add(conv)
-        db.session.flush()
+        db.session.flush() # Flush to get the ID
 
+        # 2. Create Project
         proj = Projet(
-            nom_projet=nom_projet, # type: ignore
-            statut_projet=StatutProjet.PAS_COMMENCE, # type: ignore
-            date_debut_projet=date.today(), # type: ignore
-            id_convention=conv.id_convention # type: ignore
+            nom_projet=nom_projet,
+            statut_projet=StatutProjet.PAS_COMMENCE,
+            date_debut_projet=date.today(),
+            id_convention=conv.id_convention
         )
         db.session.add(proj)
+        
+        # 3. Handle Required Skills (Many-to-Many)
+        # We get the list of skill IDs from the form
+        skill_ids = request.form.getlist("competences_requises")
+        for sid in skill_ids:
+            c = Competence.query.get(sid)
+            if c:
+                proj.competences_requises.append(c)
+
         db.session.commit()
 
-        flash("Projet ajouté avec succès.", "success")
-        return redirect(url_for('jalons.voir_kanban', id_projet=proj.id_projet))
+        flash("Project created successfully.", "success")
+        # Redirect to details page to see the result
+        return redirect(url_for('projets.details_projet', id=proj.id_projet))
 
-    clients = Client.query.order_by(Client.raison_sociale).all() # type: ignore
+    # GET: Prepare data for the form
+    clients = Client.query.order_by(Client.raison_sociale).all()
+    all_competences = Competence.query.order_by(Competence.nom_competence).all()
     selected_client = request.args.get('client', type=int)
-    return render_template("ajouter_projet.html", clients=clients, selected_client=selected_client)
+    
+    return render_template("ajouter_projet.html", 
+                           clients=clients, 
+                           competences=all_competences, 
+                           selected_client=selected_client)
 
 @projets_bp.route("/details/<int:id>")
 @login_required
 def details_projet(id):
     """
-    Shows the details of a specific project (Team, Budget, Status).
+    Shows detailed overview: Team, Status, Budget, and Required Skills.
     """
     projet = Projet.query.get_or_404(id)
     return render_template("details_projet.html", projet=projet)
@@ -75,12 +93,12 @@ def details_projet(id):
 @login_required
 def modifier_projet(id):
     """
-    Route to edit an existing project.
-    Allows updating status, dates, and assigned team members.
+    Route to edit an existing project (Status, Dates, Team, Skills).
     """
     projet = Projet.query.get_or_404(id)
 
     if request.method == "POST":
+        # Update scalar fields
         projet.nom_projet = request.form.get("nom_projet")
         date_debut = request.form.get("date_debut")
         date_fin = request.form.get("date_fin")
@@ -90,39 +108,51 @@ def modifier_projet(id):
         if date_fin:
             projet.date_fin_projet = datetime.strptime(date_fin, '%Y-%m-%d').date()
 
-
+        # Update Status
         new_statut = request.form.get("statut_projet")
         for s in StatutProjet:
             if s.value == new_statut:
                 projet.statut_projet = s
                 break
 
+        # Update Team (Intervenants)
         intervenant_ids = request.form.getlist("intervenants")
         projet.intervenants = [] # Reset
         for i_id in intervenant_ids:
             intervenant = Intervenant.query.get(int(i_id))
             if intervenant:
                 projet.intervenants.append(intervenant)
+                
+        # Update Required Skills
+        skill_ids = request.form.getlist("competences_requises")
+        projet.competences_requises = [] # Reset
+        for sid in skill_ids:
+            c = Competence.query.get(sid)
+            if c:
+                projet.competences_requises.append(c)
 
         db.session.commit()
-        flash("Projet mis à jour avec succés.", "success")
+        flash("Project updated successfully.", "success")
         return redirect(url_for("projets.details_projet", id=projet.id_projet))
 
+    # GET: Prepare form data
     tous_intervenants = Intervenant.query.all()
+    toutes_competences = Competence.query.all()
 
     return render_template(
         "modifier_projet.html",
         projet=projet,
         intervenants=tous_intervenants,
+        competences=toutes_competences,
         StatutProjet=StatutProjet
     )
 
-
 @projets_bp.route("/delete/<int:id>", methods=["POST"])
+@login_required
 def supprimer_projet(id):
     """
-    Deletes a specific project.
-    Redirects back to the client's page if possible, otherwise to the project list.
+    Deletes a project.
+    Redirects to client details if possible, otherwise project list.
     """
     projet = Projet.query.get_or_404(id)
     client_id = projet.convention.id_client if projet.convention else None
@@ -130,7 +160,7 @@ def supprimer_projet(id):
     try:
         db.session.delete(projet)
         db.session.commit()
-        flash("Projet supprimé.", "info")
+        flash("Project deleted.", "info")
         
         if client_id:
             return redirect(url_for("clients.details_client", id=client_id))
@@ -138,7 +168,7 @@ def supprimer_projet(id):
         
     except Exception as e:
         db.session.rollback()
-        flash("Could not delete project.", "danger")
+        flash(f"Could not delete project: {e}", "danger")
         return redirect(url_for("projets.details_projet", id=id))
 
 @projets_bp.route("/<int:id>/match",methods=['GET'])
