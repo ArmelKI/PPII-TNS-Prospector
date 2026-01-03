@@ -12,7 +12,7 @@ def app():
     app.config.update({
         "TESTING": True,
         "WTF_CSRF_ENABLED": False,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:", # Base de données ultra-rapide
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///test_prospector.db", # Base de données ultra-rapide
         "SQLALCHEMY_TRACK_MODIFICATIONS": False
     })
 
