@@ -546,3 +546,129 @@ aside {
   font-style: italic;
   font-size: 16px;
 }
+
+/* Spacing */
+.mb-10 { margin-bottom: 10px; }
+.mb-15 { margin-bottom: 15px; }
+.mb-20 { margin-bottom: 20px; }
+.mt-15 { margin-top: 15px; }
+
+/* Flexbox Helpers */
+.flex-between-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-start-center {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px; /* Standard space between elements */
+}
+
+.flex-gap-10 {
+    display: flex;
+    gap: 10px;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Forms */
+.inline-form {
+    display: inline;
+    margin: 0;
+}
+
+.w-100 { width: 100%; }
+
+/* Text */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.font-bold { font-weight: bold; }
+.text-sm { font-size: 0.85rem; }
+.text-lg { font-size: 1.1rem; }
+
+/* Project Cards */
+.card-project {
+    width: 320px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.card-project p {
+    flex-grow: 1; /* So that the card footer is always at the bottom */
+}
+
+/* Specific badges */
+.badge-sm {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+.form-card-centered {
+  max-width: 600px;
+  margin: 0 auto; /* Center horizontally */
+}
+
+/* Scrollable list area (for skills) */
+.scrollable-list-box {
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+/* Individual checkbox item */
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.checkbox-item label {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Section separated by a line (for convention type) */
+.form-divider-section {
+  margin: 20px 0;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+/* Label for radio buttons */
+.radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 20px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+/* Standard field labels (for consistency) */
+.form-label-block {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Standard inputs */
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 15px; 
+  box-sizing: border-box;
+}
