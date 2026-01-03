@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, flash
 from app.models import Client, Projet, Intervenant, Jalon, InteractionClient, StatutJalon, StatutProjet
 from datetime import date, timedelta
 from sqlalchemy import or_
@@ -16,6 +16,8 @@ def dashboard():
     Returns:
         Rendered HTML template for the dashboard.
     """
+    flash(f'Utilisateur user.prenom_utilisateur user.nom_utilisateur connecté', "warning")
+
     nb_clients = Client.query.count()
 
     nb_projets = Projet.query.filter(

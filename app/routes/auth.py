@@ -24,7 +24,7 @@ def login_page():
     # Validity check
     user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
     if (user is None or not user.check_password(form.password.data)) and not form.bypass.data:   # TODO : Remove bypass for production !!!
-        flash("Invalid username or password")
+        flash("Invalid username or password", "danger")
         return redirect(url_for('auth.login_page'))
 
     login_user(user, remember=form.remember_me.data)
@@ -33,7 +33,7 @@ def login_page():
     # URL sanitizer
     if not next_page or urlsplit(next_page).netloc != '':
         next_page = '/'
-    flash(f'Utilisateur {user.prenom_utilisateur} {user.nom_utilisateur} connecté')
+    flash(f'Utilisateur {user.prenom_utilisateur} {user.nom_utilisateur} connecté', "success")
     return redirect(next_page)
 
 @auth_bp.route('/logout')
@@ -66,5 +66,5 @@ def register_page():
     db.session.add(new_user)
     db.session.commit()
 
-    flash(f'Utilisateur {form.first_name.data} {form.name.data} a été créé.')
+    flash(f'Utilisateur {form.first_name.data} {form.name.data} a été créé.', "success")
     return redirect(url_for('auth.register_page'))

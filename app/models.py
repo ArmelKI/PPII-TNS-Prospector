@@ -110,7 +110,7 @@ class Utilisateur(db.Model, UserMixin):
         try:
             return checkpw(candidate_bytes, stored_hash)
         except ValueError:
-            flash("Erreur lors de la vérification du mot de passe. \nVeuillez contacter le responsable informatique !")
+            flash("Erreur lors de la vérification du mot de passe. \nVeuillez contacter le responsable informatique !", "warning")
             return False
 
     def set_password(self, new_password: str):

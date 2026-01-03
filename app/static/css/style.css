@@ -365,7 +365,8 @@ a:hover { text-decoration: underline; }
 
 .alert {
     padding: 15px 20px;
-    margin-bottom: 20px;
+    margin: 10px;
+    max-width: max-content ;
     border: 1px solid transparent;
     border-radius: 8px; /* Coins arrondis */
     font-family: sans-serif;
@@ -383,7 +384,7 @@ a:hover { text-decoration: underline; }
 }
 
 /* 2. ERREUR / DANGER (Rouge) */
-.alert-danger {
+.alert-danger, .alert-error {
     color: #842029;
     background-color: #f8d7da;
     border-color: #f5c2c7;
@@ -405,10 +406,9 @@ a:hover { text-decoration: underline; }
 
 /* --- BOUTON DE FERMETURE (La petite croix) --- */
 .btn-close {
-    position: absolute;
     top: 0;
     right: 0;
-    padding: 15px 20px;
+    padding-left: 20px;
     background: transparent;
     border: none;
     font-size: 1.2rem;
