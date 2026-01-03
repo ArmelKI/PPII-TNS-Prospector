@@ -103,7 +103,11 @@ with app.app_context():
     clients_data = [
         ("TotalEnergies", "Energie"), ("Sanofi", "Santé"), ("LVMH", "Luxe"),
         ("Airbus", "Aéronautique"), ("BNP Paribas", "Banque"), ("Orange", "Télécom"),
-        ("Google France", "Tech"), ("Carrefour", "Retail"), ("SNCF", "Transport"), ("Decathlon", "Sport")
+        ("Google France", "Tech"), ("Carrefour", "Retail"), ("SNCF", "Transport"),
+        ("Decathlon", "Sport"),("Amazon", "Logistique"), ("Citroën", "Automobile"), 
+        ("Match", "Retail"), ("Mairie de Nancy", "Institution"), ("Apple", "Electronique"), 
+        ("Réseau STAN", "Transport"), ("Dassault", "Aéronautique"), ("Arcelor Mittal", "Sidérurgie"),
+        ("Pro à Pro", "Alimentaire"), ("Zara", "Mode"), ("Centre commercial Saint-Sébastien", "Vente")
     ]
 
     types_interaction = [
