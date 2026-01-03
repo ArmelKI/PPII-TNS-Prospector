@@ -12,3 +12,6 @@
 
 # Uploaded files
 app/static/uploads
+
+.DS_Store
+**/.DS_Store
