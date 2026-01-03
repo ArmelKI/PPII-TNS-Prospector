@@ -41,24 +41,25 @@ def liste_intervenants():
     page = request.args.get('page', 1, type=int)
     per_page = 8
 
+    # 1. Base query
     q = Intervenant.query.join(Utilisateur).options(
         joinedload(Intervenant.utilisateur),
-        joinedload(Intervenant.maitrise_details)
+        joinedload(Intervenant.maitrise_details).joinedload(MaitriseCompetence.competence)
     )
 
+    # 2. Search filters
     if search:
-        q = q.join(Utilisateur).outerjoin(Intervenant.maitrise_details).filter(
+        q = q.outerjoin(Intervenant.maitrise_details).outerjoin(MaitriseCompetence.competence).filter(
             (Utilisateur.nom_utilisateur.ilike(f"%{search}%")) |
             (Utilisateur.prenom_utilisateur.ilike(f"%{search}%")) |
             (Competence.nom_competence.ilike(f"%{search}%"))
         )
-
+    # 3. Availability filter
     if dispo:
         dispo_bool = dispo.lower() == "disponible"
         q = q.filter_by(disponible=dispo_bool)
-
+    # 4. Pagination
     pagination = q.order_by(Utilisateur.nom_utilisateur).paginate(page=page, per_page=per_page, error_out=False)
-
     return render_template('intervenants.html', intervenants=pagination, search_query=search, filter_dispo=dispo)
 
 
@@ -66,14 +67,14 @@ def liste_intervenants():
 @login_required
 def ajouter_intervenant():
     if request.method == "POST":
-        # On vérifie que les fichiers sont bien présents dans la requête
+        # Check that files are present in the request
         cv_file = request.files.get('cv_file')
         photo_file = request.files.get('photo_file')
 
-        # Si l'un des fichiers majeurs manque, on bloque.
+        # If one of the required files is missing, block the process.
         if not cv_file or cv_file.filename == '':
             flash("Erreur : Le CV est obligatoire pour créer un profil.", "warning")
-            return redirect(request.url) # Recharge la page avec l'erreur
+            return redirect(request.url) # Reload the page with the error
 
         if not photo_file or photo_file.filename == '':
             flash("Erreur : La photo d'identité est obligatoire.", "warning")
@@ -153,7 +154,7 @@ def modifier_intervenant(id):
         intervenant.disponible = request.form.get("disponible") == "on"
         intervenant.nb_heures_dispo = request.form.get("heures", type=float, default=0.0)
 
-        # Mise à jour fichiers (seulement si un nouveau est envoyé)
+        # Update files (only if a new one is sent)
         new_cv = save_uploaded_file(request.files.get('cv_file'), 'documents')
         if new_cv: intervenant.cv = new_cv
 
@@ -176,19 +177,19 @@ def modifier_intervenant(id):
         items = [c.strip() for c in competences_raw.split(";") if c.strip()]
         
         for item in items:
-            # Nettoyage : on retire les parenthèses pour avoir "Nom, Note"
+            # Cleaning: remove parentheses to get "Name, Score"
             clean_item = item.replace("(", "").replace(")", "")
             parts = clean_item.split(",")
             cname = parts[0].strip()
             
-            # On essaie de récupérer la note (seconde partie), sinon 0 par défaut
+            # Try to get the score (second part), otherwise 0 by default
             note = 0
             if len(parts) > 1:
                 try:
-                    note = int(parts[1].strip()) # ou float() si vous acceptez les décimales
+                    note = int(parts[1].strip()) # or float() if you accept decimals
                 except ValueError:
                     note = 0
-            if note > 10 or note < 0 : # Sécurité d'entree
+            if note > 10 or note < 0 : # Input safety
                 flash("Veuiller rentrer une note sur 10 pour chaque compétence, mis à 0 par défaut","danger") 
                 note = 0
                 
@@ -210,7 +211,7 @@ def modifier_intervenant(id):
     
     maitrises_existantes = MaitriseCompetence.query.filter_by(id_intervenant=intervenant.id_intervenant).all()
 
-    # On reconstruit la string au format "(Nom, Note); (Nom, Note)"
+    # Rebuild the string in the format "(Name, Score); (Name, Score)"
     competences_str = "; ".join([f"({m.competence.nom_competence}, {m.niveau_maitrise})" for m in maitrises_existantes])
 
     return render_template("modifier_intervenant.html", intervenant=intervenant, competences_str=competences_str)
