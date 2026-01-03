@@ -37,7 +37,7 @@ Exemple : [StatutJalon] signifie que l'atribut prend ses valeurs parmi les valeu
 | Nom Physique | Type | Contraintes | Description | Domaine | Obligatoire |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id_intervenant` | Integer | PK, FK (utilisateurs, CASCADE) | Identifiant lié à l'User | | Oui |
-| `disponible` | Boolean | Not Null, Default: True | Disponibilité de l'intervenant | True, False | Oui |
+| `disponible` | Boolean | Not Null, Default: True | Disponibilité de l'intervenant (heures/semaine) | True, False | Oui |
 | `nb_heures_dispo` | Integer | | Heures de travail que l'intervenant peut accorder | | Non |
 | `bulletin_adhesion` | String(255) | | Chemin vers le document | | Non |
 | `carte_etudiante` | String(255) | | Chemin vers le document | | Non |

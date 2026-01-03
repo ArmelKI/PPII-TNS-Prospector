@@ -25,3 +25,16 @@ Vous pouvez également avoir un aperçu des interactions récentes avec vos clie
 La page est aussi constituée de quelques chiffres sur les intervenants, les projets actifs et les clients.
 
 ![KPI](images_user_guide/chiffres.png)
+
+## Intervenants
+
+Ici, vous avez la possibilité de manager vos intervenants.
+
+![Liste des intervenant de la junior](images_user_guide/intervenants.png)
+
+
+Vous pouvez gérer des informations telles que leur nom, prénom, compétences, leur degré de maitrise de ces compétences, s'ils sont disponibles ou non, et si oui, combien de temps par semaine.
+
+![Liste des intervenant de la junior](images_user_guide/modifier_intervenant.png)
+
+Vous pouvez ajouter des documents : leur CV, photo d'identité, carte étudiante, carte vitale.
