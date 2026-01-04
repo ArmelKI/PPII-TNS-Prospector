@@ -57,6 +57,11 @@ with app.app_context():
     ]
 
     intervenants_objs = []
+    # utilisateur sans intervenant lié 
+    test_util = Utilisateur(prenom_utilisateur="Jean", nom_utilisateur="Test", mail_utilisateur="jean.test@example.com", id_role=2,mdp_utilisateur = "$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq")
+    db.session.add(test_util)
+    db.session.commit()
+
 
     # UNE SEULE BOUCLE ICI
     for i in range(len(prenoms)):

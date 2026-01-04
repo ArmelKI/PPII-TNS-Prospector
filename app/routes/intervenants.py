@@ -88,7 +88,14 @@ def ajouter_intervenant():
         heures = request.form.get("heures", type=float, default=0.0)
         competences_raw = request.form.get("competences", "")
 
+
         if id_util:
+            # Vérification de sécurité
+            deja_intervenant = Intervenant.query.get(int(id_util))
+            if deja_intervenant:
+                flash(f"Erreur : L'utilisateur sélectionné est déjà un intervenant.", "danger")
+                return redirect(url_for("intervenants.ajouter_intervenant"))
+        
             utilisateur = Utilisateur.query.get(int(id_util))
         else:
             if not (prenom and nom and email):
@@ -155,9 +162,14 @@ def ajouter_intervenant():
         flash("Intervenant créé avec succès !", "success")
         return redirect(url_for("intervenants.liste_intervenants"))
 
-
-    utilisateurs = Utilisateur.query.order_by(Utilisateur.nom_utilisateur).all()
-    return render_template("ajouter_intervenant.html", utilisateurs=utilisateurs)
+    # restriction aux utilisateurs sans intervenant lié
+    utilisateurs_disponibles = Utilisateur.query\
+    .outerjoin(Intervenant)\
+    .filter(Intervenant.id_intervenant == None)\
+    .order_by(Utilisateur.nom_utilisateur)\
+    .all()
+    
+    return render_template("ajouter_intervenant.html", utilisateurs=utilisateurs_disponibles)
 
 
 @intervenants_bp.route("/edit/<int:id>", methods=["GET", "POST"])
