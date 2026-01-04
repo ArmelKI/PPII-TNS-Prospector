@@ -71,7 +71,7 @@ def create_app():
             'prenom_utilisateur': 'admin',
             'nom_utilisateur': 'admin',
             'mail_utilisateur': 'admin',
-            'mdp_utilisateur': '$2b$12$8JaG2qUu2F4QgXwaQogpk.xbW9qPrl89g7JNb1dhOf7J6g6iUEIYm',
+            'mdp_utilisateur': '$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq',
             'permission': all_perms
         }
     }
