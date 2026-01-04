@@ -53,6 +53,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login_page'
+    login_manager.login_message = 'Veuillez vous connectez pour accéder à cette page.'
 
     # 3. Global Template Helpers
     @app.errorhandler(404)
