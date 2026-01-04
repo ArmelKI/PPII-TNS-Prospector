@@ -90,6 +90,7 @@ class Utilisateur(db.Model, UserMixin):
     nom_utilisateur = db.Column(db.String(100), nullable=False)
     mail_utilisateur = db.Column(db.String(150), nullable=False, unique=True)
     mdp_utilisateur = db.Column(db.String(255), nullable=False)
+    permission = db.Column(db.Integer, nullable=False)
     id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"), nullable=False)
 
     role = db.relationship("Role", back_populates="utilisateurs")

@@ -99,6 +99,7 @@ def ajouter_intervenant():
                 prenom_utilisateur=prenom,
                 nom_utilisateur=nom,
                 mail_utilisateur=email,
+                permission=0,
                 id_role=1
             )
             utilisateur.set_password('pass')

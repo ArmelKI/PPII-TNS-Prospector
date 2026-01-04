@@ -59,6 +59,7 @@ def register_page():
         prenom_utilisateur=form.first_name.data,
         nom_utilisateur=form.name.data,
         mail_utilisateur=form.usermail.data,
+        permission=0,
         id_role=1 # XXX Valeur par défaut
     )
     new_user.set_password(form.password.data)
