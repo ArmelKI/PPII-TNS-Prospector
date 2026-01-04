@@ -12,14 +12,7 @@ load_dotenv()
 
 def create_ai_prompt(mission,intervenants_dispos ):
     """
-    Missions = Projets 
-    mission est un élément de Projets
-    {% for mission in Projets %}
-        create_ai_prompt(mission,intervenants_dispots )
-    {% endfor %}
-
-    intervenants_dispos = Intervenant.query.filter(Intervenants.disponible == True).all()
-
+    Génère les prompts system et user  nécessaire  pour la requete à l'IA
     """
     deadline_weeks = 4 # default value
     if mission.date_debut_projet and mission.date_fin_projet:
