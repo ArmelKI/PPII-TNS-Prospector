@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from urllib.parse import quote
 from datetime import datetime
 from app.config import login_manager
+from app.permissions import all_perms
 
 # Import Blueprints
 from app.routes.dashboard import dashboard_bp
@@ -12,11 +13,10 @@ from app.routes.intervenants import intervenants_bp
 from app.routes.clients import clients_bp
 from app.routes.projets import projets_bp
 from app.routes.interactions import interactions_bp
-from app.routes.jalons import jalons_bp  # <--- Added
+from app.routes.jalons import jalons_bp
 from app.routes.api import api_bp
 from app.routes.map import map_bp
 from app.routes.auth import auth_bp
-# from app.routes.auth import auth_bp # Uncomment when auth.py is ready
 
 load_dotenv()
 
@@ -72,7 +72,7 @@ def create_app():
             'nom_utilisateur': 'admin',
             'mail_utilisateur': 'admin',
             'mdp_utilisateur': '$2b$12$8JaG2qUu2F4QgXwaQogpk.xbW9qPrl89g7JNb1dhOf7J6g6iUEIYm',
-            'permission': 1
+            'permission': all_perms
         }
     }
     app.config['special_accounts_mails'] = [account['mail_utilisateur'] for account in special_accounts.values()]

@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import current_user, login_user, logout_user
 from urllib.parse import urlsplit
 from app.forms import LoginForm, RegisterForm
-from app.models import db, Utilisateur, admin_required
+from app.models import db, Utilisateur
+from app.permissions import manage_users_required
 
 
 
@@ -49,7 +50,7 @@ def logout():
     return redirect(url_for('auth.login_page'))
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
-@admin_required
+@manage_users_required
 def register_page():
     form = RegisterForm()
 

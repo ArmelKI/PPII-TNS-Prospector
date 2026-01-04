@@ -1,0 +1,50 @@
+from flask import flash, request, redirect, url_for
+from flask_login import current_user
+from functools import wraps
+from app.config import login_manager
+
+
+
+# Translation of permission numbers
+permission_table = [
+    'Gestion des utilisateurs', # 0
+    'Gestion des intervenants', # 1
+    'Gestion des clients'       # 2
+]
+
+nb_perms = len(permission_table)
+
+def encode_perms(perms: list[int]) -> int:
+    return sum([1<<perm for perm in range(nb_perms)])
+
+all_perms = encode_perms([i for i in range(nb_perms)])
+
+def check_perm(perms: int, perm: int) -> bool:
+    return (perms>>perm & 1 == 1)
+
+def decode_perms(perms: int) -> list[int]:
+    max_perm = len(permission_table)
+    return [perm for perm in range(max_perm) if check_perm(perms, perm)]
+
+def perm_required(perm):
+    def decorator(func):
+        @wraps(func)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return login_manager.unauthorized()
+
+            if not check_perm(current_user.permission, perm):
+                flash(f"Vous n'avez pas la permission \"{permission_table[perm]}\" pour accéder à cette page.", 'warning')
+                if request.referrer is None:
+                    return redirect(url_for('dashboard.dashboard'))
+                else:
+                    return redirect(request.referrer)
+
+            return func(*args, **kwargs)
+            return current_app.ensure_sync(func)(*args, **kwargs)
+        return decorated_view
+    return decorator
+
+manage_users_required = perm_required(0)
+manage_intervenants_required = perm_required(1)
+manage_clients_required = perm_required(2)

@@ -312,20 +312,3 @@ class Tache(db.Model):
 @login_manager.user_loader
 def load_user(user_id) -> Utilisateur:
     return Utilisateur.query.get(user_id)
-
-def admin_required(func):
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        if not current_user.is_authenticated:
-            return login_manager.unauthorized()
-
-        if current_user.permission != 1:
-            flash("Vous n'avez pas la permission d'accéder à cette page.", 'warning')
-            if request.referrer is None:
-                return redirect(url_for('dashboard.dashboard'))
-            else:
-                return redirect(request.referrer)
-
-        return func(*args, **kwargs)
-        return current_app.ensure_sync(func)(*args, **kwargs)
-    return decorated_view
