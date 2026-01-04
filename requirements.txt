@@ -25,3 +25,4 @@ Flask-Login==0.6.3
 Flask-WTF==1.2.2
 bcrypt==5.0.0
 email-validator==2.3.0
+WTForms-SQLAlchemy==0.4.2
