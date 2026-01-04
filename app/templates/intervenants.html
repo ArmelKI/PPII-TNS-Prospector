@@ -3,110 +3,88 @@
 
 {% block content %}
 <div class="container fade-in">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h1>Intervenants</h1>
-    <!-- Button to add a new intervenant -->
-    <a href="{{ url_for('intervenants.ajouter_intervenant') }}" class="btn">+ Ajouter</a>
-  </div>
+    <div class="flex-between-center mb-20">
+        <h1>Intervenants</h1>
+        <a href="{{ url_for('intervenants.ajouter_intervenant') }}" class="btn">+ Nouveau</a>
+    </div>
 
-  <!-- Search and filter panel for intervenants -->
-  <div class="panel" style="margin-bottom: 20px; padding: 15px; display: flex; gap: 15px; align-items: center;">
-    <form method="get" style="display: flex; gap: 10px; flex: 1;">
-      <!-- Search by name or skill -->
-      <input type="text" name="search" placeholder="Entrer un nom ou une compétence..." value="{{ search_query }}" style="flex: 1; padding: 8px;">
+    <div class="card mb-20">
+        <form method="GET" class="filter-form">
+            <div class="flex-gap-10">
+                <input type="text" name="search" placeholder="Nom ou Compétence (ex: Docker)..." 
+                       value="{{ search_query }}" class="form-control" style="margin:0;">
+                
+                <select name="disponibilite" class="form-control" style="width:auto; margin:0;">
+                    <option value="">-- Tout --</option>
+                    <option value="disponible" {% if filter_dispo == 'disponible' %}selected{% endif %}>Disponible</option>
+                    <option value="indisponible" {% if filter_dispo == 'indisponible' %}selected{% endif %}>Indisponible</option>
+                </select>
 
-      <!-- Filter by availability status -->
-      <select name="disponibilite" onchange="this.form.submit()" style="padding: 8px;">
-        <option value="">-- Disponibilité --</option>
-        <option value="Disponible" {% if filter_dispo == 'Disponible' %}selected{% endif %}>✅ Disponible</option>
-        <option value="Indisponible" {% if filter_dispo == 'Indisponible' %}selected{% endif %}>❌ Indisponible</option>
-      </select>
+                <button type="submit" class="btn">Filtrer</button>
+                <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
 
-      <button type="submit" class="btn-secondary">🔍</button>
-    </form>
-  </div>
+    <table class="data-table mb-20">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Compétences</th>
+                <th>Disponibilité</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in intervenants.items %}
+            <tr>
+                <td>
+                    <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong><br>
+                    <small class="text-muted">{{ i.utilisateur.mail_utilisateur }}</small>
+                </td>
+                <td>
+                    {% for m in i.maitrise_details %}
+                        <span class="badge badge-sm">{{ m.competence.nom_competence }} ({{ m.niveau_maitrise }})</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% if i.disponible %}
+                        <span class="badge badge-success">Disponible ({{ i.nb_heures_dispo }}h)</span>
+                    {% else %}
+                        <span class="badge badge-danger">Indisponible</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="flex-gap-10">
+                        <a href="{{ url_for('intervenants.modifier_intervenant', id=i.id_intervenant) }}" class="btn-secondary btn-sm">Modifier</a>
+                        <form action="{{ url_for('intervenants.supprimer_intervenant', id=i.id_intervenant) }}" method="POST" onsubmit="return confirm('Supprimer ?');" class="inline-form">
+                            <button type="submit" class="btn-danger btn-sm">Suppr.</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center p-20">Aucun intervenant trouvé.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-  <!-- Table displaying intervenants -->
-  <table class="data-table">
-    <thead>
-    <tr>
-      <th>Identité</th>
-      <th>Compétences</th>
-      <th>Disponibilité</th>
-      <th style="text-align: right;">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for i in intervenants.items %}
-    <tr>
-      <td>
-      <div style="display:flex; align-items:center; gap:12px;">
-        {% if i.photo_identite %}
-          <!-- Show profile photo if available -->
-          <img src="{{ url_for('static', filename=i.photo_identite) }}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border: 1px solid #ddd;">
-        {% else %}
-          <!-- Fallback avatar if no photo -->
-          <div style="width:36px; height:36px; background:#e0e0e0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px;">👤</div>
+    <div class="pagination-container">
+        {% if intervenants.has_prev %}
+            <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.prev_num, search=search_query, disponibilite=filter_dispo) }}" class="btn-secondary">
+                &laquo; Précédent
+            </a>
         {% endif %}
 
-        <div>
-          <!-- Display full name and email -->
-          <div style="font-weight:bold;">{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</div>
-          <small class="text-muted">{{ i.utilisateur.mail_utilisateur }}</small>
-        </div>
-      </div>
-      </td>
+        <span class="text-muted">Page {{ intervenants.page }} / {{ intervenants.pages }}</span>
 
-      <td>
-        <!-- List all skills as badges -->
-        {% for m  in i.maitrise_details %}
-        <span class="badge" style="background:#e3f2fd; color:#0d47a1; margin-right:4px;">{{ m.competence.nom_competence}} : {{m.niveau_maitrise}}/10</span>
-        {% endfor %}
-      </td>
-
-      <td>
-      {% if i.disponible %}
-        <!-- Show available status with hours -->
-        <span class="badge" style="background:#d4edda; color:#155724;">✅ Disponible ({{ i.nb_heures_dispo }}h)</span>
-      {% else %}
-        <!-- Show unavailable status -->
-        <span class="badge" style="background:#f8d7da; color:#721c24;">❌ Indisponible</span>
-      {% endif %}
-      </td>
-
-      <td style="text-align: right;">
-      <div style="display:inline-flex; gap: 5px;">
-        <!-- Edit button for this intervenant -->
-        <a href="{{ url_for('intervenants.modifier_intervenant', id=i.id_intervenant) }}" class="btn-secondary btn-xs" title="Modifier" style="padding: 5px 10px;">
-          ✏️
-        </a>
-
-        <!-- Delete button with confirmation dialog -->
-        <form action="{{ url_for('intervenants.supprimer_intervenant', id=i.id_intervenant) }}" method="POST" onsubmit="return confirm('Supprimer définitivement cet intervenant ?');" style="margin:0;">
-          <button type="submit" class="btn-secondary btn-xs" style="background:#fff; border:1px solid #dc3545; color:#dc3545; padding: 5px 10px;" title="Supprimer">
-            🗑
-          </button>
-        </form>
-      </div>
-      </td>
-    </tr>
-    {% else %}
-    <!-- Show message if no intervenants found -->
-    <tr>
-      <td colspan="4" style="text-align:center; padding: 20px;">Aucun intervenant trouvé.</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-
-  <!-- Pagination controls -->
-  <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
-    {% if intervenants.has_prev %}
-      <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.prev_num) }}" class="btn btn-secondary">← Précédent</a>
-    {% endif %}
-    {% if intervenants.has_next %}
-      <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.next_num) }}" class="btn btn-secondary">Suivant →</a>
-    {% endif %}
-  </div>
+        {% if intervenants.has_next %}
+            <a href="{{ url_for('intervenants.liste_intervenants', page=intervenants.next_num, search=search_query, disponibilite=filter_dispo) }}" class="btn-secondary">
+                Suivant &raquo;
+            </a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
