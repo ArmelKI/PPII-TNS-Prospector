@@ -58,11 +58,14 @@ def register_page():
     if not form.validate_on_submit():
         return render_template('register.html', form=form)
 
+    # Evil data parsing
+    perms = [int(perm_field.data['id']) for perm_field in form.perms_fields if perm_field.data['checked']]
+
     new_user = Utilisateur(
         prenom_utilisateur=form.first_name.data,
         nom_utilisateur=form.name.data,
         mail_utilisateur=form.usermail.data,
-        permission=encode_perms(form.perm.data),
+        permission=encode_perms(perms),
         id_role=form.role.data
     )
     new_user.set_password(form.password.data)
