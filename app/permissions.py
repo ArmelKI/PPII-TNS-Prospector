@@ -15,7 +15,7 @@ permission_table = [
 nb_perms = len(permission_table)
 
 def encode_perms(perms: list[int]) -> int:
-    return sum([1<<perm for perm in range(nb_perms)])
+    return sum([1<<perm for perm in perms])
 
 all_perms = encode_perms([i for i in range(nb_perms)])
 
