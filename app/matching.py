@@ -54,20 +54,23 @@ def create_ai_prompt(mission,intervenants_dispos ):
     - INTERDICTION formelle de proposer un ID déjà présent dans l'équipe actuelle (pas de doublons).
     - Vise une équipe totale de 4 à 5 personnes maximum.
 
-    3. **DISTRIBUTION DE LA CHARGE (Nouveau & Critique)** : Tu dois attribuer un nombre d'heures spécifique à chaque membre de l'équipe pour couvrir la durée totale de la mission.
-    - Règle 1 : La somme des heures attribuées à tous les membres doit être égale à la 'duree_mission' demandée.
-    - Règle 2 : Pour chaque intervenant, 'heures_attribuees' ne doit JAMAIS dépasser ses 'heures_dispo'.
-    - Règle 3 : Si un intervenant est très expert, essaie de maximiser ses heures dans la limite de sa disponibilité.
+    3. **DISTRIBUTION DE LA CHARGE (CRITIQUE : HEBDOMADAIRE)** :
+    Tu reçois une 'charge_estimee' (TOTAL d'heures du projet) et une 'deadline_semaines'.
+    Tu dois d'abord calculer la **charge de travail par semaine** nécessaire (= charge_estimee / deadline_semaines).
+    
+    - Règle 1 : La somme des 'heures_attribuees' de tous les membres doit être égale à cette **charge par semaine** calculée (arrondie à l'entier supérieur).
+    - Règle 2 : Les 'heures_attribuees' sont des **heures par semaine**. Ce chiffre doit être un ENTIER et ne doit JAMAIS dépasser les 'heures_dispo' de l'intervenant (qui sont aussi par semaine).
+    - Règle 3 : Si un intervenant est très expert, essaie de maximiser ses heures hebdos dans la limite de sa disponibilité.
 
     FORMAT DE RÉPONSE :
     Réponds UNIQUEMENT par un JSON valide (sans texte avant/après) contenant une liste 'suggestions'.
     Chaque suggestion doit avoir :
     - 'score': note de 0 à 100 (basée sur la moyenne des compétences).
-    - 'raison': explique les choix et la répartition des heures.
+    - 'raison': explique les choix et précise le calcul hebdo (ex: "Besoin de 5h/semaine pour faire 50h en 10 semaines").
     - 'details_equipe': Une liste d'objets où chaque objet représente un membre (actuel ou nouveau) et contient :
         - 'id': ID de l'intervenant (entier)
         - 'nom': Nom de l'intervenant
-        - 'heures_attribuees': Le nombre d'heures (float ou int) que tu prélèves sur ses disponibilités pour cette mission.
+        - 'heures_attribuees': Le nombre d'heures **par semaine** (int) que tu prélèves sur ses disponibilités.
     """
 
     prompt_user = f"""
