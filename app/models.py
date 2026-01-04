@@ -6,12 +6,13 @@ from app.config import login_manager
 from bcrypt import hashpw, gensalt, checkpw
 from flask import flash
 
-
-
 db = SQLAlchemy()
 
-# Enum types for project, milestone, and task statuses.
-# These are not tables, just Python enums for clarity and type safety.
+# -------------------------------------------------------------------
+# ENUMS (Enumerations)
+# Used to enforce strict status values in the database.
+# -------------------------------------------------------------------
+
 class StatutProjet(enum.Enum):
     PAS_COMMENCE = "Pas commencé"
     EN_COURS = "En cours"
@@ -31,8 +32,12 @@ class StatutTache(enum.Enum):
     BLOQUE = "Bloqué"
     STAND_BY = "Stand-By"
 
-# Association tables for many-to-many relationships.
-# For example, a project can have multiple contributors, and a contributor can work on multiple projects.
+# -------------------------------------------------------------------
+# ASSOCIATION TABLES
+# These tables handle Many-to-Many relationships between entities.
+# -------------------------------------------------------------------
+
+# Links Intervenants (Contributors) to Projects
 intervenant_projet = db.Table(
     "intervenant_projet",
     db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
@@ -41,47 +46,57 @@ intervenant_projet = db.Table(
     db.Column("date_fin_intervention", db.Date)
 )
 
-class MaitriseCompetence(db.Model):
-    __tablename__ = "intervenant_competence"
-
-    id_intervenant = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE"), primary_key=True)
-    id_competence = db.Column(db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE"), primary_key=True)
-    niveau_maitrise = db.Column(db.Integer, default=0)
-
-    # Relations vers les deux objets
-    intervenant = db.relationship("Intervenant", back_populates="maitrise_details")
-    competence = db.relationship("Competence", back_populates="intervenant_details")
-
-    __table_args__ = (
-        db.CheckConstraint("niveau_maitrise >= 0 AND niveau_maitrise <= 10", name="check_niveau_maitrise"),
-    )
-
+# Links Intervenants to specific Tasks
 intervenant_tache = db.Table(
     "intervenant_tache",
     db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
     db.Column("id_tache", db.Integer, db.ForeignKey("taches.id_tache", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
 )
-# Nouvelle table pour lier Projets et Compétences requises
+
+# Links Projects to required Skills (Competences)
 projet_competence = db.Table(
     "projet_competence",
     db.Column("id_projet", db.Integer, db.ForeignKey("projets.id_projet", ondelete="CASCADE"), primary_key=True),
     db.Column("id_competence", db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE"), primary_key=True)
 )
 
+# -------------------------------------------------------------------
+# MODELS (Database Tables)
+# -------------------------------------------------------------------
+
+class MaitriseCompetence(db.Model):
+    """
+    Association Object pattern for Intervenant <-> Competence.
+    Allows storing the 'level' (niveau_maitrise) of a specific skill for a user.
+    """
+    __tablename__ = "intervenant_competence"
+
+    id_intervenant = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE"), primary_key=True)
+    id_competence = db.Column(db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE"), primary_key=True)
+    niveau_maitrise = db.Column(db.Integer, default=0)
+
+    # Relationships to the parent objects
+    intervenant = db.relationship("Intervenant", back_populates="maitrise_details")
+    competence = db.relationship("Competence", back_populates="intervenant_details")
+
+    # Constraint: Skill level must be between 0 and 10
+    __table_args__ = (
+        db.CheckConstraint("niveau_maitrise >= 0 AND niveau_maitrise <= 10", name="check_niveau_maitrise"),
+    )
+
 class Role(db.Model):
     """
-    Stores user roles (e.g., admin, contributor).
+    Defines user roles (e.g., Admin, Project Manager, Contributor).
     """
     __tablename__ = "roles"
-
     id_role = db.Column(db.Integer, primary_key=True)
     nom_role = db.Column(db.String(100), nullable=False)
-
+    
     utilisateurs = db.relationship("Utilisateur", back_populates="role")
 
 class Utilisateur(db.Model, UserMixin):
     """
-    Represents a user in the system.
+    Core User model handling authentication and identity.
     """
     __tablename__ = "utilisateurs"
 
@@ -93,28 +108,25 @@ class Utilisateur(db.Model, UserMixin):
     id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"), nullable=False)
 
     role = db.relationship("Role", back_populates="utilisateurs")
+    # One-to-One relationship with Intervenant profile
     intervenant = db.relationship("Intervenant", uselist=False, back_populates="utilisateur")
 
     def __repr__(self):
-        return f"Utilisateur {self.nom_utilisateur} {self.prenom_utilisateur}"
+        return f"User {self.nom_utilisateur} {self.prenom_utilisateur}"
 
     def check_password(self, pw_candidate: str) -> bool:
-        if not self.mdp_utilisateur:
-            return False
+        """Verifies the password against the stored bcrypt hash."""
+        if not self.mdp_utilisateur: return False
         stored_hash = self.mdp_utilisateur
-        if isinstance(stored_hash, str):
-            stored_hash = stored_hash.encode('utf-8')
-
+        if isinstance(stored_hash, str): stored_hash = stored_hash.encode('utf-8')
         candidate_bytes = pw_candidate.encode('utf-8')
-
         try:
             return checkpw(candidate_bytes, stored_hash)
         except ValueError:
-            flash("Erreur lors de la vérification du mot de passe. \nVeuillez contacter le responsable informatique !", "warning")
             return False
 
     def set_password(self, new_password: str):
-        # SQLAlchemy se chargera de la conversion en String pour Postgres
+        """Hashes the password using bcrypt before storage."""
         pw_bytes = new_password.encode('utf-8')
         hashed = hashpw(pw_bytes, gensalt())
         self.mdp_utilisateur = hashed.decode('utf-8')
@@ -124,13 +136,15 @@ class Utilisateur(db.Model, UserMixin):
 
 class Intervenant(db.Model):
     """
-    Represents a contributor/intervenant, linked to a user.
+    Extended profile for a user who works on projects (The 'Resource').
     """
     __tablename__ = "intervenants"
 
     id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur", ondelete="CASCADE"), primary_key=True)
     disponible = db.Column(db.Boolean, nullable=False, server_default='TRUE')
     nb_heures_dispo = db.Column(db.Integer)
+    
+    # Documents paths
     bulletin_adhesion = db.Column(db.String(255))
     carte_etudiante = db.Column(db.String(255))
     carte_vitale = db.Column(db.String(255))
@@ -139,7 +153,11 @@ class Intervenant(db.Model):
     cv = db.Column(db.String(255))
 
     utilisateur = db.relationship("Utilisateur", back_populates="intervenant")
+    
+    # Skills relationship via association object
     maitrise_details = db.relationship("MaitriseCompetence", back_populates="intervenant", cascade="all, delete-orphan")
+    
+    # Projects and Tasks
     projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
     taches = db.relationship("Tache", secondary=intervenant_tache, back_populates="intervenants")
 
@@ -149,7 +167,7 @@ class Intervenant(db.Model):
 
 class Competence(db.Model):
     """
-    Represents a skill or competence.
+    Represents a generic Skill (e.g., Python, Marketing).
     """
     __tablename__ = "competences"
 
@@ -157,11 +175,11 @@ class Competence(db.Model):
     nom_competence = db.Column(db.String(150), nullable=False)
 
     intervenant_details = db.relationship("MaitriseCompetence", back_populates="competence", cascade="all, delete-orphan")
-    # Ajout relation inverse pour back_populates
     projets_requerant = db.relationship("Projet", secondary=projet_competence, back_populates="competences_requises")
+
 class EtatRelation(db.Model):
     """
-    Represents the state of the relationship with a client at a given time.
+    Defines the state of a client relationship (e.g., Prospect, Active Client).
     """
     __tablename__ = "etats_relations"
 
@@ -172,7 +190,7 @@ class EtatRelation(db.Model):
 
 class Client(db.Model):
     """
-    Represents a client.
+    Represents a client company.
     """
     __tablename__ = "clients"
 
@@ -182,14 +200,13 @@ class Client(db.Model):
     telephone_client = db.Column(db.String(30))
     secteur = db.Column(db.String(100))
     date_dernier_contact = db.Column(db.Date)
-    latitude = db.Column(db.Numeric(10, 7))  # e.g., 777.7777777
+    latitude = db.Column(db.Numeric(10, 7))
     longitude = db.Column(db.Numeric(10, 7))
 
     conventions = db.relationship("Convention", back_populates="client")
     interactions = db.relationship("InteractionClient", back_populates="client")
 
-    def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur,
-                 date_dernier_contact, latitude, longitude):
+    def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur, date_dernier_contact, latitude, longitude):
         self.id_client = id_client
         self.raison_sociale = raison_sociale
         self.mail_client = mail_client
@@ -204,7 +221,7 @@ class Client(db.Model):
 
 class InteractionClient(db.Model):
     """
-    Represents an interaction with a client, including the state of the relationship at that time.
+    Logs an event/interaction with a client (Phone call, Meeting, etc.).
     """
     __tablename__ = "interactions_client"
 
@@ -219,61 +236,62 @@ class InteractionClient(db.Model):
 
 class Convention(db.Model):
     """
-    Represents a convention/contract with a client.
+    Represents a legal contract/convention binding a client and a project.
     """
     __tablename__ = "conventions"
 
     id_convention = db.Column(db.Integer, primary_key=True)
     id_client = db.Column(db.Integer, db.ForeignKey("clients.id_client"), nullable=False)
-    type_convention = db.Column(db.String(2), nullable=False)
+    type_convention = db.Column(db.String(2), nullable=False) # 'CC' (Framework) or 'CE' (Study)
     date_debut_convention = db.Column(db.Date, nullable=False)
     date_fin_convention = db.Column(db.Date)
     regles = db.Column(db.Text)
     cahier_charges = db.Column(db.Text)
     prix = db.Column(db.Numeric(10, 2))
-    convention = db.Column(db.String(255))
+    
+    # File paths
+    convention_file = db.Column("convention", db.String(255)) 
     bon_commande = db.Column(db.String(255))
     recap_mission = db.Column(db.String(255))
 
     client = db.relationship("Client", back_populates="conventions")
     projets = db.relationship("Projet", back_populates="convention")
 
-    __table_args__ = (
-        CheckConstraint("type_convention IN ('CE','CC')", name="convention_type_check"),
-    )
+    __table_args__ = (CheckConstraint("type_convention IN ('CE','CC')", name="convention_type_check"),)
 
 class Projet(db.Model):
     """
-    Represents a project.
+    Represents a Project. The core entity of the application.
     """
     __tablename__ = "projets"
 
     id_projet = db.Column(db.Integer, primary_key=True)
     nom_projet = db.Column(db.String(200), nullable=False)
-    statut_projet = db.Column(
-        SAEnum(StatutProjet, name="statut_projet_enum"),
-        nullable=False,
-        default=StatutProjet.PAS_COMMENCE)
-    # Charge de travail estimée
-    charge_projet = db.Column(db.Integer, default=0) # peut décroitre vers 0 avec l'avancement du projet
+    statut_projet = db.Column(SAEnum(StatutProjet, name="statut_projet_enum"), nullable=False, default=StatutProjet.PAS_COMMENCE)
+    charge_projet = db.Column(db.Integer, default=0) # Estimated workload
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
+    
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
-    convention = db.Column(db.String(255))
+    
+    # File paths (redundancy from Convention for convenience or specific project files)
+    convention_file = db.Column("convention", db.String(255)) 
     bon_commande = db.Column(db.String(255))
     recap_mission = db.Column(db.String(255))
 
+    # Relationships
     convention = db.relationship("Convention", back_populates="projets")
     jalons = db.relationship("Jalon", back_populates="projet")
     intervenants = db.relationship("Intervenant", secondary=intervenant_projet, back_populates="projets")
-    # Ajout relation vers compétences requises
     competences_requises = db.relationship("Competence", secondary=projet_competence, back_populates="projets_requerant")
+    
     def __repr__(self):
-        return f"Projet {self.nom_projet}"
+        return f"Project {self.nom_projet}"
 
 class Jalon(db.Model):
     """
-    Represents a milestone within a project.
+    Represents a Milestone (Phase) within a project.
+    Contains multiple tasks.
     """
     __tablename__ = "jalons"
 
@@ -285,27 +303,35 @@ class Jalon(db.Model):
     date_fin_jalon = db.Column(db.Date)
 
     projet = db.relationship("Projet", back_populates="jalons")
-    taches = db.relationship("Tache", back_populates="jalon")
+    
+    # Important: 'cascade="all, delete-orphan"' ensures that when a Milestone is deleted, 
+    # all its associated tasks are automatically deleted as well.
+    taches = db.relationship("Tache", back_populates="jalon", cascade="all, delete-orphan")
 
 class Tache(db.Model):
     """
-    Represents a task within a milestone.
+    Represents a Task. The smallest unit of work in the Kanban board.
     """
     __tablename__ = "taches"
 
     id_tache = db.Column(db.Integer, primary_key=True)
-    id_jalon = db.Column(db.Integer, db.ForeignKey("jalons.id_jalon", ondelete="SET NULL", onupdate="CASCADE"), nullable=False)
+    
+    # Foreign Key with CASCADE delete
+    id_jalon = db.Column(db.Integer, db.ForeignKey("jalons.id_jalon", ondelete="CASCADE"), nullable=False)
+    
     nom_tache = db.Column(db.String(200), nullable=False)
     description_tache = db.Column(db.Text)
     statut_tache = db.Column(SAEnum(StatutTache, name="statut_tache_enum"), nullable=False, default=StatutTache.PAS_COMMENCE)
     date_dernier_delai_tache = db.Column(db.Date)
     id_intervenant_tache = db.Column(db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="SET NULL", onupdate="CASCADE"))
 
+    # Relationship back to Jalon (Essential for SQLAlchemy to understand the link)
     jalon = db.relationship("Jalon", back_populates="taches")
+    
     intervenants = db.relationship("Intervenant", back_populates="taches", secondary=intervenant_tache)
 
     def __repr__(self):
-        return f"<Tache {self.nom_tache}>"
+        return f"<Task {self.nom_tache}>"
 
 @login_manager.user_loader
 def load_user(user_id) -> Utilisateur:
