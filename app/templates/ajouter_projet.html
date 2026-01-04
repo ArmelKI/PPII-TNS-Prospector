@@ -18,11 +18,20 @@
         <label class="form-label-block">Nom du projet</label>
         <input type="text" name="nom_projet" placeholder="Ex: Refonte Site Web" required class="form-control">
 
-        <label class="form-label-block">Budget prévisionnel (€)</label>
-        <input type="number" name="prix" value="5000" class="form-control">
+        <div style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+                <label class="form-label-block">Budget (€)</label>
+                <input type="number" name="prix" value="5000" class="form-control">
+            </div>
+            <div style="flex: 1;">
+                <label class="form-label-block">Charge Estimée (Heures)</label>
+                <input type="number" name="charge_projet" value="50" class="form-control" required>
+                <small class="text-muted">Indispensable pour le calcul IA</small>
+            </div>
+        </div>
 
         <div class="form-group mt-15">
-            <label class="form-label-block">Compétences requises (Pour le matching IA)</label>
+            <label class="form-label-block">Compétences requises</label>
             <div class="scrollable-list-box">
                 {% for c in competences %}
                 <div class="checkbox-item">
@@ -35,15 +44,11 @@
 
         <div class="form-divider-section">
             <label class="form-label-block mb-10">Type de convention :</label>
-            
             <label class="radio-label">
-                <input type="radio" name="type_convention" value="CC" checked> 
-                Convention Cadre (Standard)
+                <input type="radio" name="type_convention" value="CC" checked> Convention Cadre (Standard)
             </label>
-            
             <label class="radio-label">
-                <input type="radio" name="type_convention" value="CE"> 
-                Convention d'Étude
+                <input type="radio" name="type_convention" value="CE"> Convention d'Étude
             </label>
         </div>
 
