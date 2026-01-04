@@ -1,10 +1,11 @@
 import enum
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum as SAEnum, CheckConstraint
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from app.config import login_manager
 from bcrypt import hashpw, gensalt, checkpw
-from flask import flash
+from flask import flash, request, url_for, current_app, redirect
+from functools import wraps
 
 
 
@@ -311,3 +312,20 @@ class Tache(db.Model):
 @login_manager.user_loader
 def load_user(user_id) -> Utilisateur:
     return Utilisateur.query.get(user_id)
+
+def admin_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return login_manager.unauthorized()
+
+        if current_user.permission != 1:
+            flash("Vous n'avez pas la permission d'accéder à cette page.", 'warning')
+            if request.referrer is None:
+                return redirect(url_for('dashboard.dashboard'))
+            else:
+                return redirect(request.referrer)
+
+        return func(*args, **kwargs)
+        return current_app.ensure_sync(func)(*args, **kwargs)
+    return decorated_view
