@@ -39,12 +39,13 @@ def login_page():
     # URL sanitizer
     if not next_page or urlsplit(next_page).netloc != '':
         next_page = '/'
-    flash(f'Utilisateur {user.prenom_utilisateur} {user.nom_utilisateur} connecté', "success")
+    flash(f'Utilisateur⋅trice {user.prenom_utilisateur} {user.nom_utilisateur} connecté⋅e', "success")
     return redirect(next_page)
 
 @auth_bp.route('/logout')
 def logout():
     logout_user()
+    flash('Utilisateur⋅trice déconnecté⋅e', 'info')
     return redirect(url_for('auth.login_page'))
 
 # TODO : Réserver la page register aux personnes autorisées
@@ -73,5 +74,5 @@ def register_page():
     db.session.add(new_user)
     db.session.commit()
 
-    flash(f'Utilisateur {form.first_name.data} {form.name.data} a été créé.', "success")
+    flash(f'Utilisateur⋅trice {form.first_name.data} {form.name.data} a été créé⋅e.', "success")
     return redirect(url_for('auth.register_page'))
