@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, logout_user
 from urllib.parse import urlsplit
 from app.forms import LoginForm, RegisterForm
 from app.models import db, Utilisateur
-from app.permissions import manage_users_required
+from app.permissions import manage_users_required, encode_perms
 
 
 
@@ -62,7 +62,7 @@ def register_page():
         prenom_utilisateur=form.first_name.data,
         nom_utilisateur=form.name.data,
         mail_utilisateur=form.usermail.data,
-        permission=0,
+        permission=encode_perms(form.perm.data),
         id_role=form.role.data
     )
     new_user.set_password(form.password.data)

@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+from wtforms.widgets import ListWidget, CheckboxInput
 from app.models import db, Utilisateur, Role
+from app.permissions import permission_table
 
 
 
@@ -17,10 +19,18 @@ class RegisterForm(FlaskForm):
         roles: list[Role] = Role.query.all()
         return [(role.id_role, role.nom_role) for role in roles]
 
+    perms = list(enumerate(permission_table))
+
     name = StringField('Nom', validators=[DataRequired()])
     first_name = StringField('Prenom', validators=[DataRequired()])
     usermail = StringField('Email', validators=[DataRequired(), Email()])
     role = SelectField()
+    perm = SelectMultipleField(
+        choices=perms,
+        coerce=int,
+        widget=ListWidget(html_tag='ul', prefix_label=False),
+        option_widget=CheckboxInput()
+    )
     password = PasswordField('Mot de passe', validators=[DataRequired()])
     password2 = PasswordField('Mot de passe', validators=[
         DataRequired(),

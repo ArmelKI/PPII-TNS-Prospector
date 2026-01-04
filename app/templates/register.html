@@ -39,6 +39,13 @@
         {% endfor %}
     </p>
     <p>
+        {{ form.perm.label }}<br>
+        {{ form.perm }}<br>
+        {% for error in form.perm.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
         {{ form.password.label }}<br>
         {{ form.password(size=32) }}<br>
         {% for error in form.password.errors %}
