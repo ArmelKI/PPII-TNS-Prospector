@@ -32,6 +32,13 @@
         {% endfor %}
     </p>
     <p>
+        {{ form.role.label }}<br>
+        {{ form.role }}<br>
+        {% for error in form.role.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
         {{ form.password.label }}<br>
         {{ form.password(size=32) }}<br>
         {% for error in form.password.errors %}
