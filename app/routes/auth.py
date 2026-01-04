@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import current_user, login_user, logout_user
 from urllib.parse import urlsplit
 from app.forms import LoginForm, RegisterForm
-from app.models import db, Utilisateur
+from app.models import db, Utilisateur, admin_required
 
 
 
@@ -48,14 +48,9 @@ def logout():
     flash('Utilisateur⋅trice déconnecté⋅e', 'info')
     return redirect(url_for('auth.login_page'))
 
-# TODO : Réserver la page register aux personnes autorisées
-
 @auth_bp.route('/register', methods=['GET', 'POST'])
+@admin_required
 def register_page():
-    # If the user is already logged in, we skip the page
-    if current_user.is_authenticated:
-        return redirect('/')
-
     form = RegisterForm()
 
     # If the form wasn't sent correctly
