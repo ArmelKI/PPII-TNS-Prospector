@@ -20,56 +20,62 @@ def liste_projets():
 @login_required
 def ajouter_projet():
     """
-    Handles creation of a new project, convention, and assignment of required skills.
+    Handles the creation of a new project, including workload and required skills.
     """
     if request.method == "POST":
         id_client = request.form.get("id_client")
         nom_projet = request.form.get("nom_projet")
         prix = request.form.get("prix", type=float)
         type_convention = request.form.get("type_convention")
+        
+        # 1. Retrieve the Workload (Charge)
+        charge = request.form.get("charge_projet", type=int, default=0)
 
-        if not id_client or not nom_projet or not type_convention:
-            flash("Please fill in all mandatory fields.", "danger")
-            clients = Client.query.order_by(Client.raison_sociale).all()
-            all_competences = Competence.query.all()
-            return render_template("ajouter_projet.html", 
-                                 clients=clients, 
-                                 competences=all_competences,
-                                 selected_client=id_client)
+        if not id_client or not nom_projet:
+            flash("Missing mandatory fields.", "danger")
+            return redirect(request.url)
 
-        # 1. Create Convention
+        # 2. Create Convention
         conv = Convention(
-            id_client=id_client, 
+            id_client=id_client,
             type_convention=type_convention,
             date_debut_convention=date.today(),
             prix=prix
         )
         db.session.add(conv)
-        db.session.flush() # Flush to get the ID
+        db.session.flush()
 
-        # 2. Create Project
+        # 3. Create Project
         proj = Projet(
             nom_projet=nom_projet,
             statut_projet=StatutProjet.PAS_COMMENCE,
             date_debut_projet=date.today(),
-            id_convention=conv.id_convention
+            id_convention=conv.id_convention,
+            charge_projet=charge  # <--- WE SAVE THE HOURS HERE
         )
         db.session.add(proj)
         
-        # 3. Handle Required Skills (Many-to-Many)
-        # We get the list of skill IDs from the form
+        # 4. Handle Required Skills (Many-to-Many)
+        # We get the list of IDs checked in the form
         skill_ids = request.form.getlist("competences_requises")
+        
         for sid in skill_ids:
             c = Competence.query.get(sid)
             if c:
+                # SQLAlchemy handles the insert into 'projet_competence' table
                 proj.competences_requises.append(c)
 
         db.session.commit()
-
+        
         flash("Project created successfully.", "success")
-        # Redirect to details page to see the result
         return redirect(url_for('projets.details_projet', id=proj.id_projet))
 
+    clients = Client.query.order_by(Client.raison_sociale).all()
+    # We pass all competences to the template for the checkbox list
+    all_competences = Competence.query.order_by(Competence.nom_competence).all()
+    selected_client = request.args.get('client', type=int)
+    
+    return render_template("ajouter_projet.html", clients=clients, competences=all_competences, selected_client=selected_client)
     # GET: Prepare data for the form
     clients = Client.query.order_by(Client.raison_sociale).all()
     all_competences = Competence.query.order_by(Competence.nom_competence).all()
@@ -93,21 +99,26 @@ def details_projet(id):
 @login_required
 def modifier_projet(id):
     """
-    Route to edit an existing project (Status, Dates, Team, Skills).
+    Route to edit an existing project.
+    Allows updating status, dates, workload, required skills, and assigned team.
     """
     projet = Projet.query.get_or_404(id)
 
     if request.method == "POST":
-        # Update scalar fields
+        # 1. Update Basic Fields
         projet.nom_projet = request.form.get("nom_projet")
+        # NEW: Update Workload
+        projet.charge_projet = request.form.get("charge_projet", type=int, default=0)
+        
+        # Date parsing
         date_debut = request.form.get("date_debut")
         date_fin = request.form.get("date_fin")
-
+        
         if date_debut:
             projet.date_debut_projet = datetime.strptime(date_debut, '%Y-%m-%d').date()
         if date_fin:
             projet.date_fin_projet = datetime.strptime(date_fin, '%Y-%m-%d').date()
-
+            
         # Update Status
         new_statut = request.form.get("statut_projet")
         for s in StatutProjet:
@@ -115,35 +126,37 @@ def modifier_projet(id):
                 projet.statut_projet = s
                 break
 
-        # Update Team (Intervenants)
-        intervenant_ids = request.form.getlist("intervenants")
-        projet.intervenants = [] # Reset
-        for i_id in intervenant_ids:
-            intervenant = Intervenant.query.get(int(i_id))
-            if intervenant:
-                projet.intervenants.append(intervenant)
-                
-        # Update Required Skills
+        # 2. Update Required Skills (Many-to-Many)
         skill_ids = request.form.getlist("competences_requises")
-        projet.competences_requises = [] # Reset
+        # We clear the current list and rebuild it based on the form
+        projet.competences_requises = [] 
         for sid in skill_ids:
             c = Competence.query.get(sid)
             if c:
                 projet.competences_requises.append(c)
 
+        # 3. Update Team (Many-to-Many)
+        intervenant_ids = request.form.getlist("intervenants")
+        projet.intervenants = [] 
+        for i_id in intervenant_ids:
+            intervenant = Intervenant.query.get(int(i_id))
+            if intervenant:
+                projet.intervenants.append(intervenant)
+
         db.session.commit()
         flash("Project updated successfully.", "success")
         return redirect(url_for("projets.details_projet", id=projet.id_projet))
 
-    # GET: Prepare form data
+    # GET: Prepare data for the form
     tous_intervenants = Intervenant.query.all()
+    # NEW: We need all skills to display the checklist
     toutes_competences = Competence.query.all()
-
+    
     return render_template(
-        "modifier_projet.html",
-        projet=projet,
+        "modifier_projet.html", 
+        projet=projet, 
         intervenants=tous_intervenants,
-        competences=toutes_competences,
+        competences=toutes_competences, # Pass this to template
         StatutProjet=StatutProjet
     )
 
