@@ -1,62 +1,70 @@
 {% extends "base.html" %}
-{% block title %}Edit Project{% endblock %}
+{% block title %}Modifier Projet{% endblock %}
 
 {% block content %}
 <div class="container fade-in">
-    <h1>Edit Project</h1>
-    <p class="text-muted">Editing: {{ projet.nom_projet }}</p>
+    <h1 class="text-center mb-20">Modifier le Projet</h1>
+    <p class="text-center text-muted mb-20">Édition de : {{ projet.nom_projet }}</p>
 
-    <div class="panel">
-        <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-
+    <div class="card card-wide-centered">
+        <form method="POST" class="edit-grid">
+            
             <div>
-                <h3 class="panel-title">📝 Information</h3>
+                <h3 class="panel-title mb-15">📝 Informations</h3>
+                
+                <label class="form-label-block">Nom du projet</label>
+                <input type="text" name="nom_projet" value="{{ projet.nom_projet }}" class="form-control" required>
 
                 <div class="form-group">
-                    <label>Project Name</label>
-                    <input type="text" name="nom_projet" value="{{ projet.nom_projet }}" required>
+                    <label class="form-label-block">Client</label>
+                    <input type="text" value="{{ projet.convention.client.raison_sociale }}" disabled class="form-control" style="background-color: #f0f0f0; cursor: not-allowed;">
                 </div>
 
-                <div class="form-group">
-                    <label>Client</label>
-                    <input type="text" value="{{ projet.convention.client.raison_sociale }}" disabled style="background-color: #eee;">
-                    <small class="text-muted">Client cannot be modified here.</small>
-                </div>
+                <label class="form-label-block">Charge Estimée (Heures)</label>
+                <input type="number" name="charge_projet" value="{{ projet.charge_projet }}" class="form-control" required>
 
-                <div class="form-group">
-                    <label>Status</label>
-                    <select name="statut_projet">
-                        {% for s in StatutProjet %}
-                            <option value="{{ s.value }}" {% if projet.statut_projet == s %}selected{% endif %}>
-                                {{ s.value }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <label class="form-label-block">Statut</label>
+                <select name="statut_projet" class="form-control">
+                    {% for s in StatutProjet %}
+                        <option value="{{ s.value }}" {% if projet.statut_projet == s %}selected{% endif %}>
+                            {{ s.value }}
+                        </option>
+                    {% endfor %}
+                </select>
 
-                <div class="form-group">
-                    <label>Start Date</label>
-                    <input type="date" name="date_debut" value="{{ projet.date_debut_projet }}">
-                </div>
-
-                <div class="form-group">
-                    <label>End Date</label>
-                    <input type="date" name="date_fin" value="{{ projet.date_fin_projet }}">
+                <label class="form-label-block">Dates (Début / Fin)</label>
+                <div class="flex-gap-10">
+                    <input type="date" name="date_debut" value="{{ projet.date_debut_projet }}" class="form-control">
+                    <input type="date" name="date_fin" value="{{ projet.date_fin_projet }}" class="form-control">
                 </div>
             </div>
 
             <div>
-                <h3 class="panel-title">👥 Team Assignment</h3>
-                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 6px;">
+                <h3 class="panel-title mb-15">🧠 Compétences Requises</h3>
+                <div class="scroll-box-150 mb-20">
+                    {% for c in competences %}
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="competences_requises" value="{{ c.id_competence }}" id="req_{{ c.id_competence }}"
+                            {% if c in projet.competences_requises %}checked{% endif %}>
+                        <label for="req_{{ c.id_competence }}">{{ c.nom_competence }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <h3 class="panel-title mb-15">👥 Équipe Assignée</h3>
+                <div class="scroll-box-200">
                     {% for i in intervenants %}
-                    <div style="display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                    <div class="checkbox-item" style="align-items: flex-start;">
                         <input type="checkbox" name="intervenants" value="{{ i.id_intervenant }}" id="int_{{ i.id_intervenant }}"
                             {% if i in projet.intervenants %}checked{% endif %}>
-
-                        <label for="int_{{ i.id_intervenant }}" style="margin:0; cursor:pointer;">
-                            <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong><br>
-                            <small class="text-muted">
-                                {% for c in i.competences %}{{ c.nom_competence }} {% endfor %}
+                        
+                        <label for="int_{{ i.id_intervenant }}">
+                            <strong>{{ i.utilisateur.prenom_utilisateur }} {{ i.utilisateur.nom_utilisateur }}</strong>
+                            <br>
+                            <small class="text-muted text-sm">
+                                {% for m in i.maitrise_details %}
+                                    {{ m.competence.nom_competence }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
                             </small>
                         </label>
                     </div>
@@ -64,9 +72,9 @@
                 </div>
             </div>
 
-            <div style="grid-column: 1 / -1; margin-top: 20px; text-align: right;">
-                <a href="{{ url_for('projets.details_projet', id=projet.id_projet) }}" class="btn btn-secondary">Cancel</a>   <!-- TODO: need to be translated -->
-                <button type="submit" class="btn">Save Changes</button>
+            <div class="form-footer">
+                <a href="{{ url_for('projets.details_projet', id=projet.id_projet) }}" class="btn-secondary">Annuler</a>
+                <button type="submit" class="btn">Enregistrer</button>
             </div>
         </form>
     </div>
