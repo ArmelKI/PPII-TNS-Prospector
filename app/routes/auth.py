@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import current_user, login_user, logout_user
 from urllib.parse import urlsplit
 from app.forms import LoginForm, RegisterForm
@@ -16,13 +16,19 @@ def login_page():
         return redirect('/')
 
     form = LoginForm()
+    user = None
+
+    # Special account check
+    if form.is_submitted() and form.usermail.data in current_app.config['special_accounts_mails']:
+        pass
 
     # If the form wasn't sent correctly
-    if not form.validate_on_submit():
+    elif not form.validate_on_submit():
         return render_template('login.html', form=form)
 
     # Validity check
-    user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
+    if user is None:   # Not equal to None when special account
+        user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == form.usermail.data).scalar()
     if user is None or not user.check_password(form.password.data):
         flash("Invalid username or password", "danger")
         return redirect(url_for('auth.login_page'))
