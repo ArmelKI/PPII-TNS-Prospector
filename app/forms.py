@@ -9,7 +9,6 @@ class LoginForm(FlaskForm):
     usermail = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Mot de passe', validators=[DataRequired()])
     remember_me = BooleanField('Se souvenir de moi')
-    bypass = BooleanField('Bypass connexion')
     submit = SubmitField('Se connecter')
 
 # TODO : Ajouter possibilité de set le role
