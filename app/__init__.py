@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template
-from app.models import db
+from app.models import db, Utilisateur
 from dotenv import load_dotenv
 from urllib.parse import quote
 from datetime import datetime
@@ -65,7 +65,34 @@ def create_app():
         """Make current_year available in all templates."""
         return {"current_year": datetime.now().year}
 
-    # 4. Register Blueprints
+    # 4. Check for special accounts in db
+    special_accounts = {
+        'admin': {
+            'prenom_utilisateur': 'admin',
+            'nom_utilisateur': 'admin',
+            'mail_utilisateur': 'admin',
+            'mdp_utilisateur': '$2b$12$8JaG2qUu2F4QgXwaQogpk.xbW9qPrl89g7JNb1dhOf7J6g6iUEIYm',
+            'permission': 1
+        }
+    }
+    app.config['special_accounts_mails'] = [account['mail_utilisateur'] for account in special_accounts.values()]
+
+    with app.app_context():
+        for account in special_accounts.values():
+            user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == account['mail_utilisateur']).scalar()
+            if user is None:
+                new_user = Utilisateur(
+                    prenom_utilisateur=account['prenom_utilisateur'],
+                    nom_utilisateur=account['nom_utilisateur'],
+                    mail_utilisateur=account['mail_utilisateur'],
+                    mdp_utilisateur=account['mdp_utilisateur'],
+                    permission=account['permission'],
+                    id_role=1
+                )
+                db.session.add(new_user)
+                db.session.commit()
+
+    # 5. Register Blueprints
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(intervenants_bp)
     app.register_blueprint(clients_bp)
