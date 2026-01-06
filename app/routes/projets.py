@@ -4,6 +4,7 @@ from datetime import date, datetime
 from app.matching import call_ai_matching, create_ai_prompt
 import json
 from flask_login import login_required
+from app.permissions import manage_projets_required
 
 projets_bp = Blueprint("projets", __name__, url_prefix="/projets")
 
@@ -17,7 +18,7 @@ def liste_projets():
     return render_template("projets.html", projets=tous_les_projets)
 
 @projets_bp.route("/add", methods=["GET", "POST"])
-@login_required
+@manage_projets_required
 def ajouter_projet():
     """
     Handles the creation of a new project, including workload and required skills.
@@ -27,7 +28,7 @@ def ajouter_projet():
         nom_projet = request.form.get("nom_projet")
         prix = request.form.get("prix", type=float)
         type_convention = request.form.get("type_convention")
-        
+
         # 1. Retrieve the Workload (Charge)
         charge = request.form.get("charge_projet", type=int, default=0)
 
@@ -54,11 +55,11 @@ def ajouter_projet():
             charge_projet=charge  # <--- WE SAVE THE HOURS HERE
         )
         db.session.add(proj)
-        
+
         # 4. Handle Required Skills (Many-to-Many)
         # We get the list of IDs checked in the form
         skill_ids = request.form.getlist("competences_requises")
-        
+
         for sid in skill_ids:
             c = Competence.query.get(sid)
             if c:
@@ -66,7 +67,7 @@ def ajouter_projet():
                 proj.competences_requises.append(c)
 
         db.session.commit()
-        
+
         flash("Project created successfully.", "success")
         return redirect(url_for('projets.details_projet', id=proj.id_projet))
 
@@ -74,16 +75,16 @@ def ajouter_projet():
     # We pass all competences to the template for the checkbox list
     all_competences = Competence.query.order_by(Competence.nom_competence).all()
     selected_client = request.args.get('client', type=int)
-    
+
     return render_template("ajouter_projet.html", clients=clients, competences=all_competences, selected_client=selected_client)
     # GET: Prepare data for the form
     clients = Client.query.order_by(Client.raison_sociale).all()
     all_competences = Competence.query.order_by(Competence.nom_competence).all()
     selected_client = request.args.get('client', type=int)
-    
-    return render_template("ajouter_projet.html", 
-                           clients=clients, 
-                           competences=all_competences, 
+
+    return render_template("ajouter_projet.html",
+                           clients=clients,
+                           competences=all_competences,
                            selected_client=selected_client)
 
 @projets_bp.route("/details/<int:id>")
@@ -96,7 +97,7 @@ def details_projet(id):
     return render_template("details_projet.html", projet=projet)
 
 @projets_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-@login_required
+@manage_projets_required
 def modifier_projet(id):
     """
     Route to edit an existing project.
@@ -109,16 +110,16 @@ def modifier_projet(id):
         projet.nom_projet = request.form.get("nom_projet")
         # NEW: Update Workload
         projet.charge_projet = request.form.get("charge_projet", type=int, default=0)
-        
+
         # Date parsing
         date_debut = request.form.get("date_debut")
         date_fin = request.form.get("date_fin")
-        
+
         if date_debut:
             projet.date_debut_projet = datetime.strptime(date_debut, '%Y-%m-%d').date()
         if date_fin:
             projet.date_fin_projet = datetime.strptime(date_fin, '%Y-%m-%d').date()
-            
+
         # Update Status
         new_statut = request.form.get("statut_projet")
         for s in StatutProjet:
@@ -129,7 +130,7 @@ def modifier_projet(id):
         # 2. Update Required Skills (Many-to-Many)
         skill_ids = request.form.getlist("competences_requises")
         # We clear the current list and rebuild it based on the form
-        projet.competences_requises = [] 
+        projet.competences_requises = []
         for sid in skill_ids:
             c = Competence.query.get(sid)
             if c:
@@ -137,7 +138,7 @@ def modifier_projet(id):
 
         # 3. Update Team (Many-to-Many)
         intervenant_ids = request.form.getlist("intervenants")
-        projet.intervenants = [] 
+        projet.intervenants = []
         for i_id in intervenant_ids:
             intervenant = Intervenant.query.get(int(i_id))
             if intervenant:
@@ -151,17 +152,17 @@ def modifier_projet(id):
     tous_intervenants = Intervenant.query.all()
     # NEW: We need all skills to display the checklist
     toutes_competences = Competence.query.all()
-    
+
     return render_template(
-        "modifier_projet.html", 
-        projet=projet, 
+        "modifier_projet.html",
+        projet=projet,
         intervenants=tous_intervenants,
         competences=toutes_competences, # Pass this to template
         StatutProjet=StatutProjet
     )
 
 @projets_bp.route("/delete/<int:id>", methods=["POST"])
-@login_required
+@manage_projets_required
 def supprimer_projet(id):
     """
     Deletes a project.
@@ -169,71 +170,73 @@ def supprimer_projet(id):
     """
     projet = Projet.query.get_or_404(id)
     client_id = projet.convention.id_client if projet.convention else None
-    
+
     try:
         db.session.delete(projet)
         db.session.commit()
         flash("Project deleted.", "info")
-        
+
         if client_id:
             return redirect(url_for("clients.details_client", id=client_id))
         return redirect(url_for("projets.liste_projets"))
-        
+
     except Exception as e:
         db.session.rollback()
         flash(f"Could not delete project: {e}", "danger")
         return redirect(url_for("projets.details_projet", id=id))
 
 @projets_bp.route("/<int:id>/match",methods=['GET'])
-def match_projet(id): 
+@manage_projets_required
+def match_projet(id):
     projet = Projet.query.get_or_404(id)
     intervenants  = Intervenant.query.filter_by (disponible = True).all()
-    
+
     sys_p, usr_p = create_ai_prompt(projet, intervenants)
     suggestions = call_ai_matching(sys_p, usr_p)
     print(f"prompt system:{sys_p}")
     print(f"prompt user:{usr_p }")
-    
+
     if suggestions:
         print("\n--- RÉSULTATS DU MATCHING ---")
         print(json.dumps(suggestions, indent=2, ensure_ascii=False))
     return  render_template('swipe.html', suggestions=suggestions['suggestions'],mission=projet)
 
 @projets_bp.route("/<int:id>/valider-equipe",methods=['POST'])
+@manage_projets_required
 def valider_equipe(id):
     projet = Projet.query.get_or_404(id)
-    
+
     equipe_json = request.form.get("equipe_data_json")
-    
+
     try :
-        if not equipe_json: 
+        if not equipe_json:
             raise ValueError("Aucune donnée d'équipe reçus.")
         membres_a_ajouter = json.loads(equipe_json)
         projet.intervenants = []
-        
+
         for membre in membres_a_ajouter :
             id_inter = int(membre['id'])
             heures_a_prendre = int(membre['heures_attribuees'])
-            
+
             intervenant = Intervenant.query.get(id_inter)
 
-            if intervenant : 
+            if intervenant :
                 projet.intervenants.append(intervenant)
 
                 if intervenant.nb_heures_dispo >=  heures_a_prendre :
-                    intervenant.nb_heures_dispo -= heures_a_prendre 
+                    intervenant.nb_heures_dispo -= heures_a_prendre
                 else:
-                    intervenant.nb_heures_dispo = 0 
+                    intervenant.nb_heures_dispo = 0
                 if  intervenant.nb_heures_dispo <= 0.5: # les heures dispos ne sont que des int
-                    intervenant.disponible = False 
+                    intervenant.disponible = False
         db.session.commit()
         flash("L'équipe à été validée et les disponibilités des intervenants mises à jours.", "success")
-    except  json.JSONDecodeError : 
+    except  json.JSONDecodeError :
         db.session.rollback()
         flash("Erreur de format des données (JSON invalide).", "danger")
 
-    except  Exception as e: 
+    except  Exception as e:
         db.session.rollback()
         flash(f"Erreur lors de la sauvegarde : {str(e)}", "danger")
 
-    return redirect(url_for('projets.details_projet',id=id))              
+    return redirect(url_for('projets.details_projet',id=id))

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.models import InteractionClient, Client, EtatRelation, db
 from datetime import date
 from flask_login import login_required
+from app.permissions import manage_clients_required
 
 interactions_bp = Blueprint("interactions", __name__, url_prefix="/interactions")
 
@@ -18,7 +19,7 @@ def liste_interactions():
     return render_template("interactions.html", interactions=interactions)
 
 @interactions_bp.route("/add", methods=["POST"])
-@login_required
+@manage_clients_required
 def ajouter_interaction():
     """
     Handle form submission to add a new interaction for a client.

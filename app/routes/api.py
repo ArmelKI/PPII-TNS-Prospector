@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from app.models import *
 from sqlalchemy.exc import ProgrammingError
-from flask_login import login_required
+from app.permissions import manage_clients_required, manage_users_required
 
 
 
@@ -9,7 +9,7 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 @api_bp.route("/clients/get_all")
-@login_required
+@manage_clients_required
 def get_all_clients():
     clients: list[Client] = Client.query.all()
     output = [{
@@ -25,7 +25,7 @@ def get_all_clients():
     return jsonify(output)
 
 @api_bp.get("/clients")
-@login_required
+@manage_clients_required
 def get_client():
     id_client = request.args.get('id')
     client: Client = Client.query.get_or_404(id_client)
@@ -42,7 +42,7 @@ def get_client():
     return jsonify(output)
 
 @api_bp.post("/clients")
-@login_required
+@manage_clients_required
 def add_client():
     client_data = request.get_json()
     client: Client = Client(
@@ -60,7 +60,7 @@ def add_client():
     return jsonify(client_data)
 
 @api_bp.put("/clients")
-@login_required
+@manage_clients_required
 def update_client():
     client_data = request.get_json()
     id_client = request.args.get('id', type=int)
@@ -89,7 +89,7 @@ def update_client():
     return jsonify({"message": "Client updated", "client": client_data})
 
 @api_bp.delete("/clients")
-@login_required
+@manage_clients_required
 def delete_client():
     id_client = request.args.get('id')
     client = Client.query.get_or_404(id_client)
@@ -111,7 +111,7 @@ def get_all_users():
     return jsonify(output)
 
 @api_bp.get("/users")
-@login_required
+@manage_users_required
 def get_user():
     id_utilisateur = request.args.get('id')
     user: Utilisateur = Utilisateur.query.get_or_404(id_utilisateur)
@@ -126,7 +126,7 @@ def get_user():
     return jsonify(output)
 
 @api_bp.post("/users")
-@login_required
+@manage_users_required
 def add_user():
     user_data = request.get_json()
     user = Utilisateur(
@@ -142,7 +142,7 @@ def add_user():
     return jsonify(user_data)
 
 @api_bp.put("/users")
-@login_required
+@manage_users_required
 def update_user():
     user_data = request.get_json()
     id_utilisateur = request.args.get('id')
@@ -168,7 +168,7 @@ def update_user():
     return jsonify({"message": "User updated", "user": user_data})
 
 @api_bp.delete("/users")
-@login_required
+@manage_users_required
 def delete_user(id_client):
     id_utilisateur = request.args.get('id')
     user: Utilisateur = Utilisateur.query.get_or_404(id_utilisateur)

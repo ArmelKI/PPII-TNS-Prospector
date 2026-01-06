@@ -32,7 +32,7 @@ def ajouter_jalon(id_projet):
     """
     nom = request.form.get("nom_jalon")
     date_fin = request.form.get("date_fin_jalon")
-    
+
     if not nom:
         flash("Milestone name is required.", "warning")
         return redirect(url_for('jalons.voir_kanban', id_projet=id_projet))
@@ -47,7 +47,7 @@ def ajouter_jalon(id_projet):
     )
     db.session.add(j)
     db.session.commit()
-    
+
     flash("Milestone added.", "success")
     return redirect(url_for('jalons.voir_kanban', id_projet=id_projet))
 
@@ -59,10 +59,10 @@ def supprimer_jalon(id_jalon):
     """
     jalon = Jalon.query.get_or_404(id_jalon)
     id_projet = jalon.id_projet
-    
+
     db.session.delete(jalon)
     db.session.commit()
-    
+
     flash("Milestone deleted.", "success")
     return redirect(url_for('jalons.voir_kanban', id_projet=id_projet))
 
@@ -81,7 +81,7 @@ def update_statut():
     nouveau_statut_str = data.get("nouveau_statut")
 
     jalon = Jalon.query.get_or_404(id_jalon)
-    
+
     # Iterate through Enum to find the matching status
     found = False
     for s in StatutJalon:
@@ -89,7 +89,7 @@ def update_statut():
             jalon.statut_jalon = s
             found = True
             break
-            
+
     if found:
         db.session.commit()
         return jsonify({"success": True})

@@ -7,6 +7,7 @@ from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 from app.models import Intervenant, Utilisateur, Competence, db, MaitriseCompetence
 from flask_login import login_required
+from app.permissions import manage_intervenants_required
 
 intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants")
 
@@ -86,7 +87,7 @@ def liste_intervenants():
 
 
 @intervenants_bp.route('/add', methods=['GET', 'POST'])
-@login_required
+@manage_intervenants_required
 def ajouter_intervenant():
     """
     Handles the creation of a new intervenant profile.
@@ -213,7 +214,7 @@ def ajouter_intervenant():
 
 
 @intervenants_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-@login_required
+@manage_intervenants_required
 def modifier_intervenant(id):
     """
     Updates an existing intervenant's profile (availability, files, skills).
@@ -285,7 +286,7 @@ def modifier_intervenant(id):
 
 
 @intervenants_bp.route("/delete/<int:id>", methods=["POST"])
-@login_required
+@manage_intervenants_required
 def supprimer_intervenant(id):
     """
     Deletes an intervenant profile.
