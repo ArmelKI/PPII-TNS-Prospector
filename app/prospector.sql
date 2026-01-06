@@ -21,6 +21,7 @@ CREATE TABLE utilisateurs (
     nom_utilisateur VARCHAR(100) NOT NULL,
     mail_utilisateur VARCHAR(150) UNIQUE NOT NULL,
     mdp_utilisateur VARCHAR(255) NOT NULL,
+    permission INT NOT NULL DEFAULT 0,
     id_role INT NOT NULL,
     FOREIGN KEY (id_role) REFERENCES roles(id_role)
 );
@@ -94,6 +95,7 @@ CREATE TABLE projets (
     id_projet SERIAL PRIMARY KEY,
     nom_projet VARCHAR(200) NOT NULL,
     statut_projet statut_projet_enum NOT NULL DEFAULT 'Pas commencé',
+    charge_projet INT DEFAULT 0
     date_debut_projet DATE,
     date_fin_projet DATE,
     id_convention INT NOT NULL, -- il faudra vérifier côté application qu'une CE ne peut avoir qu'un seul projet

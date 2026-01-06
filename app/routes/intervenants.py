@@ -13,7 +13,7 @@ intervenants_bp = Blueprint("intervenants", __name__, url_prefix="/intervenants"
 def save_uploaded_file(file_obj, subfolder="documents"):
     """
     Saves a given file object to the app's static upload directory.
-    
+
     Args:
         file_obj (FileStorage): The file object from request.files.
         subfolder (str): The specific subfolder inside 'static/uploads/' (e.g., 'avatars').
@@ -64,7 +64,7 @@ def liste_intervenants():
     # 2. Apply Search Filters
     # If a search term exists, we filter by User's First/Last Name OR Skill Name.
     if search:
-        # Note: We use outerjoin to include intervenants even if they don't have skills yet, 
+        # Note: We use outerjoin to include intervenants even if they don't have skills yet,
         # but match the name search criteria.
         q = q.outerjoin(Intervenant.maitrise_details).outerjoin(MaitriseCompetence.competence).filter(
             (Utilisateur.nom_utilisateur.ilike(f"%{search}%")) |
@@ -101,7 +101,7 @@ def ajouter_intervenant():
         # Mandatory files check
         if not cv_file or cv_file.filename == '':
             flash("Le CV est obligatoire", "warning")
-            return redirect(request.url) 
+            return redirect(request.url)
 
         if not photo_file or photo_file.filename == '':
             flash("Le CV est obligatoire", "warning")
@@ -124,7 +124,7 @@ def ajouter_intervenant():
             if deja_intervenant:
                 flash(f"Error: The selected user is already an intervenant.", "danger")
                 return redirect(url_for("intervenants.ajouter_intervenant"))
-        
+
             utilisateur = Utilisateur.query.get(int(id_util))
         else:
             # Case B: Creating a new user from scratch
@@ -136,6 +136,7 @@ def ajouter_intervenant():
                 prenom_utilisateur=prenom,
                 nom_utilisateur=nom,
                 mail_utilisateur=email,
+                permission=0,
                 id_role=1 # Default role ID
             )
             # Set a temporary password (in production, send an invite email instead)
@@ -174,12 +175,12 @@ def ajouter_intervenant():
             note = 0
             if len(parts) > 1:
                 try:
-                    note = int(parts[1].strip()) 
+                    note = int(parts[1].strip())
                 except ValueError:
                     note = 0
-            
+
             # Boundary check for the score (0-10)
-            if note > 10 or note < 0 : 
+            if note > 10 or note < 0 :
                 flash("Please enter a score out of 10 for each skill. Defaulted to 0.", "danger")
                 note = 0
 
@@ -207,7 +208,7 @@ def ajouter_intervenant():
     .filter(Intervenant.id_intervenant == None)\
     .order_by(Utilisateur.nom_utilisateur)\
     .all()
-    
+
     return render_template("ajouter_intervenant.html", utilisateurs=utilisateurs_disponibles)
 
 
@@ -256,8 +257,8 @@ def modifier_intervenant(id):
                     note = int(parts[1].strip())
                 except ValueError:
                     note = 0
-            
-            if note > 10 or note < 0 : 
+
+            if note > 10 or note < 0 :
                 flash("Please enter a score out of 10. Defaulted to 0.", "danger")
                 note = 0
 
@@ -305,34 +306,34 @@ def exporter_intervenants():
     Useful for external reporting or backups.
     """
     intervenants = Intervenant.query.options(joinedload(Intervenant.utilisateur)).all()
-    
+
     # Use StringIO to create an in-memory text buffer
     si = StringIO()
     writer = csv.writer(si)
-    
+
     # Header row
     writer.writerow(["ID", "Last Name", "First Name", "Email", "Skills", "Available", "Hours", "CV Path"])
-    
+
     # Data rows
     for i in intervenants:
         u = i.utilisateur
         # We join skills into a single string for the CSV cell
         # Note: This simple export doesn't include skill levels for brevity, but could be added.
         skills_str = ";".join([m.competence.nom_competence for m in i.maitrise_details])
-        
+
         writer.writerow([
-            i.id_intervenant, 
-            u.nom_utilisateur if u else "", 
-            u.prenom_utilisateur if u else "", 
+            i.id_intervenant,
+            u.nom_utilisateur if u else "",
+            u.prenom_utilisateur if u else "",
             u.mail_utilisateur if u else "",
-            skills_str, 
-            i.disponible, 
-            i.nb_heures_dispo, 
+            skills_str,
+            i.disponible,
+            i.nb_heures_dispo,
             i.cv
         ])
-        
+
     return Response(
-        si.getvalue(), 
-        mimetype="text/csv", 
+        si.getvalue(),
+        mimetype="text/csv",
         headers={"Content-Disposition": "attachment;filename=intervenants.csv"}
     )
