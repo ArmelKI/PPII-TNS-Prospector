@@ -293,7 +293,7 @@ def supprimer_intervenant(id):
     intervenant = Intervenant.query.get_or_404(id)
     db.session.delete(intervenant)
     db.session.commit()
-    flash("Intervenant deleted.", "danger")
+    flash("Intervenant deleted.", "success")
     return redirect(url_for("intervenants.liste_intervenants"))
 
 
