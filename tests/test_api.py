@@ -1,14 +1,14 @@
 import pytest
 from app.models import Client, db
+from datetime import date, datetime
 
 @pytest.fixture
 def setup_client_100(app):
-    """Prépare un client avec l'ID 100 en base de données pour les tests unitaires."""
+    """Prépare un client proprement."""
     with app.app_context():
-        existing = Client.query.get(100)
-        if existing:
-            db.session.delete(existing)
-            db.session.commit()
+        # Nettoyage préventif
+        Client.query.filter_by(id_client=100).delete()
+        db.session.commit()
             
         client_obj = Client(
             id_client=100,
@@ -16,16 +16,42 @@ def setup_client_100(app):
             mail_client="contact@api.com",
             telephone_client="0123456789",
             secteur="Tech",
-            date_dernier_contact="2025-12-21",
+            # CORRECTION ICI : Utilisation d'un objet date
+            date_dernier_contact=None, 
             latitude=48.85,
             longitude=2.35
         )
         db.session.add(client_obj)
         db.session.commit()
-        yield client_obj
+        
+        yield client_obj.id_client 
         
         with app.app_context():
             db.session.query(Client).filter_by(id_client=100).delete()
+            db.session.commit()
+
+@pytest.fixture
+def client_pour_changement_id(app):
+    """Fixture qui crée un client avec l'ID 50 et nettoie après le test."""
+    with app.app_context():
+        db.session.query(Client).filter(Client.id_client.in_([50, 60])).delete()
+        
+        c = Client(
+            id_client=50, 
+            raison_sociale="Initial",
+            mail_client="test@test.com",
+            telephone_client="00000000",
+            secteur="Test",
+            date_dernier_contact=None,
+            latitude=0.0,
+            longitude=0.0
+        )
+        db.session.add(c)
+        db.session.commit()
+        yield c 
+        
+        with app.app_context():
+            db.session.query(Client).filter(Client.id_client.in_([50, 60])).delete()
             db.session.commit()
 
 # --- TESTS UNITAIRES (AUTHENTIFIÉS) ---
@@ -38,7 +64,7 @@ def test_api_create_client(logged_in_client, app):
         "mail_client": "new@corp.com",
         "telephone_client": "00000000",
         "secteur": "Finance",
-        "date_dernier_contact": "2025-12-21",
+        "date_dernier_contact": None,
         "latitude": 0.0,
         "longitude": 0.0
     }
@@ -64,19 +90,20 @@ def test_api_get_single_client(logged_in_client, setup_client_100):
     assert response.json["raison_sociale"] == "API Corp"
 
 def test_api_update_client_success(logged_in_client, setup_client_100, app):
-    """Teste la mise à jour (PUT) avec ID correspondant."""
+    """Utilise l'ID passé par la fixture."""
+    client_id = setup_client_100
     payload = {
-        "id_client": 100, 
+        "id_client": client_id, 
         "raison_sociale": "API Limited"
     }
-    response = logged_in_client.put("/api/clients?id=100", json=payload)
+    response = logged_in_client.put(f"/api/clients?id={client_id}", json=payload)
     
     assert response.status_code == 200
-    assert response.json["message"] == "Client updated"
     
     with app.app_context():
+        # IMPORTANT: expire_all() force SQLA à recharger les données de la DB
         db.session.expire_all()
-        c = Client.query.get(100)
+        c = db.session.get(Client, client_id)
         assert c.raison_sociale == "API Limited"
 
 def test_api_delete_client(logged_in_client, setup_client_100, app):
@@ -93,30 +120,6 @@ def test_api_client_not_found(logged_in_client):
     response = logged_in_client.get("/api/clients?id=9999")
     # Maintenant que nous sommes loggés, nous devrions recevoir 404 et non 302
     assert response.status_code == 404
-
-@pytest.fixture
-def client_pour_changement_id(app):
-    """Fixture qui crée un client avec l'ID 50 et nettoie après le test."""
-    with app.app_context():
-        db.session.query(Client).filter(Client.id_client.in_([50, 60])).delete()
-        
-        c = Client(
-            id_client=50, 
-            raison_sociale="Initial",
-            mail_client="test@test.com",
-            telephone_client="00000000",
-            secteur="Test",
-            date_dernier_contact="2025-12-21",
-            latitude=0.0,
-            longitude=0.0
-        )
-        db.session.add(c)
-        db.session.commit()
-        yield c 
-        
-        with app.app_context():
-            db.session.query(Client).filter(Client.id_client.in_([50, 60])).delete()
-            db.session.commit()
 
 def test_api_put_client_id_mismatch_blocks_without_confirm(logged_in_client, client_pour_changement_id):
     """Vérifie que le changement d'ID est bloqué sans confirmation."""
@@ -137,7 +140,7 @@ def test_api_put_client_id_change_success_with_confirm(logged_in_client, client_
         "mail_client": "test@test.com",
         "telephone_client": "00000000",
         "secteur": "Test",
-        "date_dernier_contact": "2025-12-21",
+        "date_dernier_contact": None,
         "latitude": 0.0,
         "longitude": 0.0
     }

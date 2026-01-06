@@ -7,7 +7,7 @@ Ne contient pas de logique métier.
 
 from app import create_app
 
-app = create_app()
+app = create_app(testing=False)
 
 if __name__ == "__main__":
     # debug=True uniquement en dev local

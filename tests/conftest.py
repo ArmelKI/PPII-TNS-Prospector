@@ -1,24 +1,22 @@
 import os
 from dotenv import load_dotenv
 import pytest
-from app.__init__ import create_app
-from app.models import db, Utilisateur, Role
+from app.__init__ import create_app, db
+from app.models import Utilisateur, Role
 
 load_dotenv()
 
-@pytest.fixture()
+@pytest.fixture()   
 def app():
-    app = create_app()
+    app = create_app(testing=True)
     app.config.update({
-        "TESTING": True,
-        "WTF_CSRF_ENABLED": False,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///test_prospector.db", # Base de données ultra-rapide
-        "SQLALCHEMY_TRACK_MODIFICATIONS": False
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///test_prospector.db",
     })
-
     with app.app_context():
         db.create_all()
         yield app
+        db.session.remove()
+        db.drop_all()
 
 @pytest.fixture
 def client(app):

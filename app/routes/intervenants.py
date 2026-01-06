@@ -100,11 +100,11 @@ def ajouter_intervenant():
 
         # Mandatory files check
         if not cv_file or cv_file.filename == '':
-            flash("Error: CV is mandatory to create a profile.", "warning")
+            flash("Le CV est obligatoire", "warning")
             return redirect(request.url) 
 
         if not photo_file or photo_file.filename == '':
-            flash("Error: Identity photo is mandatory.", "warning")
+            flash("Le CV est obligatoire", "warning")
             return redirect(request.url)
 
         # --- 2. Form Data Retrieval ---

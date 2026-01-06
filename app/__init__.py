@@ -21,34 +21,38 @@ from app.routes.auth import auth_bp
 load_dotenv()
 
 
-def create_app():
+def create_app(testing:bool):
     """
     Application factory for TNS.
     - Loads config from environment variables.
     - Initializes DB.
     - Registers blueprints.
     """
-
-    # 1. Database Configuration
-    DB_USER = os.getenv("DB_USER", "postgres")
-    db_password = os.getenv("DB_PASSWORD", "")
-    DB_PASSWORD = quote(db_password.encode()) if db_password else ""
-    DB_HOST = os.getenv("DB_HOST", "localhost")
-    DB_PORT = os.getenv("DB_PORT", "5432")
-    DB_NAME = os.getenv("DB_NAME", "tns_db")
-
-    # Construct the PostgreSQL connection string
-    DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-
     app = Flask(__name__)
+    if testing:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['TESTING'] = True
+        app.config['WTF_CSRF_ENABLED'] = False
+        app.config['SECRET_KEY'] = 'test_key'
+    else:
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+        # 1. Database Configuration
+        DB_USER = os.getenv("DB_USER", "postgres")
+        db_password = os.getenv("DB_PASSWORD", "")
+        DB_PASSWORD = quote(db_password.encode()) if db_password else ""
+        DB_HOST = os.getenv("DB_HOST", "localhost")
+        DB_PORT = os.getenv("DB_PORT", "5432")
+        DB_NAME = os.getenv("DB_NAME", "tns_db")
+
+        # Construct the PostgreSQL connection string
+        DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+
+        app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+        app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_key_fallback')
+
+        # Optional: Set max upload size (e.g., 16MB)
+        app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_key_fallback')
-
-    # Optional: Set max upload size (e.g., 16MB)
-    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-
     # 2. Initialize Extensions
     db.init_app(app)
     login_manager.init_app(app)

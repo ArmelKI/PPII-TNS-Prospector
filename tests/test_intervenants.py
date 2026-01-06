@@ -68,5 +68,6 @@ def test_ajouter_intervenant_fichiers_manquants(logged_in_client, app):
         # Vérification des messages flash
         messages = get_flashed_messages(with_categories=True)
         # On vérifie si le message d'erreur sur le CV est présent
-        assert any("Le CV est obligatoire" in msg for cat, msg in messages)
+       # Remplacez la vérification des messages flash par :
+        assert "Le CV est obligatoire".encode('utf-8') in response.data
         assert response.status_code == 200
