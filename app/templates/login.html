@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="login-wrapper fade-in">
-
+    
     <div class="login-card">
         <div class="login-header">
             <h1>Bienvenue 👋</h1>
@@ -17,7 +17,7 @@
             <div class="form-group">
                 {{ form.usermail.label(class_="form-label") }}
                 {{ form.usermail(class_="form-input", placeholder="exemple@tns.fr") }}
-
+                
                 {% for error in form.usermail.errors %}
                     <span class="error-msg">⚠️ {{ error }}</span>
                 {% endfor %}
@@ -26,7 +26,7 @@
             <div class="form-group">
                 {{ form.password.label(class_="form-label") }}
                 {{ form.password(class_="form-input", placeholder="••••••••") }}
-
+                
                 {% for error in form.password.errors %}
                     <span class="error-msg">⚠️ {{ error }}</span>
                 {% endfor %}
@@ -35,10 +35,6 @@
             <div class="form-check">
                 {{ form.remember_me() }}
                 <label for="remember_me">Se souvenir de moi</label>
-            </div>
-            <div class="form-check">
-                {{ form.bypass() }}
-                <label for="bypass">Bypass password check</label>
             </div>
 
             <div>

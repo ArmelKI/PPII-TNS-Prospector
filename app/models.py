@@ -1,10 +1,11 @@
 import enum
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum as SAEnum, CheckConstraint
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from app.config import login_manager
 from bcrypt import hashpw, gensalt, checkpw
-from flask import flash
+from flask import flash, request, url_for, current_app, redirect
+from functools import wraps
 
 db = SQLAlchemy()
 
@@ -105,6 +106,7 @@ class Utilisateur(db.Model, UserMixin):
     nom_utilisateur = db.Column(db.String(100), nullable=False)
     mail_utilisateur = db.Column(db.String(150), nullable=False, unique=True)
     mdp_utilisateur = db.Column(db.String(255), nullable=False)
+    permission = db.Column(db.Integer, nullable=False)
     id_role = db.Column(db.Integer, db.ForeignKey("roles.id_role"), nullable=False)
 
     role = db.relationship("Role", back_populates="utilisateurs")

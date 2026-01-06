@@ -1,10 +1,12 @@
 import os
 from flask import Flask, render_template
-from app.models import db
+from app.models import db, Utilisateur
 from dotenv import load_dotenv
 from urllib.parse import quote
 from datetime import datetime
+from sqlalchemy.exc import ProgrammingError
 from app.config import login_manager
+from app.permissions import all_perms
 
 # Import Blueprints
 from app.routes.dashboard import dashboard_bp
@@ -12,11 +14,10 @@ from app.routes.intervenants import intervenants_bp
 from app.routes.clients import clients_bp
 from app.routes.projets import projets_bp
 from app.routes.interactions import interactions_bp
-from app.routes.jalons import jalons_bp  # <--- Added
+from app.routes.jalons import jalons_bp
 from app.routes.api import api_bp
 from app.routes.map import map_bp
 from app.routes.auth import auth_bp
-# from app.routes.auth import auth_bp # Uncomment when auth.py is ready
 
 load_dotenv()
 
@@ -57,6 +58,7 @@ def create_app(testing:bool):
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login_page'
+    login_manager.login_message = 'Veuillez vous connectez pour accéder à cette page.'
 
     # 3. Global Template Helpers
     @app.errorhandler(404)
@@ -69,7 +71,38 @@ def create_app(testing:bool):
         """Make current_year available in all templates."""
         return {"current_year": datetime.now().year}
 
-    # 4. Register Blueprints
+    # 4. Check for special accounts in db
+    try:
+        special_accounts = {
+            'admin': {
+                'prenom_utilisateur': 'admin',
+                'nom_utilisateur': 'admin',
+                'mail_utilisateur': 'admin',
+                'mdp_utilisateur': '$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq',
+                'permission': all_perms
+            }
+        }
+        app.config['special_accounts_mails'] = [account['mail_utilisateur'] for account in special_accounts.values()]
+
+        with app.app_context():
+            for account in special_accounts.values():
+                user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == account['mail_utilisateur']).scalar()
+                if user is None:
+                    new_user = Utilisateur(
+                        prenom_utilisateur=account['prenom_utilisateur'],
+                        nom_utilisateur=account['nom_utilisateur'],
+                        mail_utilisateur=account['mail_utilisateur'],
+                        mdp_utilisateur=account['mdp_utilisateur'],
+                        permission=account['permission'],
+                        id_role=1
+                    )
+                    db.session.add(new_user)
+                    db.session.commit()
+    except ProgrammingError:
+        print('\n\n\n\n\n⚠️⚠️⚠️⚠️⚠️The DB model and the DB looks like they don\'t match !\n\n\n\n\n', flush=True)
+        pass
+
+    # 5. Register Blueprints
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(intervenants_bp)
     app.register_blueprint(clients_bp)

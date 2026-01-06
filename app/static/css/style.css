@@ -785,7 +785,7 @@ a:hover {
   border-color: #ffecb5;
 }
 
-.alert-info {
+.alert-info, .alert-message {
   color: #055160;
   background-color: #cff4fc;
   border-color: #b6effb;

@@ -27,7 +27,7 @@
       <li><a href="{{ url_for('interactions.liste_interactions') }}">Interactions</a></li>
       <li><a href="{{ url_for('intervenants.exporter_intervenants') }}">Export CSV</a></li>
       <li><a href="{{ url_for('map.map_page') }}">Carte des prospects</a></li>
-      <li><a href="{{ url_for('auth.logout') }}">Se déconnecter</a></li>
+      <li><a href="{{ url_for('auth.logout') }}">({{ current_user.prenom_utilisateur + ' ' + current_user.nom_utilisateur }}) Se déconnecter</a></li>
       {% endif %}
     </ul>
   </nav>
@@ -38,9 +38,9 @@
         <div class="flash-container">
             {% for category, message in messages %}
                 <div class="alert alert-{{ category }}">
-                    
+
                     <span>{{ message }}</span>
-                    
+
                     <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';">
                         &times;
                     </button>

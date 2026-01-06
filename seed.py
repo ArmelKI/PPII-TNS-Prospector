@@ -70,6 +70,7 @@ with app.app_context():
         u.nom_utilisateur = noms[i]
         u.mail_utilisateur = f"{prenoms[i].lower()}.{noms[i].lower()}@tns.fr"
         u.mdp_utilisateur = "$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq"
+        u.permission = 0
         u.id_role = r_inter.id_role
 
         db.session.add(u)
@@ -109,8 +110,8 @@ with app.app_context():
         ("TotalEnergies", "Energie"), ("Sanofi", "Santé"), ("LVMH", "Luxe"),
         ("Airbus", "Aéronautique"), ("BNP Paribas", "Banque"), ("Orange", "Télécom"),
         ("Google France", "Tech"), ("Carrefour", "Retail"), ("SNCF", "Transport"),
-        ("Decathlon", "Sport"),("Amazon", "Logistique"), ("Citroën", "Automobile"), 
-        ("Match", "Retail"), ("Mairie de Nancy", "Institution"), ("Apple", "Electronique"), 
+        ("Decathlon", "Sport"),("Amazon", "Logistique"), ("Citroën", "Automobile"),
+        ("Match", "Retail"), ("Mairie de Nancy", "Institution"), ("Apple", "Electronique"),
         ("Réseau STAN", "Transport"), ("Dassault", "Aéronautique"), ("Arcelor Mittal", "Sidérurgie"),
         ("Pro à Pro", "Alimentaire"), ("Zara", "Mode"), ("Centre commercial Saint-Sébastien", "Vente")
     ]
@@ -160,15 +161,15 @@ with app.app_context():
             StatutProjet.EN_COURS, StatutProjet.EN_COURS,
             StatutProjet.TERMINE, StatutProjet.BLOQUE
         ])
-        # Randomly choose the start and end of a project 
+        # Randomly choose the start and end of a project
         d_debut = date.today() - timedelta(days=random.randint(10,120))
-        
-        if statut_choisi == StatutProjet.TERMINE: 
+
+        if statut_choisi == StatutProjet.TERMINE:
             jours_ecoules = (date.today() - d_debut).days
             d_fin = d_debut + timedelta(days=random.randint(1,jours_ecoules))
         else :
             d_fin =date.today() + timedelta(weeks=random.randint(4,24))
-        
+
         p = Projet(
             nom_projet=f"Mission {secteur} - {nom_cli}", # type: ignore
             statut_projet=statut_choisi, # type: ignore
