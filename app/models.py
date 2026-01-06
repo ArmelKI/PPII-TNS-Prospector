@@ -203,8 +203,8 @@ class Client(db.Model):
     latitude = db.Column(db.Numeric(10, 7))
     longitude = db.Column(db.Numeric(10, 7))
 
-    conventions = db.relationship("Convention", back_populates="client")
-    interactions = db.relationship("InteractionClient", back_populates="client")
+    conventions = db.relationship("Convention", back_populates="client", cascade="all, delete-orphan")
+    interactions = db.relationship("InteractionClient", back_populates="client", cascade="all, delete-orphan")
 
     def __init__(self, id_client, raison_sociale, mail_client, telephone_client, secteur, date_dernier_contact, latitude, longitude):
         self.id_client = id_client
@@ -274,14 +274,13 @@ class Projet(db.Model):
     
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
     
-    # File paths (redundancy from Convention for convenience or specific project files)
+    # file paths
     convention_file = db.Column("convention", db.String(255)) 
     bon_commande = db.Column(db.String(255))
     recap_mission = db.Column(db.String(255))
 
-    # Relationships
     convention = db.relationship("Convention", back_populates="projets")
-    jalons = db.relationship("Jalon", back_populates="projet")
+    jalons = db.relationship("Jalon", back_populates="projet", cascade="all, delete-orphan")
     intervenants = db.relationship("Intervenant", secondary=intervenant_projet, back_populates="projets")
     competences_requises = db.relationship("Competence", secondary=projet_competence, back_populates="projets_requerant")
     
@@ -296,7 +295,7 @@ class Jalon(db.Model):
     __tablename__ = "jalons"
 
     id_jalon = db.Column(db.Integer, primary_key=True)
-    id_projet = db.Column(db.Integer, db.ForeignKey("projets.id_projet", ondelete="SET NULL", onupdate="CASCADE"), nullable=False)
+    id_projet = db.Column(db.Integer, db.ForeignKey("projets.id_projet", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
     nom_jalon = db.Column(db.String(200), nullable=False)
     statut_jalon = db.Column(SAEnum(StatutJalon, name="statut_jalon_enum"), nullable=False, default=StatutJalon.A_VENIR)
     date_debut_jalon = db.Column(db.Date)

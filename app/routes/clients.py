@@ -122,5 +122,5 @@ def supprimer_client(id):
     except Exception as e:
         db.session.rollback()
         flash(f"Error deleting client", "danger")
-        print(f"Error deleting client: {str(e)}")
+        raise e
         return redirect(url_for("clients.details_client", id=id))
