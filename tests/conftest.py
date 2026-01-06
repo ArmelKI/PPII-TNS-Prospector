@@ -6,7 +6,7 @@ from app.models import Utilisateur, Role
 
 load_dotenv()
 
-@pytest.fixture()   
+@pytest.fixture()
 def app():
     app = create_app(testing=True)
     app.config.update({
@@ -36,15 +36,16 @@ def logged_in_client(client, app):
             nom_utilisateur="Test",
             prenom_utilisateur="User",
             mail_utilisateur="test@test.com",
+            permission=7,
             id_role=1
         )
         user.set_password("password")
         db.session.add(user)
         db.session.commit()
-            
+
         # Simulation de session Flask-Login
         with client.session_transaction() as sess:
             sess['_user_id'] = str(user.id_utilisateur)
             sess['_fresh'] = True
-            
+
         yield client

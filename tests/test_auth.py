@@ -17,6 +17,7 @@ def test_login_success(client, app):
             prenom_utilisateur="Jean",
             nom_utilisateur="Test",
             mail_utilisateur="jean@test.com",
+            permission=7,
             id_role=1
         )
         u.set_password("password123")
@@ -30,7 +31,7 @@ def test_login_success(client, app):
 
     assert response.status_code == 200
     # On vérifie une partie du nom pour être plus flexible sur la casse/format
-    assert b"Jean" in response.data 
+    assert b"Jean" in response.data
 
 def test_login_invalid_credentials(client, app):
     response = client.post('/auth/login', data={
@@ -60,9 +61,10 @@ def test_next_page_sanitization(client, app):
     with app.app_context():
         # Correction : ajout du nom et prénom obligatoires
         u = Utilisateur(
-            prenom_utilisateur="Safe", 
-            nom_utilisateur="User", 
-            mail_utilisateur="safe@test.com", 
+            prenom_utilisateur="Safe",
+            nom_utilisateur="User",
+            mail_utilisateur="safe@test.com",
+            permission=7,
             id_role=1
         )
         u.set_password("password")
@@ -73,7 +75,7 @@ def test_next_page_sanitization(client, app):
         "usermail": "safe@test.com",
         "password": "password"
     })
-    
+
     # La redirection vers '/' est un code 302
     assert response.status_code == 302
     assert response.location == "/" or response.location == "http://localhost/"

@@ -84,20 +84,21 @@ def create_app(testing:bool):
         }
         app.config['special_accounts_mails'] = [account['mail_utilisateur'] for account in special_accounts.values()]
 
-        with app.app_context():
-            for account in special_accounts.values():
-                user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == account['mail_utilisateur']).scalar()
-                if user is None:
-                    new_user = Utilisateur(
-                        prenom_utilisateur=account['prenom_utilisateur'],
-                        nom_utilisateur=account['nom_utilisateur'],
-                        mail_utilisateur=account['mail_utilisateur'],
-                        mdp_utilisateur=account['mdp_utilisateur'],
-                        permission=account['permission'],
-                        id_role=1
-                    )
-                    db.session.add(new_user)
-                    db.session.commit()
+        if not testing:
+            with app.app_context():
+                for account in special_accounts.values():
+                    user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == account['mail_utilisateur']).scalar()
+                    if user is None:
+                        new_user = Utilisateur(
+                            prenom_utilisateur=account['prenom_utilisateur'],
+                            nom_utilisateur=account['nom_utilisateur'],
+                            mail_utilisateur=account['mail_utilisateur'],
+                            mdp_utilisateur=account['mdp_utilisateur'],
+                            permission=account['permission'],
+                            id_role=1
+                        )
+                        db.session.add(new_user)
+                        db.session.commit()
     except ProgrammingError:
         print('\n\n\n\n\n⚠️⚠️⚠️⚠️⚠️The DB model and the DB looks like they don\'t match !\n\n\n\n\n', flush=True)
         pass
