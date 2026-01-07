@@ -32,7 +32,12 @@
       {% endfor %}
     </td>
     <td>
-      <a href="{{ url_for('auth.update_user', id=u.id_utilisateur) }}" class="btn btn-secondary">Gérer</a>
+      <div class="flex-gap-10">
+        <a href="{{ url_for('auth.update_user', id=u.id_utilisateur) }}" class="btn-secondary btn-sm">Gérer</a>
+        <form action="{{ url_for('auth.delete', id=u.id_utilisateur) }}" method="POST" onsubmit="return confirm('Supprimer ?');" class="inline-form">
+            <button type="submit" class="btn-danger btn-sm">Suppr.</button>
+        </form>
+      </div>
     </td>
   </tr>
   {% else %}

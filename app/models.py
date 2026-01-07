@@ -16,7 +16,7 @@ class StatutProjet(enum.Enum):
     BLOQUE = "Bloqué"
     STAND_BY = "Stand-By"
     TERMINE = "Terminé"
-    
+
 class StatutJalon(enum.Enum):
     A_VENIR = "À venir"
     ACTUEL = "Actuel"
@@ -98,7 +98,7 @@ class Utilisateur(db.Model, UserMixin):
 
     role = db.relationship("Role", back_populates="utilisateurs")
     # One-to-One relationship with Intervenant profile
-    intervenant = db.relationship("Intervenant", uselist=False, back_populates="utilisateur")
+    intervenant = db.relationship("Intervenant", uselist=False, back_populates="utilisateur", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"User {self.nom_utilisateur} {self.prenom_utilisateur}"

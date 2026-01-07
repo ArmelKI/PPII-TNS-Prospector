@@ -56,6 +56,9 @@
 
 <div class="multiple-forms">
     <a href="{{ url_for('auth.logout') }}" class="btn">Se déconnecter</a>
+    <form action="{{ url_for('auth.delete', id=current_user.id_utilisateur) }}" method="POST" onsubmit="return confirm('Supprimer ?');" class="inline-form">
+        <button type="submit" class="btn-danger" style="margin-left: 15px;">Supprimer</button>
+    </form>
 </div>
 
 {% endblock %}

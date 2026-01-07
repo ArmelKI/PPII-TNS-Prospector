@@ -123,3 +123,12 @@ def account():
         return render_template('account.html', pw_form=pw_form, email_form=email_form)
 
     return redirect(url_for('auth.account', form=pw_form, email_form=email_form))
+
+@auth_bp.post('/delete/<int:id>')
+@manage_users_required
+def delete(id: int):
+    user = Utilisateur.query.get_or_404(id)
+    flash(f'Utilisateur⋅trice {user.prenom_utilisateur} {user.nom_utilisateur} supprimé⋅e', "success")
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for("auth.list_users"))
