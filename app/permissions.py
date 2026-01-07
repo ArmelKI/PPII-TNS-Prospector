@@ -30,6 +30,13 @@ def decode_perms(perms: int) -> list[int]:
 def check_user_perm(user, perm: int) -> bool:
     return check_perm(user.permission, perm)
 
+def list_perm(user) -> list[str]:
+    perms = []
+    for perm in range(len(permission_table)):
+        if check_user_perm(user, perm):
+            perms.append(permission_table[perm])
+    return perms
+
 def perm_required(perm: int):
     def decorator(func):
         @wraps(func)

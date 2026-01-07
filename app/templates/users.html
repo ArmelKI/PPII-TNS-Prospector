@@ -12,6 +12,7 @@
         <th>Nom</th>
         <th>Prénom</th>
         <th>Mail</th>
+        <th>Rôle</th>
         <th>Autorisations</th>
         <th>Action</th>
     </tr>
@@ -22,9 +23,16 @@
     <td class="font-bold">{{ u.nom_utilisateur }}</td>
     <td class="font-bold">{{ u.prenom_utilisateur }}</td>
     <td>{{ u.mail_utilisateur }}</td>
-    <td><span class="badge">{{ u.permission }}</span></td>
+    <td>{{ u.role.nom_role }}</td>
     <td>
-      <a href="{{ url_for('auth.register_page') }}" class="btn btn-secondary">Gérer</a>
+      {% for perm in list_perm(u) %}
+      <span class="badge">{{ perm }}</span>
+      {% else %}
+      <span class="badge">Aucune</span>
+      {% endfor %}
+    </td>
+    <td>
+      <a href="{{ url_for('auth.update_user', id=u.id_utilisateur) }}" class="btn btn-secondary">Gérer</a>
     </td>
   </tr>
   {% else %}

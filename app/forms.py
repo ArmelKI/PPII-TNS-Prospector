@@ -58,3 +58,29 @@ class RegisterForm(FlaskForm):
         user = Utilisateur.query.where(Utilisateur.mail_utilisateur == email.data).scalar()
         if user is not None:
             raise ValidationError('Email déjà utilisé.')
+
+class UpdateUserForm(FlaskForm):
+    @staticmethod
+    def get_roles() -> list[tuple[str, str]]:
+        roles: list[Role] = Role.query.all()
+        return [(role.id_role, role.nom_role) for role in roles]
+
+    role = SelectField()
+    perms_fields = FieldList(
+        FormField(CheckboxItem),
+        label='Permissions'
+    )
+    submit = SubmitField('Modifier')
+
+    def __init__(self, *args, **kwargs):
+        perms_data = list(enumerate(permission_table))
+
+        super().__init__(*args, **kwargs)
+        self.role.choices = self.get_roles()  # Needed to make db call when app_context is available
+        if not self.is_submitted():
+            for perm in perms_data:
+                self.perms_fields.append_entry({
+                'id': perm[0],
+                'label': perm[1],
+                'checked': False
+                })

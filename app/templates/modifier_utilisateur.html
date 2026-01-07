@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Utilisateur{% endblock %}
+
+{% block content %}
+
+<h1 class="text-center mb-20">Modifier un utilisateur</h1>
+<div class="card" style="max-width: 600px; margin: 40px auto;">
+    <form action="" method="post" novalidate>
+        <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
+        {{ form.hidden_tag() }}
+            {{ form.role.label(class="form-label-block") }}
+            {{ form.role(class="form-control", placeholder="Ex: Google France") }}
+            {% for error in form.role.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+
+            <div class="form-group mt-15">
+                {{ form.perms_fields.label(class="form-label-block") }}
+                <div class="scrollable-list-box">
+                    {% for perm in form.perms_fields %}
+                        <div class="checkbox-item">
+                            {{ perm.hidden_tag() }}
+                            {{ perm.checked }}
+                            <label for="{{ perm.checked.id }}">{{ perm.data['label'] }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% for error in form.perms_fields.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+        <p>{{ form.submit(class="btn") }}</p>
+    </form>
+</div>
+
+{% endblock %}
