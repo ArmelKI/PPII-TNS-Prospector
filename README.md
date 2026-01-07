@@ -42,9 +42,11 @@ Lancez successivement les commandes suivantes
 ```
 cp ./app/.env.example ./app/.env
 
-python3 -m venv venv
+python3 -m venv .venv
 
-source ./venv/bin/activate
+source ./.venv/bin/activate
+
+pip install pip install --no-cache-dir -r requirements.txt
 
 createdb prospector
 
