@@ -99,9 +99,9 @@ def ajouter_projet():
     selected_client = request.args.get('client', type=int)
 
     return render_template("ajouter_projet.html",
-                           clients=clients,
-                           competences=all_competences,
-                           selected_client=selected_client)
+                        clients=clients,
+                        competences=all_competences,
+                        selected_client=selected_client)
 
 @projets_bp.route("/details/<int:id>")
 @login_required
