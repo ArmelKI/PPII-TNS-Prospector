@@ -12,8 +12,16 @@ def liste_clients():
     """
     Displays the list of all clients ordered alphabetically.
     """
-    tous_les_clients = Client.query.order_by(Client.raison_sociale).all()
-    return render_template("clients.html", clients=tous_les_clients)
+    search_query = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    q = Client.query
+    if search_query:
+        q = q.filter(
+            Client.raison_sociale.ilike(f"%{search_query}%") |
+            Client.secteur.ilike(f"%{search_query}%")
+        )
+    clients_pagination = q.order_by(Client.raison_sociale).paginate(page=page, per_page=10)
+    return render_template("clients.html", clients=clients_pagination, search_query=search_query)
 
 @clients_bp.route("/add", methods=["GET", "POST"])
 @manage_clients_required
