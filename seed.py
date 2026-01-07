@@ -6,6 +6,7 @@ from app.models import (
     Jalon, Role, StatutProjet, StatutJalon, Tache, StatutTache,
     EtatRelation, InteractionClient, MaitriseCompetence
 )
+from app.permissions import all_perms
 
 app = create_app(testing=False)
 
@@ -59,7 +60,9 @@ with app.app_context():
     intervenants_objs = []
     # utilisateur sans intervenant lié
     test_util = Utilisateur(prenom_utilisateur="Jean", nom_utilisateur="Test", mail_utilisateur="jean.test@example.com", permission=0, id_role=2, mdp_utilisateur = "$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq")
+    admin = Utilisateur(prenom_utilisateur="Admin", nom_utilisateur="Admin", mail_utilisateur="admin", permission=all_perms, id_role=1, mdp_utilisateur = "$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq")
     db.session.add(test_util)
+    db.session.add(admin)
     db.session.commit()
 
 
