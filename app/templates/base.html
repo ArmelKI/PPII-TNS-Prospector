@@ -26,7 +26,7 @@
       <li><a href="{{ url_for('projets.liste_projets') }}">Projets</a></li>
       <li><a href="{{ url_for('interactions.liste_interactions') }}">Interactions</a></li>
       {% if current_user.is_admin() %}
-      <li><a href="{{ url_for('intervenants.exporter_intervenants') }}">Export CSV</a></li>
+      <li><a href="{{ url_for('import_export.main') }}">Export CSV</a></li>
       {% endif %}
       {% if current_user.can_manage_clients() %}
       <li><a href="{{ url_for('map.map_page') }}">Carte des prospects</a></li>
