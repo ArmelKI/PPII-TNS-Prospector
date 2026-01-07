@@ -47,6 +47,9 @@ def get_client():
 @api_bp.post("/clients")
 @manage_clients_required
 def add_client():
+    """
+    Ajoute un client à la DB et retounrne un JSON contenant les informations sur ce client
+    """
     client_data = request.get_json()
     client: Client = Client(
         id_client=client_data["id_client"],
@@ -65,6 +68,9 @@ def add_client():
 @api_bp.put("/clients")
 @manage_clients_required
 def update_client():
+    """
+    Met à jour les informations d'un client dans la DB et retounrne les données mises à jour
+    """
     client_data = request.get_json()
     id_client = request.args.get('id', type=int)
     confirm_change_id = request.args.get('confirm_change_id')
@@ -94,6 +100,9 @@ def update_client():
 @api_bp.delete("/clients")
 @manage_clients_required
 def delete_client():
+    """
+    Supprime un client de la DB
+    """
     id_client = request.args.get('id')
     client = Client.query.get_or_404(id_client)
     db.session.delete(client)
@@ -102,6 +111,9 @@ def delete_client():
 
 @api_bp.route("/users/get_all")
 def get_all_users():
+    """
+    Retourne un JSON contenant les informations de tous les utilisateurs
+    """
     users: list[Utilisateur] = Utilisateur.query.all()
     output = [{
         'id_utilisateur': user.id_utilisateur,
@@ -116,6 +128,9 @@ def get_all_users():
 @api_bp.get("/users")
 @manage_users_required
 def get_user():
+    """
+    Retourne les informations d'un utilisateur
+    """
     id_utilisateur = request.args.get('id')
     user: Utilisateur = Utilisateur.query.get_or_404(id_utilisateur)
     output = {
@@ -131,6 +146,9 @@ def get_user():
 @api_bp.post("/users")
 @manage_users_required
 def add_user():
+    """
+    Ajoute un utilisateur à la DB
+    """
     user_data = request.get_json()
     user = Utilisateur(
         id_utilisateur = user_data["id_utilisateur"],
@@ -147,6 +165,9 @@ def add_user():
 @api_bp.put("/users")
 @manage_users_required
 def update_user():
+    """
+    Met à jour les informations d'un utilisateur
+    """
     user_data = request.get_json()
     id_utilisateur = request.args.get('id')
     confirm_change_id = request.args.get('confirm_change_id')
@@ -173,6 +194,9 @@ def update_user():
 @api_bp.delete("/users")
 @manage_users_required
 def delete_user(id_client):
+    """
+    Supprime un utilisateur
+    """
     id_utilisateur = request.args.get('id')
     user: Utilisateur = Utilisateur.query.get_or_404(id_utilisateur)
     db.session.delete(user)
