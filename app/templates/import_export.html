@@ -3,26 +3,27 @@
 {% block title %}Import/Export CSV - TNS{% endblock %}
 
 {% block content %}
-<div class="login-wrapper fade-in">
+<div class="login-wrapper fade-in" style="display:flex; flex-direction:column; align-items:center;">
 
     
-    
-    
-    <a href="{{ url_for('import_export.export_db') }}">
-        <button class = "btn" type="button">EXPORT DB</button>
-    </a>
-
-    <br>
-    <div class="card">
-        <form action="{{ url_for('import_export.import_db') }}" method="POST" enctype="multipart/form-data">
-        
-        <label for="db_file">Choisir le fichier ZIP :</label>
-        <input type="file" name="file" id="db_file" accept=".zip" required>
-        
-        <button class ="btn" type="submit" onclick="return confirm('Attention ! Cela va EFFACER et REMPLACER toutes les données actuelles. Continuer ?')">
-            IMPORTER / RESTAURER
-        </button>
+    <div class="card" style="display:flex; flex-direction: column; min-width:400px; width:45%; align-items:center; margin-bottom: 20px;">
+        <a href="{{ url_for('import_export.export_db') }}" >
+            <button class = "btn" type="button">EXPORT DB</button>
+        </a>
+    </div>   
+    <div class="card" style="display:flex; flex-direction: column; min-width:400px; width:45%; align-items:center;">   
+        <div>
+            <form action="{{ url_for('import_export.import_db') }}" method="POST" enctype="multipart/form-data">
+            
+            <label for="db_file">Choisir le fichier ZIP :</label>
+            <input type="file" name="file" id="db_file" accept=".zip" required>
+        </div>    
+            <button class ="btn" type="submit" style="margin-top:10px;" onclick="return confirm('Attention ! Cela va EFFACER et REMPLACER toutes les données actuelles. Continuer ?')">
+                IMPORTER / RESTAURER
+            </button>
     </div>
-</form>
+    
+    
+    </form>
 </div>
 {% endblock %}
