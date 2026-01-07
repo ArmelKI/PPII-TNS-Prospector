@@ -15,9 +15,8 @@ Vous trouverez un guide utilisateur à cette [adresse](./docs/Guide_utilisateur.
 - Le port 5432 de votre machine est libre.
 
 ### 2. Configuration et Lancement
-Ouvrez un terminal à la racine du projet :
-
-Copiez successivement les commandes suivantes :
+Ouvrez un terminal à la racine du projet.
+Copiez-y successivement les commandes suivantes :
 
 ```bash
 cp ./app/.env.example ./app/.env
