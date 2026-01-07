@@ -23,7 +23,10 @@ cp ./app/.env.example ./app/.env
 
 docker compose --env-file ./app/.env up --build
 
-python3 seed.py # uniquement au premier lancement !
+#uniquement au premier lancement !
+python3 seed.py # initialise avec des données de test
+# ou
+python3 init_db.py # initialise sans données de test 
 ```
 
 Ouvrez maintenant http://127.0.0.1:8000, enjoy!
@@ -51,7 +54,10 @@ pip install --no-cache-dir -r requirements.txt
 
 createdb prospector
 
-python3 seed.py # uniquement au premier lancement !
+# uniquement au premier lancer !
+python3 seed.py # initialise avec des données de test
+# ou
+python3 init_db.py #initialise sans données de test
 
 python3 app.py
 ```
