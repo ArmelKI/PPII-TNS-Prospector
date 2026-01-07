@@ -2,9 +2,21 @@
 {% block title %}Clients{% endblock %}
 
 {% block content %}
-<h1 class="fade-in">Clients</h1>
 
-<a href="{{ url_for('clients.ajouter_client') }}" class="btn mb-20">+ Ajouter un client</a>
+<div class="flex-between-center mb-20">
+  <h1>Clients</h1>
+  <a href="{{ url_for('clients.ajouter_client') }}" class="btn">+ Ajouter un client</a>
+</div>
+
+<div class="card mb-20">
+  <form method="GET" class="filter-form">
+    <div class="flex-gap-10">
+      <input type="text" name="search" placeholder="Raison sociale ou secteur..." 
+          value="{{ search_query }}" class="form-control" style="margin:0;">
+      <button type="submit" class="btn">Filtrer</button>
+    </div>
+  </form>
+</div>
 
 <table class="data-table fade-in">
   <thead>
@@ -39,5 +51,15 @@
   {% endfor %}
   </tbody>
 </table>
+
+<div class="pagination-container">
+  {% if clients.has_prev %}
+    <a href="{{ url_for('clients.liste_clients', page=clients.prev_num, search=search_query) }}" class="btn-secondary">&laquo; Précédent</a>
+  {% endif %}
+  <span class="text-muted">Page {{ clients.page }} / {{ clients.pages }}</span>
+  {% if clients.has_next %}
+    <a href="{{ url_for('clients.liste_clients', page=clients.next_num, search=search_query) }}" class="btn-secondary">Suivant &raquo;</a>
+  {% endif %}
+</div>
 
 {% endblock %}
