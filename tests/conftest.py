@@ -49,3 +49,24 @@ def logged_in_client(client, app):
             sess['_fresh'] = True
 
         yield client
+
+@pytest.fixture
+def admin_client(client, app):
+    with app.app_context():
+        admin_role = Role.query.get(1)
+        user = Utilisateur(
+            nom_utilisateur="Test",
+            prenom_utilisateur="User",
+            mail_utilisateur="test@test.com",
+            permission=7,
+            id_role=1
+        )
+        user.set_password("password")
+        db.session.add(user)
+        db.session.commit()
+    
+    client.post('/auth/login', data={
+        "usermail": "admin@test.com",
+        "password": "password"
+    })
+    return client

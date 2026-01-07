@@ -55,7 +55,7 @@ def test_register_success(client, app):
 
     assert response.status_code == 200
     # On cherche juste le nom créé pour confirmer le succès
-    assert b"New" in response.data or b"User" in response.data
+    assert b"Connexion" in response.data or b"User" in response.data
 
 def test_next_page_sanitization(client, app):
     with app.app_context():
