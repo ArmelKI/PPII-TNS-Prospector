@@ -24,7 +24,7 @@ cp ./app/.env.example ./app/.env
 
 docker compose --env-file ./app/.env up --build
 
-python3 seed.py
+python3 seed.py # uniquement au premier lancement !
 ```
 
 Ouvrez maintenant http://127.0.0.1:8000, enjoy!
@@ -41,7 +41,7 @@ Lorsque Docker ne fonctionne pas, voici comment lancer l'application avec Python
 
 Lancez successivement les commandes suivantes
 
-```
+```bash
 cp ./app/.env.example ./app/.env
 
 python3 -m venv .venv
@@ -52,7 +52,7 @@ pip install pip install --no-cache-dir -r requirements.txt
 
 createdb prospector
 
-python3 seed.py
+python3 seed.py # uniquement au premier lancement !
 
 python3 app.py
 ```
