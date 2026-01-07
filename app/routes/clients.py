@@ -67,9 +67,6 @@ def details_client(id):
     interactions = InteractionClient.query.order_by(InteractionClient.date_interaction.desc()).where(InteractionClient.id_client == client.id_client).all()
     # We fetch relationship states to populate the dropdown in the interaction form
     etats = EtatRelation.query.all()
-    # Récupérer les interactions du client (ordonnées par date décroissante)
-    interactions = client.interactions if hasattr(client, 'interactions') else []
-    interactions = sorted(interactions, key=lambda i: i.date_interaction, reverse=True)
 
     return render_template("details_clients.html", client=client, etats=etats, interactions=interactions)
 
