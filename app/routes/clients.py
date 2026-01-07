@@ -66,8 +66,11 @@ def details_client(id):
     client = Client.query.get_or_404(id)
     # We fetch relationship states to populate the dropdown in the interaction form
     etats = EtatRelation.query.all()
+    # Récupérer les interactions du client (ordonnées par date décroissante)
+    interactions = client.interactions if hasattr(client, 'interactions') else []
+    interactions = sorted(interactions, key=lambda i: i.date_interaction, reverse=True)
 
-    return render_template("details_clients.html", client=client, etats=etats)
+    return render_template("details_clients.html", client=client, etats=etats, interactions=interactions)
 
 @clients_bp.route("/edit/<int:id>", methods=["GET", "POST"])
 @manage_clients_required
