@@ -47,6 +47,9 @@ def get_client():
 @api_bp.post("/clients")
 @manage_clients_required
 def add_client():
+    """
+    Ajoute un client à la DB et retounrne un JSON contenant les informations sur ce client
+    """
     client_data = request.get_json()
     client: Client = Client(
         id_client=client_data["id_client"],
