@@ -3,32 +3,20 @@ stages:
 
 test_job:
   stage: test
-  image: docker:24.0.5
+  image: python:3.10  
+
   variables:
-    # On indique à Docker d'utiliser le socket du host au lieu du service dind
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  services:
-    - name: docker:24.0.5-dind
-      command: ["--privileged"] # On tente de forcer, mais si ça échoue on passera à une autre méthode
-  
+
+    DB_HOST: "db"
+    DB_USER: "testuser"
+    DB_PASSWORD: "testpass"
+    DB_NAME: "testdb"
+
+
   before_script:
-    # On installe docker-compose
-    - apk add --no-cache docker-compose
-    # SOLUTION POUR LE .env : on crée un fichier vide ou avec des valeurs de test
-    # pour que docker-compose ne plante pas
-    - touch ./app/.env
-    - echo "DB_USER=testuser" >> ./app/.env
-    - echo "DB_PASSWORD=testpass" >> ./app/.env
-    - echo "DB_NAME=testdb" >> ./app/.env
+    - python --version
+    - pip install -r requirements.txt
+    - pip install pytest 
 
   script:
-    # On build et on lance
-    - docker-compose up -d
-    # On attend que la DB soit prête
-    - sleep 10
-    # On lance les tests
-    - docker-compose exec -T web pytest
-  
-  after_script:
-    - docker-compose down
+    - pytest
