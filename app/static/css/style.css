@@ -60,6 +60,10 @@ a:hover {
   color: var(--tns-white);
 }
 
+.brand {
+  margin-right: 50px;
+}
+
 .nav-list {
   list-style: none;
   display: flex;

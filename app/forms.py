@@ -35,7 +35,7 @@ class RegisterForm(FlaskForm):
         label='Permissions'
     )
     password = PasswordField('Mot de passe', validators=[DataRequired()])
-    password2 = PasswordField('Mot de passe', validators=[
+    password2 = PasswordField('Mot de passe (confirmation)', validators=[
         DataRequired(),
         EqualTo('password')
     ])
