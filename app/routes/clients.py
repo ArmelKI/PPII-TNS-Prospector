@@ -63,11 +63,12 @@ def details_client(id):
     """
     Shows the detailed profile of a client.
     """
-    client = Client.query.get_or_404(id)
+    client: Client = Client.query.get_or_404(id)
+    interactions = InteractionClient.query.order_by(InteractionClient.date_interaction.desc()).where(InteractionClient.id_client == client.id_client).all()
     # We fetch relationship states to populate the dropdown in the interaction form
     etats = EtatRelation.query.all()
 
-    return render_template("details_clients.html", client=client, etats=etats)
+    return render_template("details_clients.html", client=client, etats=etats, interactions=interactions)
 
 @clients_bp.route("/edit/<int:id>", methods=["GET", "POST"])
 @manage_clients_required
