@@ -12,7 +12,7 @@
         <form method="GET" class="filter-form">
             <div class="flex-gap-10">
                 <input type="text" name="search" placeholder="Nom ou Compétence (ex: Docker)..." 
-                       value="{{ search_query }}" class="form-control" style="margin:0;">
+                    value="{{ search_query }}" class="form-control" style="margin:0;">
                 
                 <select name="disponibilite" class="form-control" style="width:auto; margin:0;">
                     <option value="">-- Tout --</option>
@@ -21,7 +21,6 @@
                 </select>
 
                 <button type="submit" class="btn">Filtrer</button>
-                <a href="{{ url_for('intervenants.liste_intervenants') }}" class="btn-secondary">Reset</a>
             </div>
         </form>
     </div>
