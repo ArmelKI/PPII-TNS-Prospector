@@ -75,3 +75,9 @@ def register_page():
 
     flash(f'Utilisateur⋅trice {form.first_name.data} {form.name.data} a été créé⋅e.', "success")
     return redirect(url_for('auth.register_page'))
+
+@auth_bp.route('/users')
+@manage_users_required
+def list_users():
+    all_users = Utilisateur.query.order_by(Utilisateur.nom_utilisateur, Utilisateur.prenom_utilisateur).all()
+    return render_template('users.html', users=all_users)

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Utilisateurs{% endblock %}
+
+{% block content %}
+<h1 class="fade-in">Utilisateurs</h1>
+
+<a href="{{ url_for('auth.register_page') }}" class="btn mb-20">+ Ajouter un utilisateur</a>
+
+<table class="data-table fade-in">
+  <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Mail</th>
+        <th>Autorisations</th>
+        <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for u in users %}
+  <tr>
+    <td class="font-bold">{{ u.nom_utilisateur }}</td>
+    <td class="font-bold">{{ u.prenom_utilisateur }}</td>
+    <td>{{ u.mail_utilisateur }}</td>
+    <td><span class="badge">{{ u.permission }}</span></td>
+    <td>
+      <a href="{{ url_for('auth.register_page') }}" class="btn btn-secondary">Gérer</a>
+    </td>
+  </tr>
+  {% else %}
+    <tr>
+        <td colspan="5" class="text-center" style="color: #777; padding: 20px;">
+            Aucun client trouvé.
+        </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
