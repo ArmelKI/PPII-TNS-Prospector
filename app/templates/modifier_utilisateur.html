@@ -10,7 +10,7 @@
         <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
         {{ form.hidden_tag() }}
             {{ form.role.label(class="form-label-block") }}
-            {{ form.role(class="form-control", placeholder="Ex: Google France") }}
+            {{ form.role(class="form-control") }}
             {% for error in form.role.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

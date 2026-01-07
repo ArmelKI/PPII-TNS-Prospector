@@ -10,25 +10,25 @@
         <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
         {{ form.hidden_tag() }}
             {{ form.name.label(class="form-label-block") }}
-            {{ form.name(class="form-control", placeholder="Ex: Google France") }}
+            {{ form.name(class="form-control", placeholder="Nom") }}
             {% for error in form.name.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
 
             {{ form.first_name.label(class="form-label-block") }}
-            {{ form.first_name(class="form-control", placeholder="Ex: Google France") }}
+            {{ form.first_name(class="form-control", placeholder="Prénom") }}
             {% for error in form.first_name.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
 
             {{ form.usermail.label(class="form-label-block") }}
-            {{ form.usermail(class="form-control", placeholder="Ex: Google France") }}
+            {{ form.usermail(class="form-control", placeholder="tns@tns.fr") }}
             {% for error in form.usermail.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
 
             {{ form.role.label(class="form-label-block") }}
-            {{ form.role(class="form-control", placeholder="Ex: Google France") }}
+            {{ form.role(class="form-control") }}
             {% for error in form.role.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
@@ -50,13 +50,13 @@
             </div>
 
             {{ form.password.label(class="form-label-block") }}
-            {{ form.password(class="form-control", placeholder="Ex: Google France") }}
+            {{ form.password(class="form-control", placeholder="••••••••") }}
             {% for error in form.password.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
 
             {{ form.password2.label(class="form-label-block") }}
-            {{ form.password2(class="form-control", placeholder="Ex: Google France") }}
+            {{ form.password2(class="form-control", placeholder="••••••••") }}
             {% for error in form.password2.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

@@ -10,19 +10,19 @@
             <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
             {{ pw_form.hidden_tag() }}
                 {{ pw_form.old_password.label(class="form-label-block") }}
-                {{ pw_form.old_password(class="form-control", placeholder="Ex: Google France") }}
+                {{ pw_form.old_password(class="form-control", placeholder="Mot de passe") }}
                 {% for error in pw_form.old_password.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
 
                 {{ pw_form.password.label(class="form-label-block") }}
-                {{ pw_form.password(class="form-control", placeholder="Ex: Google France") }}
+                {{ pw_form.password(class="form-control", placeholder="Nouveau mot de passe") }}
                 {% for error in pw_form.password.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
 
                 {{ pw_form.password2.label(class="form-label-block") }}
-                {{ pw_form.password2(class="form-control", placeholder="Ex: Google France") }}
+                {{ pw_form.password2(class="form-control", placeholder="Confirmer nouveau mot de passe") }}
                 {% for error in pw_form.password2.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
@@ -37,13 +37,13 @@
             <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
             {{ email_form.hidden_tag() }}
                 {{ email_form.usermail.label(class="form-label-block") }}
-                {{ email_form.usermail(class="form-control", placeholder="Ex: Google France") }}
+                {{ email_form.usermail(class="form-control", placeholder="Nouvel email") }}
                 {% for error in email_form.usermail.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
 
                 {{ email_form.password.label(class="form-label-block") }}
-                {{ email_form.password(class="form-control", placeholder="Ex: Google France") }}
+                {{ email_form.password(class="form-control", placeholder="Mot de passe") }}
                 {% for error in email_form.password.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
