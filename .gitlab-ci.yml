@@ -6,7 +6,7 @@ test_job:
   image: python:3.10  
 
   variables:
-
+    PYTHONPATH: "."
     DB_HOST: "db"
     DB_USER: "testuser"
     DB_PASSWORD: "testpass"
@@ -14,9 +14,7 @@ test_job:
 
 
   before_script:
-    - python --version
     - pip install -r requirements.txt
-    - pip install pytest 
 
   script:
-    - pytest
+    - python -m pytest
