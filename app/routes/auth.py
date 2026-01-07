@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import current_user, login_user, logout_user
 from sqlalchemy.orm import joinedload
 from urllib.parse import urlsplit
-from app.forms import LoginForm, RegisterForm, UpdateUserForm
+from app.forms import LoginForm, RegisterForm, UpdateUserForm, ChangePWForm, ChangeEmailForm
 from app.models import db, Utilisateur
 from app.permissions import manage_users_required, encode_perms, list_perm
 
@@ -103,3 +103,23 @@ def update_user():
     db.session.commit()
 
     return redirect(url_for('auth.list_users'))
+
+@auth_bp.route('/account', methods=['GET', 'POST'])
+def account():
+    pw_form = ChangePWForm(current_user)
+    email_form = ChangeEmailForm(current_user)
+
+    if pw_form.validate_on_submit():
+        current_user.set_password(pw_form.password.data)
+        db.session.flush()
+        db.session.commit()
+        flash('Mot de passe mis à jour.', 'success')
+    elif email_form.validate_on_submit():
+        current_user.usermail = email_form.usermail.data
+        db.session.flush()
+        db.session.commit()
+        flash('Email de passe mis à jour.', 'success')
+    else:
+        return render_template('account.html', pw_form=pw_form, email_form=email_form)
+
+    return redirect(url_for('auth.account', form=pw_form, email_form=email_form))

@@ -84,3 +84,35 @@ class UpdateUserForm(FlaskForm):
                 'label': perm[1],
                 'checked': False
                 })
+
+class ChangePWForm(FlaskForm):
+
+    old_password = PasswordField('Mot de passe actuel', validators=[DataRequired()])
+    password = PasswordField('Nouveau mot de passe', validators=[DataRequired()])
+    password2 = PasswordField('Nouveau mot de passe (confirmation)', validators=[
+        DataRequired(),
+        EqualTo('password')
+    ])
+    submit = SubmitField('Modifier mot de passe')
+
+    def validate_old_password(self, password):
+        if not self.user.check_password(password.data):
+            raise ValidationError('Mot de passe incorrecte.')
+
+    def __init__(self, user: Utilisateur, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user  # Needed to make db call when app_context is available
+
+class ChangeEmailForm(FlaskForm):
+
+    usermail = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Nouveau mot de passe', validators=[DataRequired()])
+    submit = SubmitField('Modifier email')
+
+    def validate_password(self, password):
+        if not self.user.check_password(password):
+            raise ValidationError('Mot de passe incorrecte.')
+
+    def __init__(self, user: Utilisateur, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user  # Needed to make db call when app_context is available
