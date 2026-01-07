@@ -16,6 +16,8 @@ Note : pour le test de l'application, vous pouvez utiliser "admin" comme email e
 
 ## Tableau de bord
 
+![Tableau de bord](images_user_guide/dashboard.png)
+
 C'est la page principale de l'application. Vous pourrez y voir d'un coup d'oeil les prochaines échéances sur vos différents projets, leur état actuel.
 
 ![Prochaines échéances](images_user_guide/echeances.png)
