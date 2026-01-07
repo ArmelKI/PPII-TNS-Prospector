@@ -28,3 +28,29 @@ docker compose --env-file ./app/.env up --build
 Ouvrez maintenant http://127.0.0.1:8000, enjoy!
 
 **Rendez-vous [ici](./docs/Guide_utilisateur.md) pour le manuel utilisateur.**
+
+## Cas particuluer : Docker ne fonctionne pas, ou une affiche une erreur d'authetification
+
+Lorsque Docker ne fonctionne pas, voici comment lancer l'application avec Python.
+
+**Pré-requis** : 
+- Python 3 est installé
+- PostGreSQL installé
+
+Lancez successivement les commandes suivantes
+
+```
+cp ./app/.env.example ./app/.env
+
+python3 -m venv venv
+
+source ./venv/bin/activate
+
+createdb prospector
+
+python3 seed.py
+
+python3 app.py
+```
+
+Ouvrez maintenant http://127.0.0.1:8000, enjoy!
