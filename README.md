@@ -23,6 +23,8 @@ Copiez successivement les commandes suivantes :
 cp ./app/.env.example ./app/.env
 
 docker compose --env-file ./app/.env up --build
+
+python3 seed.py
 ```
 
 Ouvrez maintenant http://127.0.0.1:8000, enjoy!
