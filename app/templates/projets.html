@@ -27,10 +27,13 @@
             <a href="{{ url_for('jalons.voir_kanban', id_projet=p.id_projet) }}" class="btn w-100 text-center">
                 📊 Kanban
             </a>
-            
+            {% if p.statut_projet.value == 'Terminé' %}
+            <a href=#  class = "btn" style="text-align:center; background-color:#858585;">Match indisponible</a>
+            {% else %}
             <a href="{{ url_for('projets.match_projet', id=p.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center;">
                 Match
             </a>
+            {% endif %}
         </div>
         <div style="margin-top: 10px;">
             <a href="{{ url_for('projets.details_projet', id=p.id_projet) }}" class="btn btn-secondary w-100 text-center">
