@@ -58,6 +58,27 @@
                     <a href="{{ url_for('projets.ajouter_projet') }}?client={{ client.id_client }}" class="btn">+ Créer un projet</a>
                 </div>
             </div>
+
+            <div class="panel">
+                <h3>Historique des interactions</h3>
+                {% if interactions and interactions|length > 0 %}
+                <ul class="interaction-list">
+                    {% for interaction in interactions %}
+                        <li class="interaction-item">
+                            <div>
+                                <strong>{{ interaction.date_interaction.strftime('%d/%m/%Y') }}</strong>
+                                {% if interaction.etat_relation %}
+                                    <span class="badge" style="font-size:0.8em; margin-left:8px;">{{ interaction.etat_relation.libelle_relation }}</span>
+                                {% endif %}
+                                <div style="margin-top:3px;">{{ interaction.detail_interaction }}</div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                    <p>Aucune interaction enregistrée pour ce client.</p>
+                {% endif %}
+            </div>
         </div>
 
         <div class="side-column">
