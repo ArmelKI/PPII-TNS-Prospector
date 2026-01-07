@@ -3,11 +3,9 @@
 Cette applicaiton web a pour objectif de faciliter la prospection de nouveaux clients pour Telecom Nancy Services.  
 Prospector permet de gérer les clients de la junior, ses projets ainsi que les intervenants qui travaillent sur ces derniers.
 
-L'application est conforme au RGPD : tout suppression des informations d'un client ou d'un utilisateur entraine la suppression complète de ses informations dans l'intégralité de l'application.
+L'application est conforme au RGPD : toute suppression des informations d'un client ou d'un utilisateur entraine la suppression complète de ses informations dans l'intégralité de l'application.
 
-Vous trouverez un guide utilisateur à cette adresse [ici](./docs/Guide_utilisateur.md)
-
-## Guide d'installation
+Vous trouverez un guide utilisateur à cette [adresse](./docs/Guide_utilisateur.md).
 
 ## Guide d'installation
 
@@ -19,10 +17,14 @@ Vous trouverez un guide utilisateur à cette adresse [ici](./docs/Guide_utilisat
 ### 2. Configuration et Lancement
 Ouvrez un terminal à la racine du projet :
 
+Copiez successivement les commandes suivantes :
+
 ```bash
-# Copie des variables d'environnement
 cp ./app/.env.example ./app/.env
 
-# Lancement de l'application
-# (Ajoutez 'sudo' devant la commande si votre utilisateur n'est pas dans le groupe docker)
 docker compose --env-file ./app/.env up --build
+```
+
+Ouvrez maintenant http://127.0.0.1:8000, enjoy!
+
+**Rendez-vous [ici](./docs/Guide_utilisateur.md) pour le manuel utilisateur.**
