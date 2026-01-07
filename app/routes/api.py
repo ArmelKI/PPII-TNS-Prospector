@@ -11,6 +11,9 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 @api_bp.route("/clients/get_all")
 @manage_clients_required
 def get_all_clients():
+    """
+    Retourne un JSON des données sur tous les clients
+    """
     clients: list[Client] = Client.query.all()
     output = [{
         'id_client': client.id_client,
