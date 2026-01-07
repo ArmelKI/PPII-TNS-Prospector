@@ -4,8 +4,7 @@ from sqlalchemy import Enum as SAEnum, CheckConstraint
 from flask_login import UserMixin, current_user
 from app.config import login_manager
 from bcrypt import hashpw, gensalt, checkpw
-from flask import flash, request, url_for, current_app, redirect
-from functools import wraps
+from app.permissions import can_manage_users, can_manage_clients, can_manage_intervenants, can_manage_projets, all_perms
 
 db = SQLAlchemy()
 
@@ -92,7 +91,7 @@ class Role(db.Model):
     __tablename__ = "roles"
     id_role = db.Column(db.Integer, primary_key=True)
     nom_role = db.Column(db.String(100), nullable=False)
-    
+
     utilisateurs = db.relationship("Utilisateur", back_populates="role")
 
 class Utilisateur(db.Model, UserMixin):
@@ -136,6 +135,21 @@ class Utilisateur(db.Model, UserMixin):
     def get_id(self):
         return self.id_utilisateur
 
+    def can_manage_users(self) -> bool:
+        return can_manage_users(self)
+
+    def can_manage_clients(self) -> bool:
+        return can_manage_clients(self)
+
+    def can_manage_projets(self) -> bool:
+        return can_manage_projets(self)
+
+    def can_manage_intervenants(self) -> bool:
+        return can_manage_intervenants(self)
+
+    def is_admin(self) -> bool:
+        return self.permission == all_perms
+
 class Intervenant(db.Model):
     """
     Extended profile for a user who works on projects (The 'Resource').
@@ -145,7 +159,7 @@ class Intervenant(db.Model):
     id_intervenant = db.Column(db.Integer, db.ForeignKey("utilisateurs.id_utilisateur", ondelete="CASCADE"), primary_key=True)
     disponible = db.Column(db.Boolean, nullable=False, server_default='TRUE')
     nb_heures_dispo = db.Column(db.Integer)
-    
+
     # Documents paths
     bulletin_adhesion = db.Column(db.String(255))
     carte_etudiante = db.Column(db.String(255))
@@ -155,10 +169,10 @@ class Intervenant(db.Model):
     cv = db.Column(db.String(255))
 
     utilisateur = db.relationship("Utilisateur", back_populates="intervenant")
-    
+
     # Skills relationship via association object
     maitrise_details = db.relationship("MaitriseCompetence", back_populates="intervenant", cascade="all, delete-orphan")
-    
+
     # Projects and Tasks
     projets = db.relationship("Projet", secondary=intervenant_projet, back_populates="intervenants")
     taches = db.relationship("Tache", secondary=intervenant_tache, back_populates="intervenants")
@@ -250,9 +264,9 @@ class Convention(db.Model):
     regles = db.Column(db.Text)
     cahier_charges = db.Column(db.Text)
     prix = db.Column(db.Numeric(10, 2))
-    
+
     # File paths
-    convention_file = db.Column("convention", db.String(255)) 
+    convention_file = db.Column("convention", db.String(255))
     bon_commande = db.Column(db.String(255))
     recap_mission = db.Column(db.String(255))
 
@@ -273,11 +287,11 @@ class Projet(db.Model):
     charge_projet = db.Column(db.Integer, default=0) # Estimated workload
     date_debut_projet = db.Column(db.Date)
     date_fin_projet = db.Column(db.Date)
-    
+
     id_convention = db.Column(db.Integer, db.ForeignKey("conventions.id_convention"), nullable=False)
-    
+
     # file paths
-    convention_file = db.Column("convention", db.String(255)) 
+    convention_file = db.Column("convention", db.String(255))
     bon_commande = db.Column(db.String(255))
     recap_mission = db.Column(db.String(255))
 
@@ -285,7 +299,7 @@ class Projet(db.Model):
     jalons = db.relationship("Jalon", back_populates="projet", cascade="all, delete-orphan")
     intervenants = db.relationship("Intervenant", secondary=intervenant_projet, back_populates="projets")
     competences_requises = db.relationship("Competence", secondary=projet_competence, back_populates="projets_requerant")
-    
+
     def __repr__(self):
         return f"Project {self.nom_projet}"
 
@@ -304,8 +318,8 @@ class Jalon(db.Model):
     date_fin_jalon = db.Column(db.Date)
 
     projet = db.relationship("Projet", back_populates="jalons")
-    
-    # Important: 'cascade="all, delete-orphan"' ensures that when a Milestone is deleted, 
+
+    # Important: 'cascade="all, delete-orphan"' ensures that when a Milestone is deleted,
     # all its associated tasks are automatically deleted as well.
     taches = db.relationship("Tache", back_populates="jalon", cascade="all, delete-orphan")
 
@@ -316,10 +330,10 @@ class Tache(db.Model):
     __tablename__ = "taches"
 
     id_tache = db.Column(db.Integer, primary_key=True)
-    
+
     # Foreign Key with CASCADE delete
     id_jalon = db.Column(db.Integer, db.ForeignKey("jalons.id_jalon", ondelete="CASCADE"), nullable=False)
-    
+
     nom_tache = db.Column(db.String(200), nullable=False)
     description_tache = db.Column(db.Text)
     statut_tache = db.Column(SAEnum(StatutTache, name="statut_tache_enum"), nullable=False, default=StatutTache.PAS_COMMENCE)
@@ -328,7 +342,7 @@ class Tache(db.Model):
 
     # Relationship back to Jalon (Essential for SQLAlchemy to understand the link)
     jalon = db.relationship("Jalon", back_populates="taches")
-    
+
     intervenants = db.relationship("Intervenant", back_populates="taches", secondary=intervenant_tache)
 
     def __repr__(self):

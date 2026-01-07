@@ -25,30 +25,39 @@
       <li><a href="{{ url_for('clients.liste_clients') }}">Clients</a></li>
       <li><a href="{{ url_for('projets.liste_projets') }}">Projets</a></li>
       <li><a href="{{ url_for('interactions.liste_interactions') }}">Interactions</a></li>
+      {% if current_user.is_admin() %}
       <li><a href="{{ url_for('intervenants.exporter_intervenants') }}">Export CSV</a></li>
+      {% endif %}
+      {% if current_user.can_manage_clients() %}
       <li><a href="{{ url_for('map.map_page') }}">Carte des prospects</a></li>
-      <li><a href="{{ url_for('auth.logout') }}">({{ current_user.prenom_utilisateur + ' ' + current_user.nom_utilisateur }}) Se déconnecter</a></li>
+      {% endif %}
+      {% if current_user.can_manage_clients() %}
+      <li><a href="{{ url_for('auth.list_users') }}">Utilisateurs</a></li>
+      {% endif %}
+      <li>
+        <a href="{{ url_for('auth.account') }}">Compte ({{ current_user.prenom_utilisateur + ' ' + current_user.nom_utilisateur }})</a>
+      </li>
       {% endif %}
     </ul>
   </nav>
 </header>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="flash-container">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
+{% if messages %}
+<div class="flash-container">
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }}">
 
-                    <span>{{ message }}</span>
+    <span>{{ message }}</span>
 
-                    <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';">
-                        &times;
-                    </button>
+    <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';">
+      &times;
+    </button>
 
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 {% endwith %}
 
 <div class="container">

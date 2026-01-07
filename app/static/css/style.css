@@ -60,6 +60,10 @@ a:hover {
   color: var(--tns-white);
 }
 
+.brand {
+  margin-right: 50px;
+}
+
 .nav-list {
   list-style: none;
   display: flex;
@@ -284,6 +288,12 @@ a:hover {
 /* =========================================
    5. FORMS & INPUTS
    ========================================= */
+.multiple-forms {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .form-group {
   margin-bottom: 16px;
   text-align: left;

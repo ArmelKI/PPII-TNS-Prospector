@@ -75,8 +75,8 @@ def create_app(testing:bool):
     try:
         special_accounts = {
             'admin': {
-                'prenom_utilisateur': 'admin',
-                'nom_utilisateur': 'admin',
+                'prenom_utilisateur': 'Admin',
+                'nom_utilisateur': 'Admin',
                 'mail_utilisateur': 'admin',
                 'mdp_utilisateur': '$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq',
                 'permission': all_perms

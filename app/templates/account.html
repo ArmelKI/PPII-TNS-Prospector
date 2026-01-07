@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Compte - TNS{% endblock %}
+
+{% block content %}
+<div class="multiple-forms">
+    <div class="card" style="min-width: 400px; max-width: 600px; margin: 40px 30px;">
+        <h1 class="text-center mb-20">Modifier mot de passe</h1>
+        <form method="post" novalidate>
+            <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
+            {{ pw_form.hidden_tag() }}
+                {{ pw_form.old_password.label(class="form-label-block") }}
+                {{ pw_form.old_password(class="form-control", placeholder="Ex: Google France") }}
+                {% for error in pw_form.old_password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+
+                {{ pw_form.password.label(class="form-label-block") }}
+                {{ pw_form.password(class="form-control", placeholder="Ex: Google France") }}
+                {% for error in pw_form.password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+
+                {{ pw_form.password2.label(class="form-label-block") }}
+                {{ pw_form.password2(class="form-control", placeholder="Ex: Google France") }}
+                {% for error in pw_form.password2.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+
+            <p>{{ pw_form.submit(class="btn") }}</p>
+        </form>
+    </div>
+
+    <div class="card" style="min-width: 400px; max-width: 600px; margin: 40px 30px;">
+        <h1 class="text-center mb-20">Modifier email</h1>
+        <form method="post" novalidate>
+            <!-- Nécessaire pour prévenir certaines attaques (merci WTF de faire le taff à notre place) -->
+            {{ email_form.hidden_tag() }}
+                {{ email_form.usermail.label(class="form-label-block") }}
+                {{ email_form.usermail(class="form-control", placeholder="Ex: Google France") }}
+                {% for error in email_form.usermail.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+
+                {{ email_form.password.label(class="form-label-block") }}
+                {{ email_form.password(class="form-control", placeholder="Ex: Google France") }}
+                {% for error in email_form.password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+
+
+            <p>{{ email_form.submit(class="btn") }}</p>
+        </form>
+    </div>
+</div>
+
+<div class="multiple-forms">
+    <a href="{{ url_for('auth.logout') }}" class="btn">Se déconnecter</a>
+</div>
+
+{% endblock %}
