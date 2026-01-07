@@ -11,6 +11,7 @@
             <p>Competences requises: {% for c in projet.competences_requises %} <span class="badge"> {{ c.nom_competence }}</span> {% endfor %} </p>
             
         </div>
+
         <div>
             <span class="badge" style="font-size: 1.2rem;">{{ projet.statut_projet.value }}</span>
         </div>
@@ -52,8 +53,16 @@
                     ✏️ Modifier le projet
                 </a>
                 
-                <a href="{{ url_for('projets.match_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center;">Match</a>
+                <a href="{{ url_for('projets.match_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center;margin-bottom:10px;">Match</a>
+
+                <form action="{{ url_for('projets.supprimer_projet', id=projet.id_projet) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce projet ? Cela supprimera toutes les données associées (jalons, etc.)');">
+                    <button type="submit" class="btn" style="display:block; width:100%; text-align:center;">
+                        🗑 Supprimer le projet
+                    </button>
+                </form>
+
             </div>
+            
         </div>
     </div>
 </div>

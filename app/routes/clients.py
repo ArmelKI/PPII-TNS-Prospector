@@ -27,20 +27,17 @@ def ajouter_client():
         tel = request.form.get("telephone_client")
         secteur = request.form.get("secteur")
 
-        # Basic validation
         if not nom:
             flash("The client name is mandatory!", "danger")
             return render_template("ajouter_client.html")
 
-        # Check for duplicates
         if Client.query.filter_by(raison_sociale=nom).first():
             flash("This client already exists!", "warning")
             return render_template("ajouter_client.html")
 
-        # Create the client object
-        # Note: We initialize latitude/longitude to 0.0 as they are required by the model
+
         new_client = Client(
-            id_client=None, # Let the DB handle the ID
+            id_client=None, # ID auto-incremented by DB
             raison_sociale=nom,
             mail_client=mail,
             telephone_client=tel,
@@ -79,19 +76,16 @@ def modifier_client(id):
     client = Client.query.get_or_404(id)
 
     if request.method == "POST":
-        # 1. Retrieve data from form
         client.raison_sociale = request.form.get("raison_sociale")
         client.secteur = request.form.get("secteur")
         client.mail_client = request.form.get("mail_client")
         client.telephone_client = request.form.get("telephone_client")
 
-        # 2. Save changes
         db.session.commit()
 
         flash("Client information updated successfully.", "success")
         return redirect(url_for('clients.details_client', id=client.id_client))
 
-    # GET: Render the form with current data
     return render_template("modifier_client.html", client=client)
 
 @clients_bp.route("/delete/<int:id>", methods=["POST"])
@@ -104,17 +98,14 @@ def supprimer_client(id):
     client = Client.query.get_or_404(id)
 
     try:
-        # 1. Delete all interactions linked to this client
         InteractionClient.query.filter_by(id_client=id).delete()
 
-        # 2. Handle Conventions and Projects manually to be safe
-        # (Explicit deletion prevents orphan errors if cascades aren't perfect)
+
         for convention in client.conventions:
             for projet in convention.projets:
                 db.session.delete(projet)
             db.session.delete(convention)
 
-        # 3. Finally, delete the client
         db.session.delete(client)
         db.session.commit()
 
@@ -124,5 +115,4 @@ def supprimer_client(id):
     except Exception as e:
         db.session.rollback()
         flash(f"Error deleting client", "danger")
-        raise e
         return redirect(url_for("clients.details_client", id=id))
