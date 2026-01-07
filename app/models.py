@@ -8,18 +8,15 @@ from app.permissions import can_manage_users, can_manage_clients, can_manage_int
 
 db = SQLAlchemy()
 
-# -------------------------------------------------------------------
-# ENUMS (Enumerations)
-# Used to enforce strict status values in the database.
-# -------------------------------------------------------------------
-
 class StatutProjet(enum.Enum):
-    PAS_COMMENCE = "Pas commencé"
+    # on choisit cet ordre pour faciliter l'affichage (dans cet ordre) des projets triés par statut
+    # cf le fonctionnement des ENUM avec les index
     EN_COURS = "En cours"
-    TERMINE = "Terminé"
+    PAS_COMMENCE = "Pas commencé"
     BLOQUE = "Bloqué"
     STAND_BY = "Stand-By"
-
+    TERMINE = "Terminé"
+    
 class StatutJalon(enum.Enum):
     A_VENIR = "À venir"
     ACTUEL = "Actuel"
