@@ -52,7 +52,12 @@
                     ✏️ Modifier le projet
                 </a>
                 
+                
+                {% if projet.statut_projet.value == 'Terminé' %}
+                <a href=#  class = "btn"  style="display:block; width:100%; text-align:center; background-color:#858585;">Match indisponible</a>
+                {% else %}
                 <a href="{{ url_for('projets.match_projet', id=projet.id_projet) }}" class="btn" style="display:block; width:100%; text-align:center;">Match</a>
+                {% endif %}
             </div>
         </div>
     </div>
