@@ -29,12 +29,7 @@ class StatutTache(enum.Enum):
     BLOQUE = "Bloqué"
     STAND_BY = "Stand-By"
 
-# -------------------------------------------------------------------
-# ASSOCIATION TABLES
-# These tables handle Many-to-Many relationships between entities.
-# -------------------------------------------------------------------
-
-# Links Intervenants (Contributors) to Projects
+# Tables de correspondance
 intervenant_projet = db.Table(
     "intervenant_projet",
     db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
@@ -43,24 +38,20 @@ intervenant_projet = db.Table(
     db.Column("date_fin_intervention", db.Date)
 )
 
-# Links Intervenants to specific Tasks
 intervenant_tache = db.Table(
     "intervenant_tache",
     db.Column("id_intervenant", db.Integer, db.ForeignKey("intervenants.id_intervenant", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True),
     db.Column("id_tache", db.Integer, db.ForeignKey("taches.id_tache", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
 )
 
-# Links Projects to required Skills (Competences)
 projet_competence = db.Table(
     "projet_competence",
     db.Column("id_projet", db.Integer, db.ForeignKey("projets.id_projet", ondelete="CASCADE"), primary_key=True),
     db.Column("id_competence", db.Integer, db.ForeignKey("competences.id_competence", ondelete="CASCADE"), primary_key=True)
 )
 
-# -------------------------------------------------------------------
-# MODELS (Database Tables)
-# -------------------------------------------------------------------
 
+# Modèles ORM
 class MaitriseCompetence(db.Model):
     """
     Association Object pattern for Intervenant <-> Competence.

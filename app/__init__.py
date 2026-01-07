@@ -38,7 +38,7 @@ def create_app(testing:bool):
         app.config['SECRET_KEY'] = 'test_key'
     else:
 
-        # 1. Database Configuration
+        # Database Configuration
         DB_USER = os.getenv("DB_USER", "postgres")
         db_password = os.getenv("DB_PASSWORD", "")
         DB_PASSWORD = quote(db_password.encode()) if db_password else ""
@@ -54,14 +54,15 @@ def create_app(testing:bool):
 
         # Optional: Set max upload size (e.g., 16MB)
         app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+        
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    # 2. Initialize Extensions
+    # Initialize Extensions
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login_page'
     login_manager.login_message = 'Veuillez vous connectez pour accéder à cette page.'
 
-    # 3. Global Template Helpers
+    # Global Template Helpers
     @app.errorhandler(404)
     def page_not_found(e):
         """Render a custom 404 error page."""
@@ -72,7 +73,7 @@ def create_app(testing:bool):
         """Make current_year available in all templates."""
         return {"current_year": datetime.now().year}
 
-    # 4. Check for special accounts in db
+    # Check for special accounts in db
     try:
         special_accounts = {
             'admin': {

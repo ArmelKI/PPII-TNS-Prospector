@@ -32,15 +32,12 @@ def save_uploaded_file(file_obj, subfolder="documents"):
     name, ext = os.path.splitext(original_name)
     new_filename = f"{name}_{random_hex}{ext}"
 
-    # Ensure the upload directory exists
     upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', subfolder)
     os.makedirs(upload_dir, exist_ok=True)
 
-    # Save the file physically
     save_path = os.path.join(upload_dir, new_filename)
     file_obj.save(save_path)
 
-    # Return relative path for DB
     return f"uploads/{subfolder}/{new_filename}"
 
 @intervenants_bp.route("/", methods=["GET"])
@@ -55,15 +52,12 @@ def liste_intervenants():
     page = request.args.get('page', 1, type=int)
     per_page = 8
 
-    # 1. Base Query construction
-    # We join with Utilisateur to access names, and eager load skills to optimize performance.
     q = Intervenant.query.join(Utilisateur).options(
         joinedload(Intervenant.utilisateur),
         joinedload(Intervenant.maitrise_details).joinedload(MaitriseCompetence.competence)
     )
 
-    # 2. Apply Search Filters
-    # If a search term exists, we filter by User's First/Last Name OR Skill Name.
+
     if search:
         # Note: We use outerjoin to include intervenants even if they don't have skills yet,
         # but match the name search criteria.
@@ -73,14 +67,11 @@ def liste_intervenants():
             (Competence.nom_competence.ilike(f"%{search}%"))
         )
 
-    # 3. Apply Availability Filter
     if dispo:
         dispo_bool = dispo.lower() == "disponible"
         # We explicitly filter on the Intervenant model to avoid ambiguity in joins
         q = q.filter(Intervenant.disponible == dispo_bool)
 
-    # 4. Pagination
-    # Fetch the results for the current page
     pagination = q.order_by(Utilisateur.nom_utilisateur).paginate(page=page, per_page=per_page, error_out=False)
 
     return render_template('intervenants.html', intervenants=pagination, search_query=search, filter_dispo=dispo)
@@ -95,7 +86,7 @@ def ajouter_intervenant():
     Also handles file uploads (CV, Photo) and Skills parsing.
     """
     if request.method == "POST":
-        # --- 1. File Validation ---
+        # File verification
         cv_file = request.files.get('cv_file')
         photo_file = request.files.get('photo_file')
 
@@ -108,7 +99,6 @@ def ajouter_intervenant():
             flash("Le CV est obligatoire", "warning")
             return redirect(request.url)
 
-        # --- 2. Form Data Retrieval ---
         id_util = request.form.get("id_utilisateur")
         prenom = request.form.get("prenom_utilisateur", "").strip()
         nom = request.form.get("nom_utilisateur", "").strip()
@@ -117,7 +107,6 @@ def ajouter_intervenant():
         heures = request.form.get("heures", type=float, default=0.0)
         competences_raw = request.form.get("competences", "")
 
-        # --- 3. User Handling ---
         if id_util:
             # Case A: Linking an existing user
             # Security check: Ensure this user isn't already an intervenant
@@ -145,13 +134,11 @@ def ajouter_intervenant():
             db.session.add(utilisateur)
             db.session.flush() # Flush to generate the ID needed for the Intervenant table
 
-        # --- 4. File Saving ---
         path_cv = save_uploaded_file(cv_file, 'documents')
         path_photo = save_uploaded_file(photo_file, 'avatars')
         path_carte_etu = save_uploaded_file(request.files.get('carte_etu_file'), 'documents')
         path_carte_vitale = save_uploaded_file(request.files.get('carte_vitale_file'), 'documents')
 
-        # --- 5. Create Intervenant Record ---
         intervenant = Intervenant(
             id_intervenant=utilisateur.id_utilisateur,
             disponible=dispo,
@@ -162,7 +149,6 @@ def ajouter_intervenant():
             carte_vitale=path_carte_vitale
         )
 
-        # --- 6. Skills Parsing ---
         # Input format expected: "Python, 5; SQL, 3"
         items = [c.strip() for c in competences_raw.split(";") if c.strip()]
 
@@ -239,7 +225,6 @@ def modifier_intervenant(id):
         new_vitale = save_uploaded_file(request.files.get('carte_vitale_file'), 'documents')
         if new_vitale: intervenant.carte_vitale = new_vitale
 
-        # --- Skills Update Strategy ---
         # 1. We delete all existing skill links for this intervenant
         MaitriseCompetence.query.filter_by(id_intervenant=intervenant.id_intervenant).delete()
 

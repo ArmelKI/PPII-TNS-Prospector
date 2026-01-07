@@ -15,7 +15,6 @@ import_export_bp = Blueprint('import_export', __name__, url_prefix='/import_expo
 def main():
     return render_template('import_export.html')
 
-
 @import_export_bp.route('/export-db')
 @manage_intervenants_required
 def export_db():

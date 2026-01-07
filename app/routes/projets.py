@@ -29,14 +29,12 @@ def ajouter_projet():
         prix = request.form.get("prix", type=float)
         type_convention = request.form.get("type_convention")
 
-        # 1. Retrieve the Workload (Charge)
         charge = request.form.get("charge_projet", type=int, default=0)
 
         if not id_client or not nom_projet:
             flash("Missing mandatory fields.", "danger")
             return redirect(request.url)
 
-        # 2. Create Convention
         conv = Convention(
             id_client=id_client,
             type_convention=type_convention,
@@ -46,7 +44,6 @@ def ajouter_projet():
         db.session.add(conv)
         db.session.flush()
 
-        # 3. Create Project
         proj = Projet(
             nom_projet=nom_projet,
             statut_projet=StatutProjet.PAS_COMMENCE,
@@ -56,7 +53,6 @@ def ajouter_projet():
         )
         db.session.add(proj)
 
-        # 4. Handle Required Skills (Many-to-Many)
         # We get the list of IDs checked in the form
         skill_ids = request.form.getlist("competences_requises")
 
@@ -77,15 +73,6 @@ def ajouter_projet():
     selected_client = request.args.get('client', type=int)
 
     return render_template("ajouter_projet.html", clients=clients, competences=all_competences, selected_client=selected_client)
-    # GET: Prepare data for the form
-    clients = Client.query.order_by(Client.raison_sociale).all()
-    all_competences = Competence.query.order_by(Competence.nom_competence).all()
-    selected_client = request.args.get('client', type=int)
-
-    return render_template("ajouter_projet.html",
-                           clients=clients,
-                           competences=all_competences,
-                           selected_client=selected_client)
 
 @projets_bp.route("/details/<int:id>")
 @login_required
@@ -106,7 +93,7 @@ def modifier_projet(id):
     projet = Projet.query.get_or_404(id)
 
     if request.method == "POST":
-        # 1. Update Basic Fields
+        # Update Basic Fields
         projet.nom_projet = request.form.get("nom_projet")
         # NEW: Update Workload
         projet.charge_projet = request.form.get("charge_projet", type=int, default=0)
@@ -127,7 +114,7 @@ def modifier_projet(id):
                 projet.statut_projet = s
                 break
 
-        # 2. Update Required Skills (Many-to-Many)
+        # Update Required Skills (Many-to-Many)
         skill_ids = request.form.getlist("competences_requises")
         # We clear the current list and rebuild it based on the form
         projet.competences_requises = []
@@ -136,7 +123,7 @@ def modifier_projet(id):
             if c:
                 projet.competences_requises.append(c)
 
-        # 3. Update Team (Many-to-Many)
+        # Update Team (Many-to-Many)
         intervenant_ids = request.form.getlist("intervenants")
         projet.intervenants = []
         for i_id in intervenant_ids:
