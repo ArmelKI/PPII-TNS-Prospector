@@ -3,10 +3,7 @@ from app.models import *
 from sqlalchemy.exc import ProgrammingError
 from app.permissions import manage_clients_required, manage_users_required
 
-
-
 api_bp = Blueprint("api", __name__, url_prefix="/api")
-
 
 @api_bp.route("/clients/get_all")
 @manage_clients_required
@@ -30,6 +27,9 @@ def get_all_clients():
 @api_bp.get("/clients")
 @manage_clients_required
 def get_client():
+    """
+    Retourne un JSON contenant les infos sur un client spécifique
+    """
     id_client = request.args.get('id')
     client: Client = Client.query.get_or_404(id_client)
     output = {
