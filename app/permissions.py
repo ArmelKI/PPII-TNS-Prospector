@@ -61,14 +61,14 @@ manage_intervenants_required = perm_required(1)
 manage_clients_required = perm_required(2)
 manage_projets_required = perm_required(3)
 
-# def can_manage_users(user) -> bool:
-#     return check_user_perm(user, 0)
+def can_manage_users(user) -> bool:
+    return check_user_perm(user, 0)
 
-# def can_manage_intervenants(user) -> bool:
-#     return check_user_perm(user, 1)
+def can_manage_intervenants(user) -> bool:
+    return check_user_perm(user, 1)
 
-# def can_manage_clients(user) -> bool:
-#     return check_user_perm(user, 2)
+def can_manage_clients(user) -> bool:
+    return check_user_perm(user, 2)
 
-# def can_manage_projets(user) -> bool:
-#     return check_user_perm(user, 3)
+def can_manage_projets(user) -> bool:
+    return check_user_perm(user, 3)

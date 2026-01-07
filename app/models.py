@@ -4,8 +4,7 @@ from sqlalchemy import Enum as SAEnum, CheckConstraint
 from flask_login import UserMixin, current_user
 from app.config import login_manager
 from bcrypt import hashpw, gensalt, checkpw
-from flask import flash, request, url_for, current_app, redirect
-from functools import wraps
+from app.permissions import can_manage_users, can_manage_clients, can_manage_intervenants, can_manage_projets, all_perms
 
 db = SQLAlchemy()
 
@@ -135,6 +134,21 @@ class Utilisateur(db.Model, UserMixin):
 
     def get_id(self):
         return self.id_utilisateur
+
+    def can_manage_users(self) -> bool:
+        return can_manage_users(self)
+
+    def can_manage_clients(self) -> bool:
+        return can_manage_clients(self)
+
+    def can_manage_projets(self) -> bool:
+        return can_manage_projets(self)
+
+    def can_manage_intervenants(self) -> bool:
+        return can_manage_intervenants(self)
+
+    def is_admin(self) -> bool:
+        return self.permission == all_perms
 
 class Intervenant(db.Model):
     """
