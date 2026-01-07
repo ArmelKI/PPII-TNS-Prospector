@@ -14,7 +14,7 @@ def liste_projets():
     """
     Displays the main list of projects.
     """
-    tous_les_projets = Projet.query.all()
+    tous_les_projets = Projet.query.order_by(Projet.statut_projet).all()
     return render_template("projets.html", projets=tous_les_projets)
 
 @projets_bp.route("/add", methods=["GET", "POST"])
@@ -52,7 +52,7 @@ def ajouter_projet():
             statut_projet=StatutProjet.PAS_COMMENCE,
             date_debut_projet=date.today(),
             id_convention=conv.id_convention,
-            charge_projet=charge  # <--- WE SAVE THE HOURS HERE
+            charge_projet=charge
         )
         db.session.add(proj)
 
