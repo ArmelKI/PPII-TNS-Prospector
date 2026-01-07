@@ -60,7 +60,7 @@
                 {% endif %}
                 
                 <form action="{{ url_for('projets.supprimer_projet', id=projet.id_projet) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce projet ? Cela supprimera toutes les données associées (jalons, etc.)');">
-                    <button type="submit" class="btn" style="display:block; width:100%; text-align:center;">
+                    <button type="submit" class="btn" style="display:block; width:100%; text-align:center;background-color: #e74c3c;">
                         🗑 Supprimer le projet
                     </button>
                 </form>

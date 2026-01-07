@@ -10,7 +10,7 @@ Différents onglets s'offriront à vous en haut de la page tout au long de votre
 
 Lors de votre arrivée sur l'application, vous atterirez sur une page d'authentification : entrez votre email et votre mot de passe.
 
-Note : pour le test de l'application, vous pouvez utiliser "lucas.martin@tns.fr" comme email et "30Q2M4G7D3rs&Q*rMCMP" comme mot de passe admin, en cochant **Bypass password check**.
+Note : pour le test de l'application, vous pouvez utiliser "admin" comme email et "pass" comme mot de passe admin.
 
 ![Page d'accueil](images_user_guide/login_admin.png)
 
@@ -49,17 +49,17 @@ Sur cette page, vous pourrez voir la liste des clients de la junior-entreprise, 
 
 Chaque client possède des coordonnées ajustables : adresse mail et numéro de téléphone.
 
+![Détails d'un client](images_user_guide/detail_client.png)
+
 Vous avez également un aperçu des projets commandités par ce client.
 
-![Projets associés à un client](images_user_guide/projets_Saint_Seb.png)
+Il est possible d'historiser une interaction avec ce même client sur sa page.
+Toutes les interactions avec ce client sont visibles plus bas.
 
-Il est possible d'historiser une interaction avec ce même client sur sa page : 
-
-![Nouvelle interaction client](images_user_guide/interaction_client.png)
+![Historique interactions d'un client](images_user_guide/interactions_client.png)
 
 Enfin, modifier les informations relatives à un client est possible en cliquant sur le bouton "Modifier".
 
-![Bouton modifier un client](images_user_guide/modifier_client.png)
 
 ## Gestion des projets
 
@@ -92,6 +92,7 @@ Parmi les actions possibles, trois options s'offrent à vous :
 - Afficher le Kanban
 - Modifer les détails du projet
 - Effectuer un matching pour voir quels intervenants seraient le plus appropriés pour cette mission
+- Supprimer le projet
 
 ### Kanban d'un projet
 
