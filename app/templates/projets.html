@@ -38,9 +38,20 @@
             </a>
         </div>
       </div>
-      {% else %}
-        <p>Aucun projet trouvé.</p>
-      {% endfor %}
-    </div>
+
+            {% else %}
+                <p>Aucun projet trouvé.</p>
+            {% endfor %}
+        </div>
+
+        <div class="pagination-container">
+                {% if projets.has_prev %}
+                        <a href="{{ url_for('projets.liste_projets', page=projets.prev_num, search=search_query) }}" class="btn-secondary">&laquo; Précédent</a>
+                {% endif %}
+                <span class="text-muted">Page {{ projets.page }} / {{ projets.pages }}</span>
+                {% if projets.has_next %}
+                        <a href="{{ url_for('projets.liste_projets', page=projets.next_num, search=search_query) }}" class="btn-secondary">Suivant &raquo;</a>
+                {% endif %}
+        </div>
 </div>
 {% endblock %}
