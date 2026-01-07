@@ -302,34 +302,32 @@ def supprimer_intervenant(id):
 @intervenants_bp.route("/export", methods=["GET"])
 @login_required
 def exporter_intervenants():
-    """
-    Generates and downloads a CSV file containing all intervenants' data.
-    Useful for external reporting or backups.
-    """
-    intervenants = Intervenant.query.options(joinedload(Intervenant.utilisateur)).all()
+    intervenants: list[Intervenant] = Intervenant.query.all()
 
     # Use StringIO to create an in-memory text buffer
     si = StringIO()
     writer = csv.writer(si)
-
-    # Header row
-    writer.writerow(["ID", "Last Name", "First Name", "Email", "Skills", "Available", "Hours", "CV Path"])
-
-    # Data rows
+    writer.writerow([
+        "id_intervenant",
+        "disponible",
+        "nb_heures_dispo",
+        "bulletin_adhesion",
+        "carte_etudiante",
+        "carte_vitale",
+        "piece_identite",
+        "photo_identite",
+        "cv",
+    ])
     for i in intervenants:
-        u = i.utilisateur
-        # We join skills into a single string for the CSV cell
-        # Note: This simple export doesn't include skill levels for brevity, but could be added.
-        skills_str = ";".join([m.competence.nom_competence for m in i.maitrise_details])
-
         writer.writerow([
             i.id_intervenant,
-            u.nom_utilisateur if u else "",
-            u.prenom_utilisateur if u else "",
-            u.mail_utilisateur if u else "",
-            skills_str,
             i.disponible,
             i.nb_heures_dispo,
+            i.bulletin_adhesion,
+            i.carte_etudiante,
+            i.carte_vitale,
+            i.piece_identite,
+            i.photo_identite,
             i.cv
         ])
 

@@ -18,6 +18,7 @@ from app.routes.jalons import jalons_bp
 from app.routes.api import api_bp
 from app.routes.map import map_bp
 from app.routes.auth import auth_bp
+from app.routes.import_export import import_export_bp
 
 load_dotenv()
 
@@ -113,5 +114,6 @@ def create_app(testing:bool):
     app.register_blueprint(api_bp)
     app.register_blueprint(map_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(import_export_bp)
 
     return app
