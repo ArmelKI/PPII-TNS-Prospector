@@ -63,9 +63,9 @@
                 <form action="{{ url_for('jalons.supprimer_jalon', id_jalon=j.id_jalon) }}" method="POST" onsubmit="return confirm('Supprimer ce jalon ?');">
                     <button type="submit" class="btn-delete-cross">×</button>
                 </form>
-             </div>
-             <p><small>Fin : {{ j.date_fin_jalon }}</small></p>
-           </div>
+            </div>
+            <p><small>Fin : {{ j.date_fin_jalon }}</small></p>
+          </div>
         {% endfor %}
       </div>
     </div>
