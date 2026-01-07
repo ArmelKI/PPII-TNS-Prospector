@@ -14,8 +14,24 @@ def liste_projets():
     """
     Displays the main list of projects.
     """
-    tous_les_projets = Projet.query.order_by(Projet.statut_projet).all()
-    return render_template("projets.html", projets=tous_les_projets)
+    search_query = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    per_page = 9
+    filter_statut = request.args.get('statut', '').strip()
+    q = Projet.query.join(Convention, Projet.id_convention == Convention.id_convention)
+    if search_query:
+        q = q.filter(
+            Projet.nom_projet.ilike(f"%{search_query}%") |
+            Convention.client.has(Client.raison_sociale.ilike(f"%{search_query}%"))
+        )
+    if filter_statut:
+        try:
+            statut_enum = getattr(StatutProjet, filter_statut)
+            q = q.filter(Projet.statut_projet == statut_enum)
+        except AttributeError:
+            pass
+    projets_pagination = q.order_by(Projet.nom_projet, Projet.statut_projet).paginate(page=page, per_page=per_page, error_out=False)
+    return render_template("projets.html", projets=projets_pagination, search_query=search_query, filter_statut=filter_statut)
 
 @projets_bp.route("/add", methods=["GET", "POST"])
 @manage_projets_required
@@ -73,6 +89,15 @@ def ajouter_projet():
     selected_client = request.args.get('client', type=int)
 
     return render_template("ajouter_projet.html", clients=clients, competences=all_competences, selected_client=selected_client)
+    # GET: Prepare data for the form
+    clients = Client.query.order_by(Client.raison_sociale).all()
+    all_competences = Competence.query.order_by(Competence.nom_competence).all()
+    selected_client = request.args.get('client', type=int)
+
+    return render_template("ajouter_projet.html",
+                        clients=clients,
+                        competences=all_competences,
+                        selected_client=selected_client)
 
 @projets_bp.route("/details/<int:id>")
 @login_required
