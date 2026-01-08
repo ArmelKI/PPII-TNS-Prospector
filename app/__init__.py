@@ -54,7 +54,7 @@ def create_app(testing:bool):
 
         # Optional: Set max upload size (e.g., 16MB)
         app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-        
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     # Initialize Extensions
     db.init_app(app)
@@ -74,36 +74,32 @@ def create_app(testing:bool):
         return {"current_year": datetime.now().year}
 
     # Check for special accounts in db
-    try:
-        special_accounts = {
-            'admin': {
-                'prenom_utilisateur': 'Admin',
-                'nom_utilisateur': 'Admin',
-                'mail_utilisateur': 'admin',
-                'mdp_utilisateur': '$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq',
-                'permission': all_perms
-            }
+    special_accounts = {
+        'admin': {
+            'prenom_utilisateur': 'Admin',
+            'nom_utilisateur': 'Admin',
+            'mail_utilisateur': 'admin',
+            'mdp_utilisateur': '$2b$12$tgFWQzanVpp8MO9CGlV45ulmkjtPD2iSMmWN5RFRxzOAB1UAdvXeq',
+            'permission': all_perms
         }
-        app.config['special_accounts_mails'] = [account['mail_utilisateur'] for account in special_accounts.values()]
+    }
+    app.config['special_accounts_mails'] = [account['mail_utilisateur'] for account in special_accounts.values()]
 
-        if not testing:
-            with app.app_context():
-                for account in special_accounts.values():
-                    user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == account['mail_utilisateur']).scalar()
-                    if user is None:
-                        new_user = Utilisateur(
-                            prenom_utilisateur=account['prenom_utilisateur'],
-                            nom_utilisateur=account['nom_utilisateur'],
-                            mail_utilisateur=account['mail_utilisateur'],
-                            mdp_utilisateur=account['mdp_utilisateur'],
-                            permission=account['permission'],
-                            id_role=1
-                        )
-                        db.session.add(new_user)
-                        db.session.commit()
-    except ProgrammingError:
-        print('\n\n\n\n\n⚠️⚠️⚠️⚠️⚠️The DB model and the DB looks like they don\'t match !\n\n\n\n\n', flush=True)
-        pass
+    if not testing:
+        with app.app_context():
+            for account in special_accounts.values():
+                user: Utilisateur = Utilisateur.query.where(Utilisateur.mail_utilisateur == account['mail_utilisateur']).scalar()
+                if user is None:
+                    new_user = Utilisateur(
+                        prenom_utilisateur=account['prenom_utilisateur'],
+                        nom_utilisateur=account['nom_utilisateur'],
+                        mail_utilisateur=account['mail_utilisateur'],
+                        mdp_utilisateur=account['mdp_utilisateur'],
+                        permission=account['permission'],
+                        id_role=1
+                    )
+                    db.session.add(new_user)
+                    db.session.commit()
 
     # 5. Register Blueprints
     app.register_blueprint(dashboard_bp)
