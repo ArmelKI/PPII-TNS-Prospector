@@ -38,7 +38,7 @@ Ouvrez maintenant http://127.0.0.1:8000, enjoy!
 
 **Rendez-vous [ici](./docs/Guide_utilisateur.md) pour le manuel utilisateur.**
 
-## Cas particuluer : Docker ne fonctionne pas, ou une affiche une erreur d'authetification
+## Cas particulier : Docker ne fonctionne pas, ou une affiche une erreur d'authetification
 
 Lorsque Docker ne fonctionne pas, voici comment lancer l'application avec Python.
 
