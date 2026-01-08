@@ -23,10 +23,14 @@ cp ./app/.env.example ./app/.env
 
 docker compose --env-file ./app/.env up --build
 
-#uniquement au premier lancement !
-python3 seed.py # initialise avec des données de test
-# ou
-python3 init_db.py # initialise sans données de test 
+# Seulement pour avoir des données de test !
+python3 seed.py
+
+```
+
+Si il semble que la DB n'a pas été correctement créée, lancez la commande suivante pendant que le conteneur est lancé  :
+```bash
+python3 init_db.py
 ```
 
 Ouvrez maintenant http://127.0.0.1:8000, enjoy!
