@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.orm import joinedload
 from urllib.parse import urlsplit
 from app.forms import LoginForm, RegisterForm, UpdateUserForm, ChangePWForm, ChangeEmailForm
@@ -105,6 +105,7 @@ def update_user():
     return redirect(url_for('auth.list_users'))
 
 @auth_bp.route('/account', methods=['GET', 'POST'])
+@login_required
 def account():
     pw_form = ChangePWForm(current_user)
     email_form = ChangeEmailForm(current_user)
