@@ -12,7 +12,7 @@ Lors de votre arrivée sur l'application, vous atterirez sur une page d'authenti
 
 Note : pour le test de l'application, vous pouvez utiliser "admin" comme email et "pass" comme mot de passe admin.
 
-![Page d'accueil](images_user_guide/login_admin.png)
+![Page d'accueil](images_user_guide/login.png)
 
 ## Tableau de bord
 
