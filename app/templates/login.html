@@ -40,6 +40,12 @@
             <div>
                 {{ form.submit(class_="btn btn-block") }}
             </div>
+
+            <div>
+                <a href="{{ url_for('auth.login_google') }}" class="btn btn-block" id="login-google">
+                    Continuer avec Google
+                </a>
+            </div>
         </form>
     </div>
 
