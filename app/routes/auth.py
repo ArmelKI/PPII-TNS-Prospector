@@ -1,12 +1,30 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, session, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.orm import joinedload
 from urllib.parse import urlsplit
 from app.forms import LoginForm, RegisterForm, UpdateUserForm, ChangePWForm, ChangeEmailForm
 from app.models import db, Utilisateur
 from app.permissions import manage_users_required, encode_perms, list_perm
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from google.oauth2 import id_token
+import os, string, secrets
 
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+CLIENT_CONFIG = {
+    "web": {
+        "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+        "client_secret": os.environ.get("GOOGLE_CLIENT_SECRET"),
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+    }
+}
+
+# The authorization URL and redirect URL must match the ones you specified when you created the OAuth client ID
+AUTH_URL = 'https://accounts.google.com/o/oauth2/auth'
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -43,6 +61,62 @@ def login_page():
         next_page = '/'
     flash(f'Utilisateur⋅trice {user.prenom_utilisateur} {user.nom_utilisateur} connecté⋅e', "success")
     return redirect(next_page)
+
+@auth_bp.route("/login_google")
+def login_google():
+    flow = Flow.from_client_config(
+        CLIENT_CONFIG, 
+        scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"]
+    )
+    # L'URL doit être celle enregistrée dans la console Google
+    flow.redirect_uri = url_for('auth.callback', _external=True)
+    
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        prompt='select_account')
+
+    session['oauth_state'] = state # Utilise le même nom que dans callback
+    return redirect(authorization_url)
+
+@auth_bp.route("/callback")
+def callback():
+    flow = Flow.from_client_config(CLIENT_CONFIG, scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"])
+    flow.redirect_uri = url_for('auth.callback', _external=True)
+    
+    # Validation du state
+    flow.fetch_token(authorization_response=request.url)
+    
+    if not session.get('oauth_state') == request.args.get('state'):
+        abort(500) # State mismatch
+
+    credentials = flow.credentials
+    # Récupérer les infos de l'utilisateur (email) via l'id_token
+    info = id_token.verify_oauth2_token(credentials.id_token, Request(), CLIENT_CONFIG['web']['client_id'])
+    
+    email = info.get('email')
+    user = Utilisateur.query.filter_by(mail_utilisateur=email).first()
+
+    if not user:
+        prenom_nom = email.split("@")[0]
+        prenom_lower, nom_lower = prenom_nom.split(".")[0], prenom_nom.split(".")[1]
+        prenom, nom = prenom_lower[0].upper() + prenom_lower[1:], nom_lower[0].upper() + nom_lower[1:]
+        user = Utilisateur(
+            mail_utilisateur=email,
+            prenom_utilisateur=prenom,
+            nom_utilisateur=nom,
+            id_role=1, # Role par défaut (ex: invité)
+            permission=encode_perms([]) # Aucune permission par défaut
+        )
+
+        token_impossible = secrets.token_urlsafe(32)
+        user.set_password(token_impossible)
+        # On ne définit pas de mot de passe (connexion Google uniquement)
+        db.session.add(user)
+        db.session.commit()
+        flash("Compte créé automatiquement avec Google.", "info")
+    
+    login_user(user)
+    return redirect("/")
 
 @auth_bp.route('/logout')
 def logout():
