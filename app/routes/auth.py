@@ -104,7 +104,7 @@ def callback():
             mail_utilisateur=email,
             prenom_utilisateur=prenom,
             nom_utilisateur=nom,
-            id_role=1, # Role par défaut (ex: invité)
+            id_role=2, # Role par défaut (ex: invité)
             permission=encode_perms([]) # Aucune permission par défaut
         )
 
