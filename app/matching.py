@@ -136,13 +136,13 @@ def call_ai_matching(prompt_system,prompt_user):
         return data
 
     except requests.exceptions.HTTPError as err:
-        print(f"❌ Erreur HTTP : {err}")
-        print(f"Détail réponse : {response.text}") 
+        print(f"❌ Erreur HTTP : {err}", flush=True)
+        print(f"Détail réponse : {response.text}", flush=True)
     except json.JSONDecodeError:
-        print(f"❌ Erreur : L'IA n'a pas renvoyé un JSON valide.")
-        print(f"Contenu reçu : {content}")
+        print(f"❌ Erreur : L'IA n'a pas renvoyé un JSON valide.", flush=True)
+        print(f"Contenu reçu : {content}", flush=True)
     except Exception as e:
-        print(f"❌ Erreur inattendue : {e}")
+        print(f"❌ Erreur inattendue : {e}", flush=True)
 
 # --- 4. EXÉCUTION ---
 if __name__ == "__main__":

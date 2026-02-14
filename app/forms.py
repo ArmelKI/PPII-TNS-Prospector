@@ -110,7 +110,7 @@ class ChangeEmailForm(FlaskForm):
     submit = SubmitField('Modifier email')
 
     def validate_password(self, password):
-        if not self.user.check_password(password):
+        if not self.user.check_password(password.data):
             raise ValidationError('Mot de passe incorrecte.')
 
     def __init__(self, user: Utilisateur, *args, **kwargs):
